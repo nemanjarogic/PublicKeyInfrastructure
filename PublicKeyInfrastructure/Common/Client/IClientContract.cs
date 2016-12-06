@@ -8,5 +8,7 @@ namespace Common.Client
 {
     public interface IClientContract
     {
+
+
     }
 }
