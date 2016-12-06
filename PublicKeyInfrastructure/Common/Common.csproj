@@ -40,11 +40,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client\IClientContract.cs" />
+    <Compile Include="Contracts\ICertificationAuthorityContract.cs" />
+    <Compile Include="Contracts\IClientContract.cs" />
+    <Compile Include="Contracts\IRegistrationAuthorityContract.cs" />
+    <Compile Include="Contracts\IValidationAuthorityContract.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Server\ICertificationAuthorityContract.cs" />
-    <Compile Include="Server\IRegistrationAuthorityContract.cs" />
-    <Compile Include="Server\IValidationAuthorityContract.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
