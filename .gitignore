@@ -1,0 +1,12 @@
+/PublicKeyInfrastructure/CertificationAuthority/bin
+/PublicKeyInfrastructure/CertificationAuthority/obj
+/PublicKeyInfrastructure/Client/bin
+/PublicKeyInfrastructure/Client/obj
+/PublicKeyInfrastructure/Common/bin
+/PublicKeyInfrastructure/Common/obj
+/PublicKeyInfrastructure/Cryptography/bin
+/PublicKeyInfrastructure/Cryptography/obj
+/PublicKeyInfrastructure/RegistrationAuthority/bin
+/PublicKeyInfrastructure/RegistrationAuthority/obj
+/PublicKeyInfrastructure/ValidationAuthority/bin
+/PublicKeyInfrastructure/ValidationAuthority/obj
