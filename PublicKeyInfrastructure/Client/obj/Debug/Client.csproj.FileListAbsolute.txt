@@ -1,0 +1,9 @@
+C:\Users\ftn\Documents\E5 21-2016\B3\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
+C:\Users\ftn\Documents\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
+C:\Users\ftn\Documents\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
+C:\Users\ftn\Documents\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
+C:\Users\ftn\Documents\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Common.dll
+C:\Users\ftn\Documents\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
+C:\Users\ftn\Documents\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
+C:\Users\ftn\Documents\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
+C:\Users\ftn\Documents\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
