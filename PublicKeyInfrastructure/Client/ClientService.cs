@@ -28,7 +28,8 @@ namespace Client
         {
             clientProxy = new ClientService(binding, address);
             /*
-             * if(vaProxy.IsValidateCertificate(othersideCertificate)){
+             * if(vaProxy.IsValidateCertificate(othersideCertificate))
+             * {
              *      messageKey = RandomGenerateKey();
              *      asimetricno definisati messageKey
              *      clientProxy.SetMessageKey(messageKey);
