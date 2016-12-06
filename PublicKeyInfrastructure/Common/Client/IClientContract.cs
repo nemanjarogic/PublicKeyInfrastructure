@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common.Client
 {
-    interface IClientContract
+    public interface IClientContract
     {
     }
 }
