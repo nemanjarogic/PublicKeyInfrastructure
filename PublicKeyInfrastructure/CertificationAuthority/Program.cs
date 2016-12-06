@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Common.Server;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,7 +12,28 @@ namespace CertificationAuthority
     {
         static void Main(string[] args)
         {
-            //proba
+            NetTcpBinding binding = new NetTcpBinding();
+            binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
+
+            string address = "net.tcp://localhost:9999/CertificationAuthority";
+            ServiceHost host = new ServiceHost(typeof(ICertificationAuthorityContract));
+            host.AddServiceEndpoint(typeof(ICertificationAuthorityContract), binding, address);
+
+            try
+            {
+                host.Open();
+                Console.WriteLine("CertificationAuthority is started.\nPress <enter> to stop ...");
+                Console.ReadLine();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("[ERROR] {0}", e.Message);
+                Console.WriteLine("[StackTrace] {0}", e.StackTrace);
+            }
+            finally
+            {
+                host.Close();
+            }
         }
     }
 }

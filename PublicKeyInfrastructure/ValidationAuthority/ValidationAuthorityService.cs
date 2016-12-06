@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace ValidationAuthority
 {
-    public class ValidationAuthorityService : ChannelFactory<IValidationAuthorityContract>, ValidationAuthority, IDisposable
+    public class ValidationAuthorityService : ChannelFactory<IValidationAuthorityContract>, IValidationAuthorityContract, IDisposable
     {
-        private ValidationAuthority factory;
+        private IValidationAuthorityContract factory;
 
         public ValidationAuthorityService(NetTcpBinding binding, EndpointAddress address)
             : base(binding, address)
