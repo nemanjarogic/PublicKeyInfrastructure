@@ -7,3 +7,11 @@ C:\Users\ftn\Documents\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Commo
 C:\Users\ftn\Documents\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
 C:\Users\ftn\Documents\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
 C:\Users\ftn\Documents\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Common.dll
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
