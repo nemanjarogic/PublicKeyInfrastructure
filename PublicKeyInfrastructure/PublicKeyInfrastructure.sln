@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{B2DC1C3F-0D04-484F-B2CB-4DBAA5AAAB18}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegistrationAuthority", "RegistrationAuthority\RegistrationAuthority.csproj", "{16B9EA77-2CAF-48BE-BFF5-07BE5E462A98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CertificationAuthority", "CertificationAuthority\CertificationAuthority.csproj", "{4623380D-84E5-4002-8D48-E8446E106D87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValidationAuthority", "ValidationAuthority\ValidationAuthority.csproj", "{703BBFE0-2C87-48A6-8105-38C9FDD8DFA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{1789852F-E37A-4163-A2CF-BA83F4F9DB30}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cryptography", "Cryptography\Cryptography.csproj", "{5F85B447-629B-4C39-BD35-5CBF3D7A51C9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B2DC1C3F-0D04-484F-B2CB-4DBAA5AAAB18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2DC1C3F-0D04-484F-B2CB-4DBAA5AAAB18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2DC1C3F-0D04-484F-B2CB-4DBAA5AAAB18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2DC1C3F-0D04-484F-B2CB-4DBAA5AAAB18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16B9EA77-2CAF-48BE-BFF5-07BE5E462A98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16B9EA77-2CAF-48BE-BFF5-07BE5E462A98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16B9EA77-2CAF-48BE-BFF5-07BE5E462A98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16B9EA77-2CAF-48BE-BFF5-07BE5E462A98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4623380D-84E5-4002-8D48-E8446E106D87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4623380D-84E5-4002-8D48-E8446E106D87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4623380D-84E5-4002-8D48-E8446E106D87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4623380D-84E5-4002-8D48-E8446E106D87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{703BBFE0-2C87-48A6-8105-38C9FDD8DFA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{703BBFE0-2C87-48A6-8105-38C9FDD8DFA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{703BBFE0-2C87-48A6-8105-38C9FDD8DFA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{703BBFE0-2C87-48A6-8105-38C9FDD8DFA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1789852F-E37A-4163-A2CF-BA83F4F9DB30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1789852F-E37A-4163-A2CF-BA83F4F9DB30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1789852F-E37A-4163-A2CF-BA83F4F9DB30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1789852F-E37A-4163-A2CF-BA83F4F9DB30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F85B447-629B-4C39-BD35-5CBF3D7A51C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F85B447-629B-4C39-BD35-5CBF3D7A51C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F85B447-629B-4C39-BD35-5CBF3D7A51C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F85B447-629B-4C39-BD35-5CBF3D7A51C9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
