@@ -15,6 +15,9 @@ namespace Common.Server
         X509Certificate2 GenerateCertificate(string subjectName);
 
         [OperationContract]
+        bool IsCertificateActive(X509Certificate2 certificate);
+
+        [OperationContract]
         bool WithdrawCertificate(X509Certificate2 certificate);
     }
 }

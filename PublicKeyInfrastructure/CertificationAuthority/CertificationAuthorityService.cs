@@ -1,6 +1,7 @@
 ﻿using Common.Server;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
@@ -18,22 +19,12 @@ namespace CertificationAuthority
 
         #endregion
 
-        #region Properties
+        #region Constructor
 
-        public HashSet<X509Certificate2> ActiveCertificates
+        public CertificationAuthorityService()
         {
-            get
-            {
-                return activeCertificates;
-            }
-        }
-
-        public HashSet<X509Certificate2> RevocationList
-        {
-            get
-            {
-                return revocationList;
-            }
+            activeCertificates = new HashSet<X509Certificate2>();
+            revocationList = new HashSet<X509Certificate2>();
         }
 
         #endregion
@@ -42,13 +33,28 @@ namespace CertificationAuthority
 
         public X509Certificate2 GenerateCertificate(string subjectName)
         {
-            throw new NotImplementedException();
+            X509Certificate2 certificate = null;
+
+
+
+            return certificate;
         }
 
         public bool WithdrawCertificate(X509Certificate2 certificate)
         {
             throw new NotImplementedException();
         }
+
+        public bool IsCertificateActive(X509Certificate2 certificate)
+        {
+            return true;
+        }
+
+        #endregion 
+
+        #region Private methods
+
+        
 
         #endregion 
     }

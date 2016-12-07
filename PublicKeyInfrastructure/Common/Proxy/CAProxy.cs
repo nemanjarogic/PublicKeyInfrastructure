@@ -42,6 +42,11 @@ namespace Common.Proxy
             throw new NotImplementedException();
         }
 
+        public bool IsCertificateActive(X509Certificate2 certificate)
+        {
+            return factory.IsCertificateActive(certificate);
+        }
+
         #endregion
 
         #region IDisposable methods
@@ -56,6 +61,6 @@ namespace Common.Proxy
             this.Close();
         }
 
-        #endregion
+        #endregion        
     }
 }
