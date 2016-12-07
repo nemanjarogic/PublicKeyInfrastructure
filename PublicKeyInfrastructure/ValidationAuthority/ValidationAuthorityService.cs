@@ -38,12 +38,20 @@ namespace ValidationAuthority
 
             if (certificate != null)
             {
-                using (CAProxy caProxy = new CAProxy(binding, address))
+                //logic for certificate validation
+                //------ check start and end date
+                //------ check if it is in activeCerts list in CA
+                //------ check if it is NOT in CLR list in CA
+                if (DateTime.Compare(DateTime.Now, certificate.NotBefore) >= 0 && DateTime.Compare(DateTime.Now, certificate.NotAfter) <= 0)
                 {
-                    //logic for certificate validation
-                    //------ check start and end date
-                    //------ check if it is in activeCerts list in CA
-                    //------ check if it is NOT in CLR list in CA
+                    using (CAProxy caProxy = new CAProxy(binding, address))
+                    {
+                        retValue = caProxy.IsCertificateActive(certificate);
+                    }
+                }
+                else
+                {
+                    retValue = false;
                 }
             }
 

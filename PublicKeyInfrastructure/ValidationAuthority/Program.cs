@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,9 @@ namespace ValidationAuthority
     {
         static void Main(string[] args)
         {
+            /*testCAProxy();
+            return;*/
+            
             NetTcpBinding binding = new NetTcpBinding();
             binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
 
@@ -38,5 +42,15 @@ namespace ValidationAuthority
                 host.Close();
             }
         }
+
+        #region Test methods
+
+        public static void testCAProxy()
+        {
+            ValidationAuthorityService service = new ValidationAuthorityService();
+            service.isCertificateValidate(new X509Certificate2());
+        }
+
+        #endregion
     }
 }
