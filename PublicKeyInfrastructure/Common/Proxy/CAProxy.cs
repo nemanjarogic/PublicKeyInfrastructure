@@ -37,6 +37,11 @@ namespace Common.Proxy
             return certificate;
         }
 
+        public bool WithdrawCertificate(X509Certificate2 certificate)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region IDisposable methods

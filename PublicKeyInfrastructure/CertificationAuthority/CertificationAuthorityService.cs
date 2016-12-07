@@ -45,6 +45,11 @@ namespace CertificationAuthority
             throw new NotImplementedException();
         }
 
-        #endregion
+        public bool WithdrawCertificate(X509Certificate2 certificate)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion 
     }
 }
