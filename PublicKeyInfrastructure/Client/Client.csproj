@@ -56,6 +56,10 @@
       <Project>{1789852f-e37a-4163-a2cf-ba83f4f9db30}</Project>
       <Name>Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Cryptography\Cryptography.csproj">
+      <Project>{5f85b447-629b-4c39-bd35-5cbf3d7a51c9}</Project>
+      <Name>Cryptography</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
