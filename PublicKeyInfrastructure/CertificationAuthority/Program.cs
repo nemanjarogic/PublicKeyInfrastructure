@@ -16,7 +16,7 @@ namespace CertificationAuthority
             binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
 
             string address = "net.tcp://localhost:9999/CertificationAuthority";
-            ServiceHost host = new ServiceHost(typeof(ICertificationAuthorityContract));
+            ServiceHost host = new ServiceHost(typeof(CertificationAuthorityService));
             host.AddServiceEndpoint(typeof(ICertificationAuthorityContract), binding, address);
 
             try

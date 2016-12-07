@@ -1,30 +1,28 @@
 ﻿using Common.Server;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CertificationAuthority
+namespace Common.Proxy
 {
-    public class CertificationAuthorityService : ICertificationAuthorityContract
+    public class CAProxy : ChannelFactory<ICertificationAuthorityContract>, ICertificationAuthorityContract, IDisposable
     {
         #region Fields
 
-        private HashSet<X509Certificate2> activeCertificates;
-        private HashSet<X509Certificate2> revocationList;
+        private ICertificationAuthorityContract factory;
 
         #endregion
 
         #region Constructor
 
-        public CertificationAuthorityService()
+        public CAProxy(NetTcpBinding binding, string address)
+            : base(binding, address)
         {
-            activeCertificates = new HashSet<X509Certificate2>();
-            revocationList = new HashSet<X509Certificate2>();
+            factory = this.CreateChannel();
         }
 
         #endregion
@@ -34,8 +32,7 @@ namespace CertificationAuthority
         public X509Certificate2 GenerateCertificate(string subjectName)
         {
             X509Certificate2 certificate = null;
-
-
+            certificate = factory.GenerateCertificate(subjectName);
 
             return certificate;
         }
@@ -47,15 +44,23 @@ namespace CertificationAuthority
 
         public bool IsCertificateActive(X509Certificate2 certificate)
         {
-            return true;
+            return factory.IsCertificateActive(certificate);
         }
 
-        #endregion 
+        #endregion
 
-        #region Private methods
+        #region IDisposable methods
 
-        
+        public void Dispose()
+        {
+            if(factory != null)
+            {
+                factory = null;
+            }
 
-        #endregion 
+            this.Close();
+        }
+
+        #endregion        
     }
 }
