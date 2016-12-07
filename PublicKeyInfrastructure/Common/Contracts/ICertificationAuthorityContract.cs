@@ -13,5 +13,8 @@ namespace Common.Server
     {
         [OperationContract]
         X509Certificate2 GenerateCertificate(string subjectName);
+
+        [OperationContract]
+        bool WithdrawCertificate(X509Certificate2 certificate);
     }
 }

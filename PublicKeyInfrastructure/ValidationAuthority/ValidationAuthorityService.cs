@@ -8,14 +8,8 @@ using System.Threading.Tasks;
 
 namespace ValidationAuthority
 {
-    public class ValidationAuthorityService : ChannelFactory<IValidationAuthorityContract>, IValidationAuthorityContract, IDisposable
+    public class ValidationAuthorityService : IValidationAuthorityContract
     {
-        private IValidationAuthorityContract factory;
-
-        public ValidationAuthorityService(NetTcpBinding binding, EndpointAddress address)
-            : base(binding, address)
-        {
-
-        }
+        
     }
 }

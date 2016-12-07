@@ -9,19 +9,42 @@ using System.Threading.Tasks;
 
 namespace CertificationAuthority
 {
-    public class CertificationAuthorityService : ChannelFactory<ICertificationAuthorityContract>, ICertificationAuthorityContract, IDisposable
+    public class CertificationAuthorityService : ICertificationAuthorityContract
     {
-        private ICertificationAuthorityContract factory;
+        #region Fields
 
-        public CertificationAuthorityService(NetTcpBinding binding, EndpointAddress address)
-            : base(binding, address)
+        private HashSet<X509Certificate2> activeCertificates;
+        private HashSet<X509Certificate2> revocationList;
+
+        #endregion
+
+        #region Properties
+
+        public HashSet<X509Certificate2> ActiveCertificates
         {
-            factory = this.CreateChannel();
+            get
+            {
+                return activeCertificates;
+            }
         }
+
+        public HashSet<X509Certificate2> RevocationList
+        {
+            get
+            {
+                return revocationList;
+            }
+        }
+
+        #endregion
+
+        #region Public methods
 
         public X509Certificate2 GenerateCertificate(string subjectName)
         {
             throw new NotImplementedException();
         }
+
+        #endregion
     }
 }
