@@ -9,18 +9,28 @@ using System.ServiceModel;
 
 namespace Common.Client
 {
-    [ServiceContract]
+    [ServiceContract(CallbackContract = typeof(IClientContract))]
     public interface IClientContract
     {
         [OperationContract]
-        bool InitiateComunication(X509Certificate othersideCertificate, NetTcpBinding binding, EndpointAddress address);
+        void InitiateComunication(X509Certificate othersideCertificate);
         [OperationContract]
-        bool Pay(byte[] message);
+        void SetMessageKey(byte[] messageKey);
+        [OperationContract]
+        void Pay(byte[] message);
 
         [OperationContract]
-        void SetMessageKey(byte[,] messageKey);
+        void StartComunication(NetTcpBinding binding, EndpointAddress address);
+        [OperationContract]
+        void AcceptComunication(X509Certificate myCertificate);
+        [OperationContract]
+        void ReadyForMessaging();
 
+        [OperationContract]
+        String GetSessionId();
+        
         X509Certificate Register();
-        byte[,] RandomGenerateKey();
+        byte[] RandomGenerateKey();
+        
     }
 }
