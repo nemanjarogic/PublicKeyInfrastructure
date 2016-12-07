@@ -15,15 +15,17 @@ namespace CertificationAuthority
 
             try
             {
-                Process process = new Process();
-                ProcessStartInfo startInfo = new ProcessStartInfo();
+                using(Process process = new Process())
+                {
+                    ProcessStartInfo startInfo = new ProcessStartInfo();
 
-                startInfo.WorkingDirectory = workingDirectory; // @"C:\Windows\System32";
-                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                startInfo.FileName = "cmd.exe";
-                startInfo.Arguments = "/C copy /b Image1.jpg + Archive.rar Image2.jpg";
-                process.StartInfo = startInfo;
-                process.Start();
+                    startInfo.WorkingDirectory = workingDirectory;
+                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    startInfo.FileName = "cmd.exe";
+                    startInfo.Arguments = "/C " + command;
+                    process.StartInfo = startInfo;
+                    process.Start();
+                }
 
                 isCommandExecuted = true;
             }
