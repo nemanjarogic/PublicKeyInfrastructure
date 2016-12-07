@@ -39,9 +39,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AES\AES128.cs" />
-    <Compile Include="AES\AES128Decryption.cs" />
-    <Compile Include="AES\AES128Encryption.cs" />
+    <Compile Include="AES\AES128_ECB.cs" />
+    <Compile Include="AES\AESOperations.cs" />
+    <Compile Include="AES\Decryption.cs" />
+    <Compile Include="AES\Encryption.cs" />
+    <Compile Include="AES\TestAES.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
