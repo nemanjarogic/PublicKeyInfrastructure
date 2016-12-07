@@ -12,5 +12,10 @@ namespace Client
     {
         private IValidationAuthorityContract proxy;
 
+
+        public bool isCertificateValidate(System.Security.Cryptography.X509Certificates.X509Certificate2 certificate)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
