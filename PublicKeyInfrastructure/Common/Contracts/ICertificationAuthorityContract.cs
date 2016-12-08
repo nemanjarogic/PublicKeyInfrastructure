@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
@@ -19,5 +20,11 @@ namespace Common.Server
 
         [OperationContract]
         bool WithdrawCertificate(X509Certificate2 certificate);
+
+        [OperationContract]
+        FileStream GetFileStreamOfCertificate(string certFileName);
+
+        [OperationContract]
+        bool SaveCertificateToBackupDisc(X509Certificate2 certificate, FileStream stream, string certFileName);
     }
 }

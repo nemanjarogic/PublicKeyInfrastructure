@@ -18,6 +18,7 @@ namespace Common.Proxy
         private static string addressOfHotCAHost = null;
         private static string addressOfBackupCAHost = null;
         private static NetTcpBinding binding = null;
+        private static string CERT_FOLDER_PATH = @"..\..\SecurityStore\";
 
         static CAProxy()
         {
@@ -51,6 +52,21 @@ namespace Common.Proxy
                 using (CAProxy hotProxy = new CAProxy(binding, addressOfHotCAHost))
                 {
                     certificate = hotProxy.factory.GenerateCertificate(subjectName);
+                    try
+                    {
+                        if (certificate != null)
+                        {
+                            //replicate to backup server
+                            using (CAProxy backupProxy = new CAProxy(binding, addressOfBackupCAHost))
+                            {
+                                backupProxy.factory.SaveCertificateToBackupDisc(certificate, hotProxy.factory.GetFileStreamOfCertificate(subjectName), subjectName);
+                            }
+                        }
+                    }
+                    catch (EndpointNotFoundException exBACKUP)
+                    {
+
+                    }
                 }
             }
             catch (EndpointNotFoundException exHOT)

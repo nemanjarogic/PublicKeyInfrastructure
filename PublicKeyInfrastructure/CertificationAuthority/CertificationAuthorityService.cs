@@ -25,6 +25,7 @@ namespace CertificationAuthority
         private readonly string CA_SUBJECT_NAME;
         private readonly string PFX_PATH;
         private readonly string PFX_PASSWORD;
+        private readonly string CERT_FOLDER_PATH;
 
         #endregion
 
@@ -38,6 +39,7 @@ namespace CertificationAuthority
             CA_SUBJECT_NAME = "CN=PKI_CA";
             PFX_PATH = @"..\..\SecurityStore\PKI_CA.pfx";
             PFX_PASSWORD = "123";
+            CERT_FOLDER_PATH = @"..\..\SecurityStore\";
 
             PrepareCAService();
         }
@@ -58,6 +60,25 @@ namespace CertificationAuthority
 
         public bool IsCertificateActive(X509Certificate2 certificate)
         {
+            return true;
+        }
+
+        public FileStream GetFileStreamOfCertificate(string certFileName)
+        {
+            return new FileStream(CERT_FOLDER_PATH + @"\" + certFileName + ".cer", FileMode.Open, FileAccess.Read);
+        }
+
+        public bool SaveCertificateToBackupDisc(X509Certificate2 certificate, FileStream stream, string certFileName)
+        {
+            //save file to disk
+            var fileStream = File.Create(CERT_FOLDER_PATH + @"\" + certFileName + ".cer");
+            stream.Seek(0, SeekOrigin.Begin);
+            stream.CopyTo(fileStream);
+            fileStream.Close();
+
+            //add cert to list
+            activeCertificates.Add(certificate);
+
             return true;
         }
 
