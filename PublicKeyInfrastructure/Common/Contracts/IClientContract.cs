@@ -20,7 +20,7 @@ namespace Common.Client
         void Pay(byte[] message);
 
         [OperationContract]
-        void StartComunication(NetTcpBinding binding, EndpointAddress address);
+        void StartComunication(string address);
         [OperationContract]
         void AcceptComunication(X509Certificate2 myCertificate);
         [OperationContract]
