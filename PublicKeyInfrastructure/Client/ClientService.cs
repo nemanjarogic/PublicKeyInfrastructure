@@ -19,11 +19,12 @@ namespace Client
         private byte[] messageKey;
         private X509Certificate myCertificate;
 
+        public ClientService() { }
+
         public string GetSessionId(){
             return OperationContext.Current.SessionId;
         }
-
-        #region Handshake
+        
         public ClientService(NetTcpBinding binding, EndpointAddress address)
         {
             clientSessions = new Dictionary<string, SessionData>();
@@ -33,9 +34,10 @@ namespace Client
             raProxy = new RAProxy();
         }
 
-        public void StartComunication(NetTcpBinding binding, EndpointAddress address)
+        #region Handshake
+        public void StartComunication(string address)
         {
-            IClientContract serverProxy = new ClientProxy(address, binding, this);
+            IClientContract serverProxy = new ClientProxy(new EndpointAddress(address), new NetTcpBinding(), this);
             string serverSessionId = serverProxy.GetSessionId();
             messageKey = RandomGenerateKey();
             clientSessions.Add(serverSessionId, new SessionData(new AES128_ECB(messageKey), serverProxy, serverSessionId));

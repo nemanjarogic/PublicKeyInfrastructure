@@ -34,9 +34,9 @@ namespace Client
             this.proxy.Pay(message);
         }
 
-        public void StartComunication(NetTcpBinding binding, EndpointAddress address)
+        public void StartComunication(string address)
         {
-            this.StartComunication(binding, address);
+            this.StartComunication(address);
         }
 
         public void AcceptComunication(X509Certificate myCertificate)
