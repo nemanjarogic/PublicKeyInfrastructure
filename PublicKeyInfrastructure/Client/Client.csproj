@@ -42,10 +42,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientProxy.cs" />
     <Compile Include="ClientService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RAProxy.cs" />
+    <Compile Include="SessionData.cs" />
     <Compile Include="VAProxy.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -11,7 +11,7 @@ namespace Client
 {
     public class RAProxy : ChannelFactory<IRegistrationAuthorityContract>, IRegistrationAuthorityContract, IDisposable
     {
-        private IRegistrationAuthorityContract raProxy;
+        private IRegistrationAuthorityContract raProxy; /* createChannel */
 
         public X509Certificate2 RegisterClient(string subjectName)
         {
