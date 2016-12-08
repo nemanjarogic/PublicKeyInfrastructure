@@ -14,8 +14,8 @@ namespace RegistrationAuthority
     {
         #region Fields
 
-        private NetTcpBinding binding;
-        private string address;
+        /*private NetTcpBinding binding;
+        private string address;*/
 
         #endregion
         
@@ -23,9 +23,9 @@ namespace RegistrationAuthority
 
         public RegistrationAuthorityService()
 	    {
-            binding = new NetTcpBinding();
+            /*binding = new NetTcpBinding();
             binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
-            address = "net.tcp://localhost:9999/CertificationAuthority";
+            address = "net.tcp://localhost:9999/CertificationAuthority";*/
 	    }
 
         #endregion
@@ -38,10 +38,12 @@ namespace RegistrationAuthority
 
             if(!String.IsNullOrEmpty(subjectName))
             {
-                using(CAProxy caProxy = new CAProxy(binding, address))
+                /*using(CAProxy caProxy = new CAProxy(binding, address))
                 {
                     certificate = caProxy.GenerateCertificate(subjectName);
-                }
+                }*/
+
+                certificate = CAProxy.GenerateCertificate(subjectName);
             }
 
             return certificate;
