@@ -1,11 +1,13 @@
 ﻿using Common.Server;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.X509;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.Text;
@@ -88,7 +90,9 @@ namespace CertificationAuthority
                     {
                         isCertFound = true;
                         caCertificate = cert;
-                        caPrivateKey = DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
+                        //caPrivateKey = Org.BouncyCastle.Security.DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
+                        caPrivateKey = CertificateHandler.TransformRSAPrivateKey(cert.PrivateKey);
+
                         break;
                     }
                 }

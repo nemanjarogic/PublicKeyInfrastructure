@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,7 +45,7 @@ namespace CertificationAuthority
             certificateGenerator.SetSignatureAlgorithm(signatureAlgorithm);
 
             // Issuer and Subject Name
-            X509Name subjectDN = new X509Name(subjectName);
+            X509Name subjectDN = new X509Name("CN=" + subjectName);
             X509Name issuerDN = new X509Name(issuerName);
             certificateGenerator.SetIssuerDN(issuerDN);
             certificateGenerator.SetSubjectDN(subjectDN);
@@ -82,6 +83,24 @@ namespace CertificationAuthority
                 rsa.Modulus, rsa.PublicExponent, rsa.PrivateExponent, rsa.Prime1, rsa.Prime2, rsa.Exponent1, rsa.Exponent2, rsa.Coefficient);
 
             x509.PrivateKey = DotNetUtilities.ToRSA(rsaparams);
+
+            // Install certificate
+            AddCertificateToStore(x509, StoreName.My, StoreLocation.LocalMachine);
+
+            //Export
+            byte[] certData = x509.Export(X509ContentType.Cert, "123");
+            string fileName = String.Empty;
+
+            if (subjectName.Contains("="))
+            {
+                fileName = subjectName.Split('=')[1] + ".cer";
+            }
+            else
+            {
+                fileName = subjectName.Trim() + ".cer"; ;
+            }
+            File.WriteAllBytes(@"..\..\SecurityStore\" + fileName, certData);
+
             return x509;
 
         }
@@ -131,9 +150,11 @@ namespace CertificationAuthority
 
             // Self-sign certificate
             Org.BouncyCastle.X509.X509Certificate certificate = certificateGenerator.Generate(issuerKeyPair.Private, random);
-            X509Certificate2 x509 = new System.Security.Cryptography.X509Certificates.X509Certificate2(certificate.GetEncoded());
+            X509Certificate2 x509 = new System.Security.Cryptography.X509Certificates.X509Certificate2(certificate.GetEncoded(), "123", X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
+          
+            RSA rsaPriv = DotNetUtilities.ToRSA(issuerKeyPair.Private as RsaPrivateCrtKeyParameters);
+            x509.PrivateKey = rsaPriv;
             refCaPrivateKey = issuerKeyPair.Private;
-            //x509.PrivateKey = issuerKeyPair.Private;
 
             // Install certificate
             AddCertificateToStore(x509, StoreName.Root, StoreLocation.LocalMachine);
@@ -153,6 +174,22 @@ namespace CertificationAuthority
             File.WriteAllBytes(@"..\..\SecurityStore\" + fileName, certData);
 
             return x509;
+        }
+
+        public static AsymmetricKeyParameter TransformRSAPrivateKey(AsymmetricAlgorithm privateKey)
+        {
+            RSACryptoServiceProvider prov = privateKey as RSACryptoServiceProvider;
+            RSAParameters parameters = prov.ExportParameters(true);
+
+            return new RsaPrivateCrtKeyParameters(
+                new BigInteger(1, parameters.Modulus),
+                new BigInteger(1, parameters.Exponent),
+                new BigInteger(1, parameters.D),
+                new BigInteger(1, parameters.P),
+                new BigInteger(1, parameters.Q),
+                new BigInteger(1, parameters.DP),
+                new BigInteger(1, parameters.DQ),
+                new BigInteger(1, parameters.InverseQ));
         }
 
         #endregion
