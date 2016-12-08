@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.ServiceModel;
 using Cryptography.AES;
 using Common.Client;
-using System.ServiceModel;
 
 namespace Client
 {

@@ -39,3 +39,14 @@ C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\obj\Deb
 C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
 C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
 C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.xml
+D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
+D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
+D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Common.dll
+D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.dll
+D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
+D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
+D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.pdb
+D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.xml
+D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
+D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
+D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb

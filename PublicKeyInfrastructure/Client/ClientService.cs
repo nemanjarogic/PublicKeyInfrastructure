@@ -46,6 +46,14 @@ namespace Client
 
         public void StartComunication(string address)
         {
+            foreach(var sessionData in clientSessions)
+            {
+                if(sessionData.Address.Equals(address))
+                {
+                    Console.WriteLine("Vec je ostvarena konekcija.");
+                    return;
+                }
+            }
             IClientContract serverProxy = new ClientProxy(new EndpointAddress(address), new NetTcpBinding(), this);
             byte[] messageKey = RandomGenerateKey();
 
@@ -59,6 +67,11 @@ namespace Client
             bool success = serverProxy.SendKey(messageKey); 
 
             object sessionInfo = serverProxy.GetSessionInfo(hostAddress);
+
+            string[] sessionId = ((string)sessionInfo).Split('|');
+            sd.CallbackSessionId = sessionId[0];
+            sd.ProxySessionId = sessionId[1];
+            clientSessions.Add(sd);
         }
 
         public void CallPay(byte[] message, string address)
@@ -68,7 +81,7 @@ namespace Client
             {
                 if(sd.Address.Equals(address))
                 {
-                    sd.Proxy.Pay(message);
+                    sd.Proxy.Pay(sd.AesAlgorithm.Encrypt(message));
                     return;
                 }
             }
@@ -126,7 +139,11 @@ namespace Client
         public bool SendKey(byte[] key)
         {
             /*Ako je kljuc validan vrati true*/
-
+            SessionData sd = GetSession(OperationContext.Current.SessionId);
+            if(sd != null)
+            {
+                sd.AesAlgorithm = new AES128_ECB(key);
+            }
             return true;
         }
 
@@ -160,7 +177,7 @@ namespace Client
         {
             string sessionId = OperationContext.Current.SessionId;
             SessionData sd = GetSession(sessionId);
-            Console.WriteLine(sessionId + " paid: " + System.Text.Encoding.UTF8.GetString(sd.AesAlgorithm.Decrypt(message)));
+            Console.WriteLine(sd.Address + " paid: " + System.Text.Encoding.UTF8.GetString(sd.AesAlgorithm.Decrypt(message)));
         }
     }
 }
