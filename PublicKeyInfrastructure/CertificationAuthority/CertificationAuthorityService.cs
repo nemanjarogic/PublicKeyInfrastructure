@@ -1,7 +1,10 @@
 ﻿using Common.Server;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Security;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
@@ -16,8 +19,12 @@ namespace CertificationAuthority
 
         private HashSet<X509Certificate2> activeCertificates;
         private HashSet<X509Certificate2> revocationList;
+        private AsymmetricKeyParameter caPrivateKey = null;
+        private X509Certificate2 caCertificate = null;
 
-        private readonly string makecertDirectory;
+        private readonly string CA_SUBJECT_NAME;
+        private readonly string PFX_PATH;
+        private readonly string PFX_PASSWORD;
 
         #endregion
 
@@ -28,7 +35,11 @@ namespace CertificationAuthority
             activeCertificates = new HashSet<X509Certificate2>();
             revocationList = new HashSet<X509Certificate2>();
 
-            makecertDirectory = @"C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin";
+            CA_SUBJECT_NAME = "CN=PKI_CA";
+            PFX_PATH = @"..\..\SecurityStore\PKI_CA.pfx";
+            PFX_PASSWORD = "123";
+
+            PrepareCAService();
         }
 
         #endregion
@@ -37,11 +48,7 @@ namespace CertificationAuthority
 
         public X509Certificate2 GenerateCertificate(string subjectName)
         {
-            X509Certificate2 certificate = null;
-
-            GenerateCertificateFromTerminal(subjectName);
-
-            return certificate;
+            return CertificateHandler.GenerateAuthorizeSignedCertificate(subjectName, "CN=" + CA_SUBJECT_NAME, caPrivateKey);
         }
 
         public bool WithdrawCertificate(X509Certificate2 certificate)
@@ -58,10 +65,39 @@ namespace CertificationAuthority
 
         #region Private methods
 
-        private void GenerateCertificateFromTerminal(string subjectName)
+        private void PrepareCAService()
         {
-            string command = "makecert -n \"CN= " + subjectName + "\" -r -sv " + subjectName + ".pvk " + subjectName + ".cer";
-            bool isCommandExecuted = TerminalManager.ExecuteTerminalCommand(makecertDirectory, command);
+            bool isPfxCreated = true;
+            bool isCertFound = false;
+            X509Certificate2Collection collection = new X509Certificate2Collection();
+
+            try
+            {
+                collection.Import(PFX_PATH, PFX_PASSWORD, X509KeyStorageFlags.PersistKeySet);
+            }
+            catch
+            {
+                isPfxCreated = false;
+            }
+
+            if(isPfxCreated)
+            {
+                foreach (X509Certificate2 cert in collection)
+                {
+                    if (cert.SubjectName.Name.Equals(CA_SUBJECT_NAME))
+                    {
+                        isCertFound = true;
+                        caCertificate = cert;
+                        caPrivateKey = DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
+                        break;
+                    }
+                }
+            }
+
+            if (!isCertFound)
+            {
+                caCertificate = CertificateHandler.GenerateCACertificate(CA_SUBJECT_NAME, ref caPrivateKey);
+            }
         }
 
         #endregion 
