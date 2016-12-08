@@ -24,7 +24,7 @@ namespace CertificationAuthority
     {
         #region Public methods
 
-        public static X509Certificate2 GenerateSelfSignedCertificate(string subjectName, string issuerName, AsymmetricKeyParameter issuerPrivKey)
+        public static X509Certificate2 GenerateAuthorizeSignedCertificate(string subjectName, string issuerName, AsymmetricKeyParameter issuerPrivKey)
         {
             const int keyStrength = 2048;
 
@@ -133,6 +133,7 @@ namespace CertificationAuthority
             Org.BouncyCastle.X509.X509Certificate certificate = certificateGenerator.Generate(issuerKeyPair.Private, random);
             X509Certificate2 x509 = new System.Security.Cryptography.X509Certificates.X509Certificate2(certificate.GetEncoded());
             refCaPrivateKey = issuerKeyPair.Private;
+            //x509.PrivateKey = issuerKeyPair.Private;
 
             // Install certificate
             AddCertificateToStore(x509, StoreName.Root, StoreLocation.LocalMachine);

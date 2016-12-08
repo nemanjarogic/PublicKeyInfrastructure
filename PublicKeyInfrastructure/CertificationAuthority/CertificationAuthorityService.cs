@@ -1,5 +1,6 @@
 ﻿using Common.Server;
 using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Security;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,7 +21,10 @@ namespace CertificationAuthority
         private HashSet<X509Certificate2> revocationList;
         private AsymmetricKeyParameter caPrivateKey = null;
         private X509Certificate2 caCertificate = null;
-        private readonly string caSubjectName;
+
+        private readonly string CA_SUBJECT_NAME;
+        private readonly string PFX_PATH;
+        private readonly string PFX_PASSWORD;
 
         #endregion
 
@@ -31,7 +35,10 @@ namespace CertificationAuthority
             activeCertificates = new HashSet<X509Certificate2>();
             revocationList = new HashSet<X509Certificate2>();
 
-            caSubjectName = "CN=PKI_CA";
+            CA_SUBJECT_NAME = "CN=PKI_CA";
+            PFX_PATH = @"..\..\SecurityStore\PKI_CA.pfx";
+            PFX_PASSWORD = "123";
+
             PrepareCAService();
         }
 
@@ -41,7 +48,7 @@ namespace CertificationAuthority
 
         public X509Certificate2 GenerateCertificate(string subjectName)
         {
-            return CertificateHandler.GenerateSelfSignedCertificate(subjectName, "CN=" + caSubjectName, caPrivateKey); ;
+            return CertificateHandler.GenerateAuthorizeSignedCertificate(subjectName, "CN=" + CA_SUBJECT_NAME, caPrivateKey);
         }
 
         public bool WithdrawCertificate(X509Certificate2 certificate)
@@ -60,26 +67,36 @@ namespace CertificationAuthority
 
         private void PrepareCAService()
         {
-            X509Store store = new X509Store(StoreName.Root, StoreLocation.LocalMachine);
-            store.Open(OpenFlags.ReadOnly);
-            X509Certificate2Collection certs = store.Certificates;
-
+            bool isPfxCreated = true;
             bool isCertFound = false;
-            foreach(var cert in certs)
+            X509Certificate2Collection collection = new X509Certificate2Collection();
+
+            try
             {
-                if (cert.SubjectName.Equals(caSubjectName))
+                collection.Import(PFX_PATH, PFX_PASSWORD, X509KeyStorageFlags.PersistKeySet);
+            }
+            catch
+            {
+                isPfxCreated = false;
+            }
+
+            if(isPfxCreated)
+            {
+                foreach (X509Certificate2 cert in collection)
                 {
-                    isCertFound = true;
-                    caCertificate = cert;
-                    //caPrivateKey = cert.PrivateKey;
-                    break;
+                    if (cert.SubjectName.Name.Equals(CA_SUBJECT_NAME))
+                    {
+                        isCertFound = true;
+                        caCertificate = cert;
+                        caPrivateKey = DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
+                        break;
+                    }
                 }
             }
 
-
             if (!isCertFound)
             {
-                caCertificate = CertificateHandler.GenerateCACertificate(caSubjectName, ref caPrivateKey);
+                caCertificate = CertificateHandler.GenerateCACertificate(CA_SUBJECT_NAME, ref caPrivateKey);
             }
         }
 
