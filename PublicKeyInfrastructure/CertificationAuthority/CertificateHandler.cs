@@ -20,38 +20,9 @@ using System.Threading.Tasks;
 
 namespace CertificationAuthority
 {
-    public class CertificateManager
+    public class CertificateHandler
     {
-        private static void create()
-        {
-            try
-            {
-                AsymmetricKeyParameter caPrivateKey = null;
-                //generate a root CA cert and obtain the privateKey
-                X509Certificate2 MyRootCAcert = GenerateCACertificate("CN=RAJ CA 2014", ref caPrivateKey);
-                AddCertificateToStore(MyRootCAcert, StoreName.Root, StoreLocation.LocalMachine);
-
-                //generate cert based on the CA cert privateKey
-                X509Certificate2 MyCert = GenerateSelfSignedCertificate("CN=Raj Kumar", "CN=RAJ CA 2014", caPrivateKey);
-                AddCertificateToStore(MyCert, StoreName.My, StoreLocation.LocalMachine);
-
-                //Export as pfx with privatekey
-                byte[] certData = MyRootCAcert.Export(X509ContentType.Pfx, "123");
-                File.WriteAllBytes(@"D:\raj CA.pfx", certData);
-
-                //Export as pfx with privatekey
-                certData = MyCert.Export(X509ContentType.Pfx, "123");
-                File.WriteAllBytes(@"D:\raj kumar.pfx", certData);
-
-                Console.WriteLine("CA:" + MyRootCAcert.Subject);
-                Console.WriteLine("User cert:" + MyCert.Subject);
-
-            }
-            catch (Exception exc)
-            {
-                Console.WriteLine(exc.Message);
-            }
-        }
+        #region Public methods
 
         public static X509Certificate2 GenerateSelfSignedCertificate(string subjectName, string issuerName, AsymmetricKeyParameter issuerPrivKey)
         {
@@ -158,19 +129,21 @@ namespace CertificationAuthority
             // Generating the Certificate
             AsymmetricCipherKeyPair issuerKeyPair = subjectKeyPair;
 
-            // selfsign certificate
+            // Self-sign certificate
             Org.BouncyCastle.X509.X509Certificate certificate = certificateGenerator.Generate(issuerKeyPair.Private, random);
             X509Certificate2 x509 = new System.Security.Cryptography.X509Certificates.X509Certificate2(certificate.GetEncoded());
-
             refCaPrivateKey = issuerKeyPair.Private;
 
+            // Install certificate
             AddCertificateToStore(x509, StoreName.Root, StoreLocation.LocalMachine);
-            byte[] certData = x509.Export(X509ContentType.Pfx, "123");
 
+            // Export certificate and private key to PFX file
+            byte[] certData = x509.Export(X509ContentType.Pfx, "123");
             string fileName = String.Empty;
-            if(subjectName.Contains(":"))
+
+            if(subjectName.Contains("="))
             {
-                fileName = subjectName.Split(':')[1] + ".pfx";
+                fileName = subjectName.Split('=')[1] + ".pfx";
             }
             else
             {
@@ -181,9 +154,13 @@ namespace CertificationAuthority
             return x509;
         }
 
+        #endregion
+
+        #region Private methods
+
         public static bool AddCertificateToStore(X509Certificate2 cert, StoreName st, StoreLocation sl)
         {
-            bool bRet = false;
+            bool isCertificateAdded = false;
 
             try
             {
@@ -192,13 +169,16 @@ namespace CertificationAuthority
                 store.Add(cert);
 
                 store.Close();
+                isCertificateAdded = true;
             }
             catch(Exception ex)
             {
                 Console.WriteLine("Exception on adding certificate to store. Message: " + ex.Message);
             }
 
-            return bRet;
+            return isCertificateAdded;
         }
+
+        #endregion
     }
 }

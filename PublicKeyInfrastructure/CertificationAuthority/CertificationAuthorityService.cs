@@ -32,7 +32,7 @@ namespace CertificationAuthority
             revocationList = new HashSet<X509Certificate2>();
 
             caSubjectName = "CN=PKI_CA";
-            PrepareCA();
+            PrepareCAService();
         }
 
         #endregion
@@ -41,7 +41,7 @@ namespace CertificationAuthority
 
         public X509Certificate2 GenerateCertificate(string subjectName)
         {
-            return CertificateManager.GenerateSelfSignedCertificate(subjectName, "CN=" + caSubjectName, caPrivateKey); ;
+            return CertificateHandler.GenerateSelfSignedCertificate(subjectName, "CN=" + caSubjectName, caPrivateKey); ;
         }
 
         public bool WithdrawCertificate(X509Certificate2 certificate)
@@ -58,7 +58,7 @@ namespace CertificationAuthority
 
         #region Private methods
 
-        private void PrepareCA()
+        private void PrepareCAService()
         {
             X509Store store = new X509Store(StoreName.Root, StoreLocation.LocalMachine);
             store.Open(OpenFlags.ReadOnly);
@@ -79,7 +79,7 @@ namespace CertificationAuthority
 
             if (!isCertFound)
             {
-                caCertificate = CertificateManager.GenerateCACertificate(caSubjectName, ref caPrivateKey);
+                caCertificate = CertificateHandler.GenerateCACertificate(caSubjectName, ref caPrivateKey);
             }
         }
 
