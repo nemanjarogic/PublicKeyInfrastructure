@@ -48,8 +48,12 @@ namespace Client
 
                             break;
                         case "2":
-                            Console.WriteLine("Message: ");
                             Console.WriteLine("Address: ");
+                            string clientAddres = Console.ReadLine();
+                            Console.WriteLine("Message: ");
+                            string message = Console.ReadLine();
+
+                            
                             break;
 
                     }

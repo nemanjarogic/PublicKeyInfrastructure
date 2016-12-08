@@ -137,5 +137,11 @@ namespace Client
             }
             return retVal;
         }
+
+
+        X509Certificate2 IClientContract.LoadMyCertificate()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

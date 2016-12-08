@@ -19,7 +19,7 @@ namespace Client
             proxy = this.CreateChannel();
         }
 
-        public void InitiateComunication(X509Certificate othersideCertificate)
+        public void InitiateComunication(X509Certificate2 othersideCertificate)
         {
             this.proxy.InitiateComunication(othersideCertificate);
         }
@@ -39,7 +39,7 @@ namespace Client
             this.StartComunication(address);
         }
 
-        public void AcceptComunication(X509Certificate myCertificate)
+        public void AcceptComunication(X509Certificate2 myCertificate)
         {
             this.proxy.AcceptComunication(myCertificate);
         }
@@ -60,6 +60,17 @@ namespace Client
         }
 
         public byte[] RandomGenerateKey()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public X509Certificate2 Register(string subjectName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public X509Certificate2 LoadMyCertificate()
         {
             throw new NotImplementedException();
         }
