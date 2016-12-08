@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,14 +14,14 @@ namespace RegistrationAuthority
         static void Main(string[] args)
         {
             testCAProxy();
-            Console.ReadLine();
-            return;
+            /*Console.ReadLine();
+            return;*/
             
 
             NetTcpBinding binding = new NetTcpBinding();
             binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
 
-            string address = "net.tcp://localhost:9999/RegistrationAuthorityService";
+            string address = "net.tcp://localhost:10002/RegistrationAuthorityService";
             ServiceHost host = new ServiceHost(typeof(RegistrationAuthorityService));
             host.AddServiceEndpoint(typeof(IRegistrationAuthorityContract), binding, address);
 
@@ -48,8 +49,11 @@ namespace RegistrationAuthority
 
         public static void testCAProxy()
         {
+            X509Certificate2 certificate = null;
+            Console.WriteLine("Test of using CAProxy in RA started...");
             RegistrationAuthorityService service = new RegistrationAuthorityService();
-            service.RegisterClient("testClient");
+            certificate = service.RegisterClient("testClient");
+            Console.WriteLine("Test of using CAProxy in RA finished. Name of new certificate - " + ((certificate != null) ? certificate.SubjectName.ToString() : "registration not implemented"));
         }
 
         #endregion

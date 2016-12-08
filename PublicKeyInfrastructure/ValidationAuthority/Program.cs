@@ -13,13 +13,14 @@ namespace ValidationAuthority
     {
         static void Main(string[] args)
         {
-            /*testCAProxy();
+            testCAProxy();
+            /*Console.ReadLine();
             return;*/
             
             NetTcpBinding binding = new NetTcpBinding();
             binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
 
-            string address = "net.tcp://localhost:9999/ValidationAuthorityService";
+            string address = "net.tcp://localhost:10003/ValidationAuthorityService";
             ServiceHost host = new ServiceHost(typeof(ValidationAuthorityService));
             host.AddServiceEndpoint(typeof(IValidationAuthorityContract), binding, address);
 
@@ -47,8 +48,11 @@ namespace ValidationAuthority
 
         public static void testCAProxy()
         {
+            bool isCertValidate = false;
+            Console.WriteLine("Test of using CAProxy in VA started...");
             ValidationAuthorityService service = new ValidationAuthorityService();
-            service.isCertificateValidate(new X509Certificate2());
+            isCertValidate = service.isCertificateValidate(new X509Certificate2());
+            Console.WriteLine("Test of using CAProxy in VA finished. Result of certValidation - " + isCertValidate);
         }
 
         #endregion
