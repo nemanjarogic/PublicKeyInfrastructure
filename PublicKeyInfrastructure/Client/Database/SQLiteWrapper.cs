@@ -55,6 +55,7 @@ namespace Client.Database
 
         public void DropDatabase(string dbName)
         {
+
             if (File.Exists(dbName + ".sqlite"))
             {
                 m_dbConnection.Close();
