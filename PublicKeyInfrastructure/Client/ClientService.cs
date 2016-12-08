@@ -3,6 +3,7 @@ using Cryptography.AES;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.ServiceModel;
@@ -29,6 +30,7 @@ namespace Client
             //clientSessions = new Dictionary<string, SessionData>();
             clientSessions = new HashSet<SessionData>();
             this.hostAddress = hostAddress;
+            myCertificate = new X509Certificate2(@"D:\Fakultet\Master\Blok3\Security\WCFClient.pfx", "12345");
         }
 
         public string GetSessionId(){
@@ -63,8 +65,9 @@ namespace Client
             clientSessions.Add(sd);
 
             X509Certificate2 serverCert = serverProxy.SendCert(null);
-            
-            bool success = serverProxy.SendKey(messageKey); 
+
+            RSACryptoServiceProvider publicKey = myCertificate.PublicKey.Key as RSACryptoServiceProvider;
+            bool success = serverProxy.SendKey(publicKey.Encrypt(messageKey, true)); 
 
             object sessionInfo = serverProxy.GetSessionInfo(hostAddress);
 
@@ -142,7 +145,8 @@ namespace Client
             SessionData sd = GetSession(OperationContext.Current.SessionId);
             if(sd != null)
             {
-                sd.AesAlgorithm = new AES128_ECB(key);
+                RSACryptoServiceProvider privateKey = myCertificate.PrivateKey as RSACryptoServiceProvider;
+                sd.AesAlgorithm = new AES128_ECB(privateKey.Decrypt(key, true));
             }
             return true;
         }
