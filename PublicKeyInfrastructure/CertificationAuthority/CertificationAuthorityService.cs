@@ -52,7 +52,14 @@ namespace CertificationAuthority
 
         public X509Certificate2 GenerateCertificate(string subjectName)
         {
-            return CertificateHandler.GenerateAuthorizeSignedCertificate(subjectName, "CN=" + CA_SUBJECT_NAME, caPrivateKey);
+            X509Certificate2 newCertificate = null;
+            newCertificate = CertificateHandler.GenerateAuthorizeSignedCertificate(subjectName, "CN=" + CA_SUBJECT_NAME, caPrivateKey);
+            if (newCertificate != null)
+            {
+                activeCertificates.Add(newCertificate);
+            }
+
+            return newCertificate;
         }
 
         public bool WithdrawCertificate(X509Certificate2 certificate)
