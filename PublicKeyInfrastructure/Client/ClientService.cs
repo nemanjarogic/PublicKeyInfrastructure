@@ -1,4 +1,5 @@
-﻿using Common.Client;
+﻿using Client.Database;
+using Common.Client;
 using Cryptography.AES;
 using System;
 using System.Collections.Generic;
@@ -19,8 +20,19 @@ namespace Client
         private RAProxy raProxy;
         private byte[] messageKey;
         private X509Certificate2 myCertificate;
+        private IDatabaseWrapper dbWrapper;
+        public ClientService()
+        {
+            InitializeDatabase();
+        }
 
-        public ClientService() { }
+        private void InitializeDatabase()
+        {
+            dbWrapper = new SQLiteWrapper();
+            dbWrapper.CreateDatabase("Clients");
+            dbWrapper.ConnectToDatabase("Clients");
+            dbWrapper.CreateTable(WindowsIdentity.GetCurrent().Name);
+        }
 
         public string GetSessionId(){
             return OperationContext.Current.SessionId;
@@ -30,7 +42,7 @@ namespace Client
         {
             clientSessions = new Dictionary<string, SessionData>();
             myCertificate = LoadMyCertificate();
-
+            InitializeDatabase();
             vaProxy = new VAProxy(); /*ucitati adresu i binding i proslediti u konstuktor*/
             raProxy = new RAProxy();
         }
@@ -79,6 +91,7 @@ namespace Client
             {
                 otherside.AesAlgorithm = new AES128_ECB(messageKey); //Dekriptuj ga
                 otherside.IsSuccessfull = true;
+                dbWrapper.InsertToTable(WindowsIdentity.GetCurrent().Name, otherside.SessionId);
                 otherside.Proxy.ReadyForMessaging();
             }
         }
@@ -91,7 +104,7 @@ namespace Client
             if (otherside != null)
             {
                 otherside.IsSuccessfull = true;
-                //otherside.Proxy.Pay(null);
+                dbWrapper.InsertToTable(WindowsIdentity.GetCurrent().Name, otherside.SessionId);
             }
         }
         #endregion
