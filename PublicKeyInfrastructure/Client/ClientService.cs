@@ -23,6 +23,7 @@ namespace Client
             return OperationContext.Current.SessionId;
         }
 
+        #region Handshake
         public ClientService(NetTcpBinding binding, EndpointAddress address)
         {
             clientSessions = new Dictionary<string, SessionData>();
@@ -90,6 +91,7 @@ namespace Client
                 //otherside.Proxy.Pay(null);
             }
         }
+        #endregion
 
         public void Pay(byte[] message)
         {
