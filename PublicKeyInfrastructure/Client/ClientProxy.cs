@@ -19,16 +19,6 @@ namespace Client
             proxy = this.CreateChannel();
         }
 
-        public void InitiateComunication(X509Certificate2 othersideCertificate)
-        {
-            this.proxy.InitiateComunication(othersideCertificate);
-        }
-
-        public void SetMessageKey(byte[] messageKey)
-        {
-            this.proxy.SetMessageKey(messageKey);
-        }
-
         public void Pay(byte[] message)
         {
             this.proxy.Pay(message);
@@ -36,17 +26,7 @@ namespace Client
 
         public void StartComunication(string address)
         {
-            this.StartComunication(address);
-        }
-
-        public void AcceptComunication(X509Certificate2 myCertificate)
-        {
-            this.proxy.AcceptComunication(myCertificate);
-        }
-
-        public void ReadyForMessaging()
-        {
-            this.proxy.ReadyForMessaging();
+            this.proxy.StartComunication(address);
         }
 
         public string GetSessionId()
@@ -73,6 +53,28 @@ namespace Client
         public X509Certificate2 LoadMyCertificate()
         {
             throw new NotImplementedException();
+        }
+
+
+        public X509Certificate2 SendCert(X509Certificate2 cert)
+        {
+            return this.proxy.SendCert(cert);
+        }
+
+        public bool SendKey(byte[] key)
+        {
+            return this.proxy.SendKey(key);
+        }
+
+
+        public object GetSessionInfo(string address)
+        {
+            return this.proxy.GetSessionInfo(address);
+        }
+
+        public void CallPay(byte[] message, string address)
+        {
+            this.proxy.CallPay(message, address);
         }
     }
 }

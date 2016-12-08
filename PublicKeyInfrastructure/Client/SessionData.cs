@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.ServiceModel;
 using Cryptography.AES;
 using Common.Client;
+using System.ServiceModel;
 
 namespace Client
 {
@@ -13,15 +14,29 @@ namespace Client
     {
         public AES128_ECB AesAlgorithm { get; set; }
         public IClientContract Proxy { get; set; }
-        public string SessionId { get; set; }
+        public string ProxySessionId { get; set; }
+        public string CallbackSessionId { get; set; }
         public bool IsSuccessfull { get; set; }
+        public string Address { get; set; }
 
-        public SessionData(AES128_ECB aesAlgorithm, IClientContract proxy, string sessionId)
+        public SessionData(AES128_ECB aesAlgorithm, IClientContract proxy)
         {
             AesAlgorithm = aesAlgorithm;
             Proxy = proxy;
-            SessionId = sessionId;
-            IsSuccessfull = false;
         }
+
+        public SessionData(AES128_ECB aesAlgorithm, IClientContract proxy, string proxySession, string callbackSession)
+        {
+            AesAlgorithm = aesAlgorithm;
+            Proxy = proxy;
+            ProxySessionId = proxySession;
+            CallbackSessionId = callbackSession;
+        }
+
+        public bool IsValidSession(string sessionId)
+        {
+            return sessionId.Equals(CallbackSessionId) || sessionId.Equals(ProxySessionId);
+        }
+
     }
 }
