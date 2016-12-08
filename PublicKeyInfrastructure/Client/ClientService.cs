@@ -6,21 +6,30 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.ServiceModel;
+using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Client
 {
-    [ServiceBehavior(InstanceContextMode=InstanceContextMode.Single, ConcurrencyMode=ConcurrencyMode.Multiple)]
+    [ServiceBehavior(InstanceContextMode=InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Multiple)]
     public class ClientService : IClientContract
     {
-        private Dictionary<string, SessionData> clientSessions;
+        //private Dictionary<string, SessionData> clientSessions;
+        private HashSet<SessionData> clientSessions;
         private VAProxy vaProxy;
         private RAProxy raProxy;
-        private byte[] messageKey;
         private X509Certificate2 myCertificate;
+        private string hostAddress;
 
         public ClientService() { }
+
+        public ClientService(string hostAddress) 
+        {
+            //clientSessions = new Dictionary<string, SessionData>();
+            clientSessions = new HashSet<SessionData>();
+            this.hostAddress = hostAddress;
+        }
 
         public string GetSessionId(){
             return OperationContext.Current.SessionId;
@@ -28,82 +37,46 @@ namespace Client
         
         public ClientService(NetTcpBinding binding, EndpointAddress address)
         {
-            clientSessions = new Dictionary<string, SessionData>();
+            //clientSessions = new Dictionary<string, SessionData>();
             myCertificate = LoadMyCertificate();
 
             vaProxy = new VAProxy(); /*ucitati adresu i binding i proslediti u konstuktor*/
             raProxy = new RAProxy();
         }
 
-        #region Handshake
         public void StartComunication(string address)
         {
             IClientContract serverProxy = new ClientProxy(new EndpointAddress(address), new NetTcpBinding(), this);
-            string serverSessionId = serverProxy.GetSessionId();
-            messageKey = RandomGenerateKey();
-            clientSessions.Add(serverSessionId, new SessionData(new AES128_ECB(messageKey), serverProxy, serverSessionId));
-            serverProxy.InitiateComunication(myCertificate);
-        }
+            byte[] messageKey = RandomGenerateKey();
 
-        public void InitiateComunication(X509Certificate2 othersideCertificate)
-        {
+            SessionData sd = new SessionData(new AES128_ECB(messageKey), serverProxy);
+            sd.Address = address;
+
+            clientSessions.Add(sd);
+
+            X509Certificate2 serverCert = serverProxy.SendCert(null);
             
-            IClientContract otherSide = OperationContext.Current.GetCallbackChannel<IClientContract>();
-            string otherSideSessionId = otherSide.GetSessionId();
-            if (vaProxy.isCertificateValidate(othersideCertificate))
-            {
-                clientSessions.Add(otherSideSessionId, new SessionData(null, otherSide, otherSideSessionId));
-                otherSide.AcceptComunication(myCertificate);
-            }
+            bool success = serverProxy.SendKey(messageKey); 
+
+            object sessionInfo = serverProxy.GetSessionInfo(hostAddress);
         }
 
-        public void AcceptComunication(X509Certificate2 othersideCertificate)
+        public void CallPay(byte[] message, string address)
         {
             string serviceId = OperationContext.Current.SessionId;
-            SessionData otherside;
-            clientSessions.TryGetValue(serviceId, out otherside);
-
-            if(vaProxy.isCertificateValidate(othersideCertificate) && otherside != null)
+            foreach(SessionData sd in clientSessions)
             {
-
-                otherside.Proxy.SetMessageKey(otherside.AesAlgorithm.Key); //Treba ga i kriptovati
+                if(sd.Address.Equals(address))
+                {
+                    sd.Proxy.Pay(message);
+                    return;
+                }
             }
-        }
 
-        public void SetMessageKey(byte[] messageKey)
-        {
-            string serviceId = OperationContext.Current.SessionId;
-            SessionData otherside;
-            clientSessions.TryGetValue(serviceId, out otherside);
-            if (otherside != null)
+            //clientSessions.TryGetValue(serviceId, out otherside);
+            //if (otherside != null)
             {
-                otherside.AesAlgorithm = new AES128_ECB(messageKey); //Dekriptuj ga
-                otherside.IsSuccessfull = true;
-                otherside.Proxy.ReadyForMessaging();
-            }
-        }
-
-        public void ReadyForMessaging()
-        {
-            string serviceId = OperationContext.Current.SessionId;
-            SessionData otherside;
-            clientSessions.TryGetValue(serviceId, out otherside);
-            if (otherside != null)
-            {
-                otherside.IsSuccessfull = true;
-                //otherside.Proxy.Pay(null);
-            }
-        }
-        #endregion
-
-        public void Pay(byte[] message)
-        {
-            string serviceId = OperationContext.Current.SessionId;
-            SessionData otherside;
-            clientSessions.TryGetValue(serviceId, out otherside);
-            if (otherside != null)
-            {
-                Console.WriteLine(otherside.SessionId + " paid: " + System.Text.Encoding.UTF8.GetString(otherside.AesAlgorithm.Decrypt(message)));
+               // Console.WriteLine(otherside.ProxySessionId + " paid: " + System.Text.Encoding.UTF8.GetString(otherside.AesAlgorithm.Decrypt(message)));
             }
         }
 
@@ -122,7 +95,7 @@ namespace Client
             return retVal;
         }
 
-        X509Certificate2 LoadMyCertificate()
+        public X509Certificate2 LoadMyCertificate()
         {
             X509Certificate2 retVal = new X509Certificate2();
 
@@ -138,10 +111,56 @@ namespace Client
             return retVal;
         }
 
-
-        X509Certificate2 IClientContract.LoadMyCertificate()
+        public X509Certificate2 SendCert(X509Certificate2 cert)
         {
-            throw new NotImplementedException();
+            IClientContract otherSide = OperationContext.Current.GetCallbackChannel<IClientContract>();
+            string callbackSession = otherSide.GetSessionId();
+            string proxySession = OperationContext.Current.SessionId;
+
+            /*Provjeri cert*/
+            clientSessions.Add(new SessionData(null, otherSide, callbackSession, proxySession));
+
+            return null;
+        }
+
+        public bool SendKey(byte[] key)
+        {
+            /*Ako je kljuc validan vrati true*/
+
+            return true;
+        }
+
+        private SessionData GetSession(string sessionId)
+        {
+            foreach(SessionData sd in clientSessions)
+            {
+                if(sd.IsValidSession(sessionId))
+                {
+                    return sd;
+                }
+            }
+            return null;
+        }
+
+        public object GetSessionInfo(string otherAddress)
+        {
+            string sessionId = OperationContext.Current.SessionId;
+            SessionData sd = GetSession(sessionId);
+
+            Console.WriteLine("Session is opened");
+            if(sd != null)
+            {
+                sd.Address = otherAddress;
+                return string.Format("{0}|{1}", sd.CallbackSessionId, sd.ProxySessionId);
+            }
+            return null;
+        }
+
+        public void Pay(byte[] message)
+        {
+            string sessionId = OperationContext.Current.SessionId;
+            SessionData sd = GetSession(sessionId);
+            Console.WriteLine(sessionId + " paid: " + System.Text.Encoding.UTF8.GetString(sd.AesAlgorithm.Decrypt(message)));
         }
     }
 }
