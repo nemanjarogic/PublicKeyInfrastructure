@@ -1,7 +1,9 @@
 ﻿using Common.Server;
+using Org.BouncyCastle.Crypto;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
@@ -16,8 +18,9 @@ namespace CertificationAuthority
 
         private HashSet<X509Certificate2> activeCertificates;
         private HashSet<X509Certificate2> revocationList;
-
-        private readonly string makecertDirectory;
+        private AsymmetricKeyParameter caPrivateKey = null;
+        private X509Certificate2 caCertificate = null;
+        private readonly string caSubjectName;
 
         #endregion
 
@@ -28,7 +31,8 @@ namespace CertificationAuthority
             activeCertificates = new HashSet<X509Certificate2>();
             revocationList = new HashSet<X509Certificate2>();
 
-            makecertDirectory = @"C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin";
+            caSubjectName = "CN=PKI_CA";
+            PrepareCA();
         }
 
         #endregion
@@ -37,11 +41,7 @@ namespace CertificationAuthority
 
         public X509Certificate2 GenerateCertificate(string subjectName)
         {
-            X509Certificate2 certificate = null;
-
-            GenerateCertificateFromTerminal(subjectName);
-
-            return certificate;
+            return CertificateManager.GenerateSelfSignedCertificate(subjectName, "CN=" + caSubjectName, caPrivateKey); ;
         }
 
         public bool WithdrawCertificate(X509Certificate2 certificate)
@@ -58,10 +58,29 @@ namespace CertificationAuthority
 
         #region Private methods
 
-        private void GenerateCertificateFromTerminal(string subjectName)
+        private void PrepareCA()
         {
-            string command = "makecert -n \"CN= " + subjectName + "\" -r -sv " + subjectName + ".pvk " + subjectName + ".cer";
-            bool isCommandExecuted = TerminalManager.ExecuteTerminalCommand(makecertDirectory, command);
+            X509Store store = new X509Store(StoreName.Root, StoreLocation.LocalMachine);
+            store.Open(OpenFlags.ReadOnly);
+            X509Certificate2Collection certs = store.Certificates;
+
+            bool isCertFound = false;
+            foreach(var cert in certs)
+            {
+                if (cert.SubjectName.Equals(caSubjectName))
+                {
+                    isCertFound = true;
+                    caCertificate = cert;
+                    //caPrivateKey = cert.PrivateKey;
+                    break;
+                }
+            }
+
+
+            if (!isCertFound)
+            {
+                caCertificate = CertificateManager.GenerateCACertificate(caSubjectName, ref caPrivateKey);
+            }
         }
 
         #endregion 
