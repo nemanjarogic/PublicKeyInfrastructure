@@ -99,7 +99,15 @@ namespace Cryptography.AES
 
         private Encryption encrypt = new Encryption();
         private Decryption decrypt = new Decryption();
+        private byte[] sessionKey;
 
+        public byte[] Key
+        {
+            get
+            {
+                return sessionKey;
+            }
+        }
         public AES128_ECB(byte[] key)
         {
             if (key == null)
@@ -110,6 +118,7 @@ namespace Cryptography.AES
             {
                 throw new ArgumentException("Duzina kljuca treba da bude 16 bajta!");
             }
+            sessionKey = key;
             KeyExpansion(key);
         }
 

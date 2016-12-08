@@ -15,7 +15,8 @@ namespace CertificationAuthority
             NetTcpBinding binding = new NetTcpBinding();
             binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
 
-            string address = "net.tcp://localhost:9999/CertificationAuthority";
+            //string address = "net.tcp://localhost:10000/CertificationAuthority";
+            string address = "net.tcp://localhost:10001/CertificationAuthorityBACKUP";
             ServiceHost host = new ServiceHost(typeof(CertificationAuthorityService));
             host.AddServiceEndpoint(typeof(ICertificationAuthorityContract), binding, address);
 
@@ -32,6 +33,7 @@ namespace CertificationAuthority
             }
             finally
             {
+                host.Abort();
                 host.Close();
             }
         }

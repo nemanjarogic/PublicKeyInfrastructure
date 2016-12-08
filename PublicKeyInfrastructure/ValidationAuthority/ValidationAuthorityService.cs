@@ -14,8 +14,8 @@ namespace ValidationAuthority
     {
         #region Fields
 
-        private NetTcpBinding binding;
-        private string address;
+        /*private NetTcpBinding binding;
+        private string address;*/
 
         #endregion
 
@@ -23,9 +23,9 @@ namespace ValidationAuthority
 
         public ValidationAuthorityService()
 	    {
-            binding = new NetTcpBinding();
+            /*binding = new NetTcpBinding();
             binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
-            address = "net.tcp://localhost:9999/CertificationAuthority";
+            address = "net.tcp://localhost:9999/CertificationAuthority";*/
 	    }
 
         #endregion
@@ -42,12 +42,16 @@ namespace ValidationAuthority
                 //------ check start and end date
                 //------ check if it is in activeCerts list in CA
                 //------ check if it is NOT in CLR list in CA
-                if (DateTime.Compare(DateTime.Now, certificate.NotBefore) >= 0 && DateTime.Compare(DateTime.Now, certificate.NotAfter) <= 0)
+
+                //TODO: ISPRAVITI USLOV DA POREDI VREMENA U CILJU PROVERE ISTEKA SERTIFIKATA
+                if (/*DateTime.Compare(DateTime.Now, certificate.NotBefore) >= 0 && DateTime.Compare(DateTime.Now, certificate.NotAfter) <= 0*/true)
                 {
-                    using (CAProxy caProxy = new CAProxy(binding, address))
+                    /*using (CAProxy caProxy = new CAProxy(binding, address))
                     {
                         retValue = caProxy.IsCertificateActive(certificate);
-                    }
+                    }*/
+
+                    retValue = CAProxy.IsCertificateActive(certificate);
                 }
                 else
                 {

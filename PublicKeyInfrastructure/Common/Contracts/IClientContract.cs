@@ -13,24 +13,26 @@ namespace Common.Client
     public interface IClientContract
     {
         [OperationContract]
-        void InitiateComunication(X509Certificate othersideCertificate);
+        void InitiateComunication(X509Certificate2 othersideCertificate);
         [OperationContract]
         void SetMessageKey(byte[] messageKey);
         [OperationContract]
         void Pay(byte[] message);
 
         [OperationContract]
-        void StartComunication(NetTcpBinding binding, EndpointAddress address);
+        void StartComunication(string address);
         [OperationContract]
-        void AcceptComunication(X509Certificate myCertificate);
+        void AcceptComunication(X509Certificate2 myCertificate);
         [OperationContract]
         void ReadyForMessaging();
 
         [OperationContract]
         String GetSessionId();
         
-        X509Certificate Register();
+        X509Certificate2 Register(string subjectName);
+        X509Certificate2 LoadMyCertificate();
         byte[] RandomGenerateKey();
+
         
     }
 }
