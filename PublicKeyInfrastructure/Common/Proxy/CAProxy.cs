@@ -101,7 +101,7 @@ namespace Common.Proxy
                     certificate = activeProxy.factory.GenerateCertificate(subject, address);
                     if (certificate != null)
                     {
-                        FileStream certFileStream = activeProxy.factory.GetFileStreamOfCertificate(address);
+                        FileStream certFileStream = activeProxy.factory.GetFileStreamOfCertificate(subject);
                         //TODO: obavezno pogledati kada zatvoriti ovaj filestream (na CAProxy-u ili na CAService-u)!!!!
 
                         #region try replication to NONACTIVE CA server
@@ -112,7 +112,7 @@ namespace Common.Proxy
                             {
                                 if (CA_SERVER_STATE == EnumCAServerState.BothOn)
                                 {
-                                    nonActiveProxy.factory.SaveCertificateToBackupDisc(certificate, certFileStream, address);
+                                    nonActiveProxy.factory.SaveCertificateToBackupDisc(certificate, certFileStream, subject);
                                     //mozda ovde zatvoriti file stream
                                 }
                                 else if (CA_SERVER_STATE == EnumCAServerState.OnlyActiveOn)

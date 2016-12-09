@@ -38,7 +38,8 @@ namespace RegistrationAuthority
 
             if (!String.IsNullOrEmpty(address))
             {
-                certificate = CAProxy.GenerateCertificate(ServiceSecurityContext.Current.PrimaryIdentity.Name, address);
+                string subject = ServiceSecurityContext.Current.PrimaryIdentity.Name.Replace('\\','_').Trim();
+                certificate = CAProxy.GenerateCertificate(subject, address);
             }
 
             return certificate;
