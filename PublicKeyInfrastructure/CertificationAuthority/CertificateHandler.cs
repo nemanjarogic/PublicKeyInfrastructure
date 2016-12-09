@@ -251,14 +251,15 @@ namespace CertificationAuthority
                 string fileName = String.Empty;
                 string fileExtension = contentType == X509ContentType.Pfx ? ".pfx" : ".cer";
 
-                if (subjectName.Contains("="))
+                if (subjectName.Contains("\\"))
                 {
-                    fileName = subjectName.Split('=')[1] + fileExtension;
+                    fileName = subjectName.Replace('\\','_') + fileExtension;
                 }
                 else
                 {
                     fileName = subjectName.Trim() + fileExtension;
                 }
+
                 File.WriteAllBytes(@"..\..\SecurityStore\" + fileName, certData);
                 isExportDone = true;
             }

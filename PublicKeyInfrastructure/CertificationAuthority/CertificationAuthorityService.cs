@@ -53,7 +53,7 @@ namespace CertificationAuthority
         public X509Certificate2 GenerateCertificate(string subject, string address)
         {
             X509Certificate2 newCertificate = null;
-            newCertificate = CertificateHandler.GenerateAuthorizeSignedCertificate(address, "CN=" + CA_SUBJECT_NAME, caPrivateKey);
+            newCertificate = CertificateHandler.GenerateAuthorizeSignedCertificate(subject, "CN=" + CA_SUBJECT_NAME, caPrivateKey);
             if (newCertificate != null)
             {
                 activeCertificates.Add(newCertificate);
