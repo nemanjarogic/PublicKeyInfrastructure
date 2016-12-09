@@ -34,12 +34,12 @@ namespace Client
             NetTcpBinding vaBinding = new NetTcpBinding();
             vaBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
             string vaAddress = "net.tcp://localhost:10003/ValidationAuthorityService";
-            raProxy = new RAProxy(raAddress, raBinding);
             vaProxy = new VAProxy(vaAddress, vaBinding);
+            raProxy = new RAProxy(raAddress, raBinding);
 
             clientSessions = new HashSet<SessionData>();
             this.hostAddress = hostAddress;
-            myCertificate = LoadMyCertificate();//new X509Certificate2(@"D:\Fakultet\Master\Blok3\Security\WCFClient.pfx", "12345");
+            myCertificate = LoadMyCertificate(); //myCertificate = new X509Certificate2(@"D:\Fakultet\Master\Blok3\Security\WCFClient.pfx", "12345");
             InitializeDatabase();
         }
 
