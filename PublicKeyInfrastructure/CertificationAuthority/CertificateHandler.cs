@@ -25,7 +25,7 @@ namespace CertificationAuthority
     /// CertificateHandler class is used for generating CA and authorize signed certificates
     /// This class also handle adding of certificate to store(installation) and export to file system
     /// </summary>
-    public class CertificateHandler
+    public static class CertificateHandler
     {
         #region Public methods
 
