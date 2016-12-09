@@ -107,6 +107,10 @@ namespace CertificationAuthority
 
         #region Private methods
 
+        /// <summary>
+        /// Prepare certification authority service for use.
+        /// Load information about CA and active certificates in system.
+        /// </summary>
         private void PrepareCAService()
         {
             bool isPfxCreated = true;
@@ -115,6 +119,7 @@ namespace CertificationAuthority
 
             try
             {
+                // Try to import pfx file for the CA(Certification authority)
                 collection.Import(PFX_PATH, PFX_PASSWORD, X509KeyStorageFlags.Exportable);
             }
             catch
@@ -131,7 +136,6 @@ namespace CertificationAuthority
                         isCertFound = true;
                         caCertificate = cert;
                         caPrivateKey = DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
-                        //caPrivateKey = CertificateHandler.TransformRSAPrivateKey(cert.PrivateKey);
 
                         break;
                     }
@@ -140,6 +144,7 @@ namespace CertificationAuthority
 
             if (!isCertFound)
             {
+                // if PFX for the CA isn't created generate certificate and PFX for the CA
                 caCertificate = CertificateHandler.GenerateCACertificate(CA_SUBJECT_NAME, ref caPrivateKey);
             }
         }
