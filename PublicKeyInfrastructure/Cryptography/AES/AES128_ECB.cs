@@ -108,6 +108,7 @@ namespace Cryptography.AES
                 return sessionKey;
             }
         }
+
         public AES128_ECB(byte[] key)
         {
             if (key == null)
@@ -165,7 +166,12 @@ namespace Cryptography.AES
         {
             byte[] retValue = new byte[data.Length];
 
-            for (int i = 0; i < data.Length; i += 16)
+            List<int> blocks = new List<int>(data.Length % 16);
+            for (int i = 0; i < data.Length % 16; i++ )
+            {
+                blocks.Add(i * 16);
+            }
+            Parallel.ForEach(blocks, i =>
             {
                 byte[][] dataBlock = new byte[4][];
                 for (int j = 0; j < 4; j++)
@@ -184,7 +190,7 @@ namespace Cryptography.AES
                 {
                     retValue[j + i] = cipherBlock[j];
                 }
-            }
+            });
 
             return retValue;
         }

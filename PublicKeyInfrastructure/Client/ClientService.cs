@@ -27,7 +27,6 @@ namespace Client
 
         public ClientService(string hostAddress) 
         {
-            //clientSessions = new Dictionary<string, SessionData>();
             clientSessions = new HashSet<SessionData>();
             this.hostAddress = hostAddress;
             myCertificate = new X509Certificate2(@"D:\Fakultet\Master\Blok3\Security\WCFClient.pfx", "12345");
@@ -39,7 +38,6 @@ namespace Client
         
         public ClientService(NetTcpBinding binding, EndpointAddress address)
         {
-            //clientSessions = new Dictionary<string, SessionData>();
             myCertificate = LoadMyCertificate();
 
             vaProxy = new VAProxy(); /*ucitati adresu i binding i proslediti u konstuktor*/
