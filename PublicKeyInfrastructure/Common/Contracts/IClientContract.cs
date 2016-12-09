@@ -24,12 +24,6 @@ namespace Common.Client
         [OperationContract]
         String GetSessionId();
         
-        X509Certificate2 Register(string subjectName);
-
-        X509Certificate2 LoadMyCertificate();
-        byte[] RandomGenerateKey();
-
-
         [OperationContract]
         X509Certificate2 SendCert(X509Certificate2 cert);
         [OperationContract]

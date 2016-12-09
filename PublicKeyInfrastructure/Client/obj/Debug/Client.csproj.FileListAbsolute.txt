@@ -78,3 +78,15 @@ C:\Users\ftn\Desktop\karac\PublicKeyInfrastructure\Client\bin\Debug\System.Data.
 C:\Users\ftn\Desktop\karac\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
 C:\Users\ftn\Desktop\karac\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
 C:\Users\ftn\Desktop\karac\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\bin\Debug\Common.dll
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.dll
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.pdb
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.xml
