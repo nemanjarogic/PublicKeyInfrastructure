@@ -13,7 +13,7 @@ namespace RegistrationAuthority
     {
         static void Main(string[] args)
         {
-            testCAProxy();
+            //testCAProxy();
             /*Console.ReadLine();
             return;*/
             
