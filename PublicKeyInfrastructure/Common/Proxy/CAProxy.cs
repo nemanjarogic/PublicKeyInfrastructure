@@ -123,6 +123,7 @@ namespace Common.Proxy
                                 else if (CA_SERVER_STATE == EnumCAServerState.OnlyActiveOn)
                                 {
                                     //nonActiveProxy.factory.INTEGRITY_UPDATE!!!
+                                    IntegrityUpdate(activeProxy, nonActiveProxy);
                                     CA_SERVER_STATE = EnumCAServerState.BothOn;
                                 }
                             }
@@ -158,6 +159,34 @@ namespace Common.Proxy
             }
 
             return certificate;
+        }
+
+        private static bool IntegrityUpdate(CAProxy activeProxy, CAProxy nonActiveProxy)
+        {
+            bool retVal = false;
+            object objModel = null;
+
+            //TODO: implementirati integrity update
+            objModel = activeProxy.factory.GetModel();
+            retVal = nonActiveProxy.factory.SetModel(objModel);
+
+            /*try
+            {
+                using (CAProxy activeProxy = new CAProxy(binding, ACTIVE_SERVER_ADDRESS))
+                {
+                    objModel = activeProxy.factory.GetModel();
+                }
+                using (CAProxy nonActiveProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
+                {
+                    retVal = nonActiveProxy.factory.SetModel(objModel);
+                }
+            } 
+            catch(EndpointNotFoundException exEndpoint)
+            {
+                Console.WriteLine("Integrity update failed!");
+            }*/
+
+            return retVal;
         }
 
         #endregion

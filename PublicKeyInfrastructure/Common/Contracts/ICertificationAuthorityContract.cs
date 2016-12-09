@@ -26,5 +26,11 @@ namespace Common.Server
 
         [OperationContract]
         bool SaveCertificateToBackupDisc(X509Certificate2 certificate, FileStream stream, string certFileName);
+
+        [OperationContract]
+        object GetModel();
+
+        [OperationContract]
+        bool SetModel(object param);
     }
 }

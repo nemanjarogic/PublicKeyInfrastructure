@@ -62,3 +62,7 @@ D:\miki_zadaci\MASTER_PSI\blok03\projekat\PKI_system\PublicKeyInfrastructure\Cli
 D:\miki_zadaci\MASTER_PSI\blok03\projekat\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
 D:\miki_zadaci\MASTER_PSI\blok03\projekat\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
 D:\miki_zadaci\MASTER_PSI\blok03\projekat\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.dll
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.pdb
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.xml
