@@ -34,28 +34,6 @@ namespace Client
             return this.proxy.GetSessionId();
         }
 
-        public X509Certificate Register()
-        {
-            throw new NotImplementedException();
-        }
-
-        public byte[] RandomGenerateKey()
-        {
-            throw new NotImplementedException();
-        }
-
-
-        public X509Certificate2 Register(string subjectName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public X509Certificate2 LoadMyCertificate()
-        {
-            throw new NotImplementedException();
-        }
-
-
         public X509Certificate2 SendCert(X509Certificate2 cert)
         {
             return this.proxy.SendCert(cert);
@@ -65,7 +43,6 @@ namespace Client
         {
             return this.proxy.SendKey(key);
         }
-
 
         public object GetSessionInfo(string address)
         {

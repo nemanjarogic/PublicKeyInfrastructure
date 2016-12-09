@@ -1,4 +1,5 @@
-﻿using Common.Client;
+﻿using Client.Database;
+using Common.Client;
 using Cryptography.AES;
 using System;
 using System.Collections.Generic;
@@ -16,32 +17,53 @@ namespace Client
     [ServiceBehavior(InstanceContextMode=InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Multiple)]
     public class ClientService : IClientContract
     {
-        //private Dictionary<string, SessionData> clientSessions;
         private HashSet<SessionData> clientSessions;
-        private VAProxy vaProxy;
-        private RAProxy raProxy;
         private X509Certificate2 myCertificate;
         private string hostAddress;
-
-        public ClientService() { }
+        private string serviceName;
+        private IDatabaseWrapper sqliteWrapper;
+        private VAProxy vaProxy;
+        private RAProxy raProxy;
 
         public ClientService(string hostAddress) 
         {
+            NetTcpBinding raBinding = new NetTcpBinding();
+            raBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
+            string raAddress = "net.tcp://localhost:10002/RegistrationAuthorityService";
+
+            NetTcpBinding vaBinding = new NetTcpBinding();
+            vaBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
+            string vaAddress = "net.tcp://localhost:10003/ValidationAuthorityService";
+            vaProxy = new VAProxy(raAddress, raBinding);
+            raProxy = new RAProxy(vaAddress, vaBinding);
+
             clientSessions = new HashSet<SessionData>();
             this.hostAddress = hostAddress;
             myCertificate = new X509Certificate2(@"D:\Fakultet\Master\Blok3\Security\WCFClient.pfx", "12345");
+            InitializeDatabase();
         }
 
         public string GetSessionId(){
             return OperationContext.Current.SessionId;
         }
         
-        public ClientService(NetTcpBinding binding, EndpointAddress address)
+        public ClientService()
         {
             myCertificate = LoadMyCertificate();
+            InitializeDatabase();
+        }
 
-            vaProxy = new VAProxy(); /*ucitati adresu i binding i proslediti u konstuktor*/
-            raProxy = new RAProxy();
+        private void InitializeDatabase()
+        {
+            string subjectName = WindowsIdentity.GetCurrent().Name;
+            string port = hostAddress.Split(':')[2].Split('/')[0];
+            string subjName = subjectName.Split('\\')[0];
+            serviceName = subjName + port;
+
+            sqliteWrapper = new SQLiteWrapper();
+            sqliteWrapper.CreateDatabase("Connections");
+            sqliteWrapper.ConnectToDatabase("Connections");
+            sqliteWrapper.CreateTable(serviceName);
         }
 
         public void StartComunication(string address)
@@ -54,7 +76,13 @@ namespace Client
                     return;
                 }
             }
-            IClientContract serverProxy = new ClientProxy(new EndpointAddress(address), new NetTcpBinding(), this);
+
+            NetTcpBinding binding = new NetTcpBinding();
+            binding.SendTimeout = new TimeSpan(0, 0, 5);
+            binding.ReceiveTimeout = new TimeSpan(0, 0, 5);
+            binding.OpenTimeout = new TimeSpan(0, 0, 5);
+            binding.CloseTimeout = new TimeSpan(0, 0, 5);
+            IClientContract serverProxy = new ClientProxy(new EndpointAddress(address), binding, this);
             byte[] messageKey = RandomGenerateKey();
 
             SessionData sd = new SessionData(new AES128_ECB(messageKey), serverProxy);
@@ -62,17 +90,31 @@ namespace Client
 
             clientSessions.Add(sd);
 
+            try
+            {
             X509Certificate2 serverCert = serverProxy.SendCert(null);
 
             RSACryptoServiceProvider publicKey = myCertificate.PublicKey.Key as RSACryptoServiceProvider;
             bool success = serverProxy.SendKey(publicKey.Encrypt(messageKey, true)); 
-
+            if (success)
+            {
+                sqliteWrapper.InsertToTable(serviceName, sd.Address);
+            }
             object sessionInfo = serverProxy.GetSessionInfo(hostAddress);
 
             string[] sessionId = ((string)sessionInfo).Split('|');
             sd.CallbackSessionId = sessionId[0];
             sd.ProxySessionId = sessionId[1];
             clientSessions.Add(sd);
+        }
+            catch(EndpointNotFoundException)
+            {
+                Console.WriteLine("Druga strana nije aktivna");
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Exception: {0}", e.Message);
+            }
         }
 
         public void CallPay(byte[] message, string address)
@@ -82,15 +124,16 @@ namespace Client
             {
                 if(sd.Address.Equals(address))
                 {
+                    try
+                    {
                     sd.Proxy.Pay(sd.AesAlgorithm.Encrypt(message));
+                    }
+                    catch(Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
                     return;
                 }
-            }
-
-            //clientSessions.TryGetValue(serviceId, out otherside);
-            //if (otherside != null)
-            {
-               // Console.WriteLine(otherside.ProxySessionId + " paid: " + System.Text.Encoding.UTF8.GetString(otherside.AesAlgorithm.Decrypt(message)));
             }
         }
 
@@ -113,15 +156,8 @@ namespace Client
         {
             X509Certificate2 retVal = new X509Certificate2();
 
-            string subjectName = WindowsIdentity.GetCurrent().Name;
-            try
-            {
-                retVal.Import("../../Certificates/" + subjectName + ".cer");
-            }
-            catch
-            {
-                retVal = raProxy.RegisterClient(subjectName);
-            }
+            retVal = raProxy.RegisterClient(hostAddress);
+
             return retVal;
         }
 
@@ -141,10 +177,12 @@ namespace Client
         {
             /*Ako je kljuc validan vrati true*/
             SessionData sd = GetSession(OperationContext.Current.SessionId);
+            
             if(sd != null)
             {
                 RSACryptoServiceProvider privateKey = myCertificate.PrivateKey as RSACryptoServiceProvider;
                 sd.AesAlgorithm = new AES128_ECB(privateKey.Decrypt(key, true));
+                sqliteWrapper.InsertToTable(serviceName, sd.Address);
             }
             return true;
         }

@@ -167,7 +167,7 @@ namespace Cryptography.AES
             byte[] retValue = new byte[data.Length];
 
             List<int> blocks = new List<int>(data.Length % 16);
-            for (int i = 0; i < data.Length % 16; i++ )
+            for (int i = 0; i <= data.Length % 16; i++ )
             {
                 blocks.Add(i * 16);
             }

@@ -7,6 +7,7 @@ using System.Threading;
 using System.ServiceModel;
 using Common.Client;
 using System.Security.Principal;
+using Cryptography.AES;
 
 namespace Client
 {
@@ -22,8 +23,11 @@ namespace Client
 
             ServiceHost host = new ServiceHost(new ClientService(address));
             NetTcpBinding binding = new NetTcpBinding();
-            binding.SendTimeout = new TimeSpan(0, 10, 0);
-            binding.ReceiveTimeout = new TimeSpan(0, 10, 10);
+            binding.SendTimeout = new TimeSpan(0, 0, 5);
+            binding.ReceiveTimeout = new TimeSpan(0, 0, 5);
+            binding.OpenTimeout = new TimeSpan(0, 0, 5);
+            binding.CloseTimeout = new TimeSpan(0, 0, 5);
+
             host.AddServiceEndpoint(typeof(IClientContract), binding, address);
                     
             host.Open();
@@ -36,7 +40,7 @@ namespace Client
 
             while(true)
             {
-                Console.WriteLine("1.Connect to other client");
+                Console.WriteLine("\n1.Connect to other client");
                 Console.WriteLine("2.Send message");
                 Console.WriteLine("3.End");
 
