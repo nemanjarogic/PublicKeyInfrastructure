@@ -21,6 +21,7 @@ namespace CertificationAuthority
 
         private HashSet<X509Certificate2> activeCertificates;
         private HashSet<X509Certificate2> revocationList;
+        private Dictionary<string, string> clientDict;
         private AsymmetricKeyParameter caPrivateKey = null;
         private X509Certificate2 caCertificate = null;
 
@@ -37,6 +38,7 @@ namespace CertificationAuthority
         {
             activeCertificates = new HashSet<X509Certificate2>();
             revocationList = new HashSet<X509Certificate2>();
+            clientDict = new Dictionary<string, string>();
 
             CA_SUBJECT_NAME = "CN=PKI_CA";
             PFX_PATH = @"..\..\SecurityStore\PKI_CA.pfx";
@@ -50,13 +52,26 @@ namespace CertificationAuthority
 
         #region Public methods
 
+        /// <summary>
+        /// Generate new certificate with specified subject name.
+        /// If certificate with given subject name already exist this action is forbiden. 
+        /// </summary>
+        /// <param name="subject">Subject name</param>
+        /// <param name="address">Host address of client</param>
+        /// <returns></returns>
         public X509Certificate2 GenerateCertificate(string subject, string address)
         {
             X509Certificate2 newCertificate = null;
-            newCertificate = CertificateHandler.GenerateAuthorizeSignedCertificate(subject, "CN=" + CA_SUBJECT_NAME, caPrivateKey);
-            if (newCertificate != null)
+
+            newCertificate = IsCertificatePublished(subject);
+            if (newCertificate == null)
             {
-                activeCertificates.Add(newCertificate);
+                newCertificate = CertificateHandler.GenerateAuthorizeSignedCertificate(subject, "CN=" + CA_SUBJECT_NAME, caPrivateKey);
+                if (newCertificate != null)
+                {
+                    activeCertificates.Add(newCertificate);
+                    clientDict.Add(subject, address);
+                }
             }
 
             return newCertificate;
@@ -147,6 +162,27 @@ namespace CertificationAuthority
                 // if PFX for the CA isn't created generate certificate and PFX for the CA
                 caCertificate = CertificateHandler.GenerateCACertificate(CA_SUBJECT_NAME, ref caPrivateKey);
             }
+        }
+
+        /// <summary>
+        /// Check does CA contains certificate with specified subject name.
+        /// </summary>
+        /// <param name="subjectName">Subject name</param>
+        /// <returns></returns>
+        private X509Certificate2 IsCertificatePublished(string subjectName)
+        {
+            X509Certificate2 certificate = null;
+
+            foreach(var cer in activeCertificates)
+            {
+                if(cer.SubjectName.Name.Equals("CN=" + subjectName))
+                {
+                    certificate = cer;
+                    break;
+                }
+            }
+
+            return certificate;
         }
 
         #endregion 
