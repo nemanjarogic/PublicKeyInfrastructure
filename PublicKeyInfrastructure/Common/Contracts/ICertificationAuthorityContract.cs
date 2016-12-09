@@ -13,7 +13,7 @@ namespace Common.Server
     public interface ICertificationAuthorityContract
     {
         [OperationContract]
-        X509Certificate2 GenerateCertificate(string subjectName);
+        X509Certificate2 GenerateCertificate(string address);
 
         [OperationContract]
         bool IsCertificateActive(X509Certificate2 certificate);

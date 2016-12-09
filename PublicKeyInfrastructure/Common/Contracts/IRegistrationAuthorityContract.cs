@@ -12,6 +12,6 @@ namespace Common.Server
     public interface IRegistrationAuthorityContract
     {
         [OperationContract]
-        X509Certificate2 RegisterClient(string subjectName);
+        X509Certificate2 RegisterClient(string address);
     }
 }

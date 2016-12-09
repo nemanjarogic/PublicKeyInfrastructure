@@ -94,7 +94,7 @@ namespace Common.Proxy
             return retValue;
         }
 
-        private static X509Certificate2 GenerateCertificate_HotBackup(string subjectName)
+        private static X509Certificate2 GenerateCertificate_HotBackup(string address)
         {
             X509Certificate2 certificate = null;
 
@@ -103,10 +103,10 @@ namespace Common.Proxy
                 //try communication with ACTIVE CA server
                 using (CAProxy activeProxy = new CAProxy(binding, ACTIVE_SERVER_ADDRESS))
                 {
-                    certificate = activeProxy.factory.GenerateCertificate(subjectName);
+                    certificate = activeProxy.factory.GenerateCertificate(address);
                     if (certificate != null)
                     {
-                        FileStream certFileStream = activeProxy.factory.GetFileStreamOfCertificate(subjectName);
+                        FileStream certFileStream = activeProxy.factory.GetFileStreamOfCertificate(address);
                         //TODO: obavezno pogledati kada zatvoriti ovaj filestream (na CAProxy-u ili na CAService-u)!!!!
 
                         #region try replication to NONACTIVE CA server
@@ -117,7 +117,7 @@ namespace Common.Proxy
                             {
                                 if (CA_SERVER_STATE == EnumCAServerState.BothOn)
                                 {
-                                    nonActiveProxy.factory.SaveCertificateToBackupDisc(certificate, certFileStream, subjectName);
+                                    nonActiveProxy.factory.SaveCertificateToBackupDisc(certificate, certFileStream, address);
                                     //mozda ovde zatvoriti file stream
                                 }
                                 else if (CA_SERVER_STATE == EnumCAServerState.OnlyActiveOn)
@@ -143,7 +143,7 @@ namespace Common.Proxy
                     //try communication with NONACTIVE CA server
                     using (CAProxy backupProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
                     {
-                        certificate = backupProxy.factory.GenerateCertificate(subjectName);
+                        certificate = backupProxy.factory.GenerateCertificate(address);
 
                         switchActiveNonActiveAddress();
                         CA_SERVER_STATE = EnumCAServerState.OnlyActiveOn;
@@ -193,11 +193,11 @@ namespace Common.Proxy
 
         #region Public methods
 
-        public static X509Certificate2 GenerateCertificate(string subjectName)
+        public static X509Certificate2 GenerateCertificate(string address)
         {
             X509Certificate2 certificate = null;
 
-            certificate = GenerateCertificate_HotBackup(subjectName);
+            certificate = GenerateCertificate_HotBackup(address);
 
             /*
             try

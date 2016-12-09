@@ -32,18 +32,18 @@ namespace RegistrationAuthority
 
         #region Public methods
 
-        public X509Certificate2 RegisterClient(string subjectName)
+        public X509Certificate2 RegisterClient(string address)
         {
             X509Certificate2 certificate = null;
 
-            if(!String.IsNullOrEmpty(subjectName))
+            if (!String.IsNullOrEmpty(address))
             {
                 /*using(CAProxy caProxy = new CAProxy(binding, address))
                 {
                     certificate = caProxy.GenerateCertificate(subjectName);
                 }*/
 
-                certificate = CAProxy.GenerateCertificate(subjectName);
+                certificate = CAProxy.GenerateCertificate(address);
             }
 
             return certificate;

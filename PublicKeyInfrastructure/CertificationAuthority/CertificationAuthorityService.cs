@@ -50,10 +50,10 @@ namespace CertificationAuthority
 
         #region Public methods
 
-        public X509Certificate2 GenerateCertificate(string subjectName)
+        public X509Certificate2 GenerateCertificate(string address)
         {
             X509Certificate2 newCertificate = null;
-            newCertificate = CertificateHandler.GenerateAuthorizeSignedCertificate(subjectName, "CN=" + CA_SUBJECT_NAME, caPrivateKey);
+            newCertificate = CertificateHandler.GenerateAuthorizeSignedCertificate(address, "CN=" + CA_SUBJECT_NAME, caPrivateKey);
             if (newCertificate != null)
             {
                 activeCertificates.Add(newCertificate);
@@ -74,13 +74,13 @@ namespace CertificationAuthority
 
         public FileStream GetFileStreamOfCertificate(string certFileName)
         {
-            return new FileStream(CERT_FOLDER_PATH + @"\" + certFileName + ".cer", FileMode.Open, FileAccess.Read);
+            return new FileStream(CERT_FOLDER_PATH + @"\" + certFileName + ".pfx", FileMode.Open, FileAccess.Read);
         }
 
         public bool SaveCertificateToBackupDisc(X509Certificate2 certificate, FileStream stream, string certFileName)
         {
             //save file to disk
-            var fileStream = File.Create(CERT_FOLDER_PATH + @"\" + certFileName + ".cer");
+            var fileStream = File.Create(CERT_FOLDER_PATH + @"\" + certFileName + ".pfx");
             stream.Seek(0, SeekOrigin.Begin);
             stream.CopyTo(fileStream);
             fileStream.Close();
