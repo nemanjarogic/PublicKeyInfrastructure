@@ -50,3 +50,15 @@ D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\S
 D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
 D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
 D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
+D:\miki_zadaci\MASTER_PSI\blok03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
+D:\miki_zadaci\MASTER_PSI\blok03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
+D:\miki_zadaci\MASTER_PSI\blok03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
+D:\miki_zadaci\MASTER_PSI\blok03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Common.dll
+D:\miki_zadaci\MASTER_PSI\blok03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.dll
+D:\miki_zadaci\MASTER_PSI\blok03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
+D:\miki_zadaci\MASTER_PSI\blok03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
+D:\miki_zadaci\MASTER_PSI\blok03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.pdb
+D:\miki_zadaci\MASTER_PSI\blok03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.xml
+D:\miki_zadaci\MASTER_PSI\blok03\projekat\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
+D:\miki_zadaci\MASTER_PSI\blok03\projekat\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
+D:\miki_zadaci\MASTER_PSI\blok03\projekat\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
