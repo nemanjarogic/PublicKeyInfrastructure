@@ -160,13 +160,12 @@ namespace CertificationAuthority
             x509.PrivateKey = DotNetUtilities.ToRSA(rsaparams);
 
             // Install certificate
-            AddCertificateToStore(x509, StoreName.My, StoreLocation.LocalMachine);
+            AddCertificateToStore(x509, StoreName.TrustedPeople, StoreLocation.LocalMachine);
 
             //Export
-            ExportToFileSystem(X509ContentType.Cert, x509, subjectName);
+            ExportToFileSystem(X509ContentType.Pfx, x509, subjectName);
 
             return x509;
-
         }
 
         /// <summary>
