@@ -49,8 +49,8 @@ namespace Client
         
         public ClientService()
         {
-            myCertificate = LoadMyCertificate();
-            InitializeDatabase();
+            //myCertificate = LoadMyCertificate();
+            //InitializeDatabase();
         }
 
         private void InitializeDatabase()

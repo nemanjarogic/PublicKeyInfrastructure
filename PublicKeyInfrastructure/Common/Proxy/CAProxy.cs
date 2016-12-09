@@ -59,6 +59,8 @@ namespace Common.Proxy
 
         private static bool IntegrityUpdate(CAProxy activeProxy, CAProxy nonActiveProxy)
         {
+            return false;
+
             bool retVal = false;
             object objModel = null;
 
