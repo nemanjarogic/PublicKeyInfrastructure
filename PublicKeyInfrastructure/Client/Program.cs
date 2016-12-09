@@ -58,6 +58,8 @@ namespace Client
                         Console.WriteLine("Message: ");
                         string message = Console.ReadLine();
 
+                        proxy.CallPay(System.Text.Encoding.UTF8.GetBytes(message), clientAddres);
+
                         break;
 
                 }

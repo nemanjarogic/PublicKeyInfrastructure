@@ -27,6 +27,7 @@ namespace CertificationAuthority
         private readonly string CA_SUBJECT_NAME;
         private readonly string PFX_PATH;
         private readonly string PFX_PASSWORD;
+        private readonly string CERT_FOLDER_PATH;
 
         #endregion
 
@@ -40,6 +41,7 @@ namespace CertificationAuthority
             CA_SUBJECT_NAME = "CN=PKI_CA";
             PFX_PATH = @"..\..\SecurityStore\PKI_CA.pfx";
             PFX_PASSWORD = "123";
+            CERT_FOLDER_PATH = @"..\..\SecurityStore\";
 
             PrepareCAService();
         }
@@ -50,7 +52,14 @@ namespace CertificationAuthority
 
         public X509Certificate2 GenerateCertificate(string subjectName)
         {
-            return CertificateHandler.GenerateAuthorizeSignedCertificate(subjectName, "CN=" + CA_SUBJECT_NAME, caPrivateKey);
+            X509Certificate2 newCertificate = null;
+            newCertificate = CertificateHandler.GenerateAuthorizeSignedCertificate(subjectName, "CN=" + CA_SUBJECT_NAME, caPrivateKey);
+            if (newCertificate != null)
+            {
+                activeCertificates.Add(newCertificate);
+            }
+
+            return newCertificate;
         }
 
         public bool WithdrawCertificate(X509Certificate2 certificate)
@@ -60,6 +69,25 @@ namespace CertificationAuthority
 
         public bool IsCertificateActive(X509Certificate2 certificate)
         {
+            return true;
+        }
+
+        public FileStream GetFileStreamOfCertificate(string certFileName)
+        {
+            return new FileStream(CERT_FOLDER_PATH + @"\" + certFileName + ".cer", FileMode.Open, FileAccess.Read);
+        }
+
+        public bool SaveCertificateToBackupDisc(X509Certificate2 certificate, FileStream stream, string certFileName)
+        {
+            //save file to disk
+            var fileStream = File.Create(CERT_FOLDER_PATH + @"\" + certFileName + ".cer");
+            stream.Seek(0, SeekOrigin.Begin);
+            stream.CopyTo(fileStream);
+            fileStream.Close();
+
+            //add cert to list
+            activeCertificates.Add(certificate);
+
             return true;
         }
 
@@ -75,7 +103,7 @@ namespace CertificationAuthority
 
             try
             {
-                collection.Import(PFX_PATH, PFX_PASSWORD, X509KeyStorageFlags.PersistKeySet);
+                collection.Import(PFX_PATH, PFX_PASSWORD, X509KeyStorageFlags.Exportable);
             }
             catch
             {
@@ -90,8 +118,8 @@ namespace CertificationAuthority
                     {
                         isCertFound = true;
                         caCertificate = cert;
-                        //caPrivateKey = Org.BouncyCastle.Security.DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
-                        caPrivateKey = CertificateHandler.TransformRSAPrivateKey(cert.PrivateKey);
+                        caPrivateKey = DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
+                        //caPrivateKey = CertificateHandler.TransformRSAPrivateKey(cert.PrivateKey);
 
                         break;
                     }

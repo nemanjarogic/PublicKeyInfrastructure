@@ -3,6 +3,7 @@ using Cryptography.AES;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.ServiceModel;
@@ -26,9 +27,9 @@ namespace Client
 
         public ClientService(string hostAddress) 
         {
-            //clientSessions = new Dictionary<string, SessionData>();
             clientSessions = new HashSet<SessionData>();
             this.hostAddress = hostAddress;
+            myCertificate = new X509Certificate2(@"D:\Fakultet\Master\Blok3\Security\WCFClient.pfx", "12345");
         }
 
         public string GetSessionId(){
@@ -37,7 +38,6 @@ namespace Client
         
         public ClientService(NetTcpBinding binding, EndpointAddress address)
         {
-            //clientSessions = new Dictionary<string, SessionData>();
             myCertificate = LoadMyCertificate();
 
             vaProxy = new VAProxy(); /*ucitati adresu i binding i proslediti u konstuktor*/
@@ -46,6 +46,14 @@ namespace Client
 
         public void StartComunication(string address)
         {
+            foreach(var sessionData in clientSessions)
+            {
+                if(sessionData.Address.Equals(address))
+                {
+                    Console.WriteLine("Vec je ostvarena konekcija.");
+                    return;
+                }
+            }
             IClientContract serverProxy = new ClientProxy(new EndpointAddress(address), new NetTcpBinding(), this);
             byte[] messageKey = RandomGenerateKey();
 
@@ -55,10 +63,16 @@ namespace Client
             clientSessions.Add(sd);
 
             X509Certificate2 serverCert = serverProxy.SendCert(null);
-            
-            bool success = serverProxy.SendKey(messageKey); 
+
+            RSACryptoServiceProvider publicKey = myCertificate.PublicKey.Key as RSACryptoServiceProvider;
+            bool success = serverProxy.SendKey(publicKey.Encrypt(messageKey, true)); 
 
             object sessionInfo = serverProxy.GetSessionInfo(hostAddress);
+
+            string[] sessionId = ((string)sessionInfo).Split('|');
+            sd.CallbackSessionId = sessionId[0];
+            sd.ProxySessionId = sessionId[1];
+            clientSessions.Add(sd);
         }
 
         public void CallPay(byte[] message, string address)
@@ -68,7 +82,7 @@ namespace Client
             {
                 if(sd.Address.Equals(address))
                 {
-                    sd.Proxy.Pay(message);
+                    sd.Proxy.Pay(sd.AesAlgorithm.Encrypt(message));
                     return;
                 }
             }
@@ -126,7 +140,12 @@ namespace Client
         public bool SendKey(byte[] key)
         {
             /*Ako je kljuc validan vrati true*/
-
+            SessionData sd = GetSession(OperationContext.Current.SessionId);
+            if(sd != null)
+            {
+                RSACryptoServiceProvider privateKey = myCertificate.PrivateKey as RSACryptoServiceProvider;
+                sd.AesAlgorithm = new AES128_ECB(privateKey.Decrypt(key, true));
+            }
             return true;
         }
 
@@ -160,7 +179,7 @@ namespace Client
         {
             string sessionId = OperationContext.Current.SessionId;
             SessionData sd = GetSession(sessionId);
-            Console.WriteLine(sessionId + " paid: " + System.Text.Encoding.UTF8.GetString(sd.AesAlgorithm.Decrypt(message)));
+            Console.WriteLine(sd.Address + " paid: " + System.Text.Encoding.UTF8.GetString(sd.AesAlgorithm.Decrypt(message)));
         }
     }
 }

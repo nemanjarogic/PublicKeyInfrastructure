@@ -40,7 +40,7 @@ namespace CertificationAuthority
             //string address = "net.tcp://localhost:10001/CertificationAuthorityBACKUP";
             ServiceHost host = new ServiceHost(typeof(CertificationAuthorityService));
             host.AddServiceEndpoint(typeof(ICertificationAuthorityContract), binding, address);
-
+            
             try
             {
                 host.Open();
