@@ -103,7 +103,7 @@ namespace CertificationAuthority
 
             try
             {
-                collection.Import(PFX_PATH, PFX_PASSWORD, X509KeyStorageFlags.PersistKeySet);
+                collection.Import(PFX_PATH, PFX_PASSWORD, X509KeyStorageFlags.Exportable);
             }
             catch
             {
@@ -118,8 +118,8 @@ namespace CertificationAuthority
                     {
                         isCertFound = true;
                         caCertificate = cert;
-                        //caPrivateKey = Org.BouncyCastle.Security.DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
-                        caPrivateKey = CertificateHandler.TransformRSAPrivateKey(cert.PrivateKey);
+                        caPrivateKey = DotNetUtilities.GetKeyPair(cert.PrivateKey).Private;
+                        //caPrivateKey = CertificateHandler.TransformRSAPrivateKey(cert.PrivateKey);
 
                         break;
                     }
