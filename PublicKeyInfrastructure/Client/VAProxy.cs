@@ -11,7 +11,13 @@ namespace Client
 {
     public class VAProxy : ChannelFactory<IValidationAuthorityContract>, IValidationAuthorityContract,IDisposable
     {
-        private IValidationAuthorityContract proxy; /* createChannel */
+        private IValidationAuthorityContract proxy; 
+
+        public VAProxy(string address, NetTcpBinding binding)
+            : base(binding, address)
+        {
+            proxy = this.CreateChannel();
+        }
 
         public bool isCertificateValidate(X509Certificate2 certificate)
         {
