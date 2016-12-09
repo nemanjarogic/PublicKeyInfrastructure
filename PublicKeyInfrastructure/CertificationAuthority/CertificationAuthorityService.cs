@@ -50,7 +50,7 @@ namespace CertificationAuthority
 
         #region Public methods
 
-        public X509Certificate2 GenerateCertificate(string address)
+        public X509Certificate2 GenerateCertificate(string subject, string address)
         {
             X509Certificate2 newCertificate = null;
             newCertificate = CertificateHandler.GenerateAuthorizeSignedCertificate(address, "CN=" + CA_SUBJECT_NAME, caPrivateKey);
@@ -109,7 +109,7 @@ namespace CertificationAuthority
 
         /// <summary>
         /// Prepare certification authority service for use.
-        /// Load information about CA and active certificates in system.
+        /// Load information about CA.
         /// </summary>
         private void PrepareCAService()
         {
