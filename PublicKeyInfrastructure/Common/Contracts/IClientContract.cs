@@ -30,6 +30,5 @@ namespace Common.Client
         bool SendKey(byte[] key);
         [OperationContract]
         object GetSessionInfo(string otherAddress);
-                
     }
 }

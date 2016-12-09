@@ -38,12 +38,7 @@ namespace RegistrationAuthority
 
             if (!String.IsNullOrEmpty(address))
             {
-                /*using(CAProxy caProxy = new CAProxy(binding, address))
-                {
-                    certificate = caProxy.GenerateCertificate(subjectName);
-                }*/
-
-                certificate = CAProxy.GenerateCertificate(address);
+                certificate = CAProxy.GenerateCertificate(ServiceSecurityContext.Current.PrimaryIdentity.Name, address);
             }
 
             return certificate;
