@@ -91,6 +91,18 @@ namespace CertificationAuthority
             return true;
         }
 
+        public object GetModel()
+        {
+            throw new NotImplementedException();
+            //TODO: implementirati getModel na CA servisu 
+        }
+
+        public bool SetModel(object param)
+        {
+            throw new NotImplementedException();
+            //TODO: implementirati setModel na CA servisu
+        }
+
         #endregion 
 
         #region Private methods
@@ -133,5 +145,6 @@ namespace CertificationAuthority
         }
 
         #endregion 
+
     }
 }
