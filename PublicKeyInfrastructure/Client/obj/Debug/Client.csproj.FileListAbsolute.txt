@@ -58,3 +58,15 @@ D:\miki_zadaci\MASTER_PSI\blok03\projekatNOVO\PKI_system\PublicKeyInfrastructure
 D:\miki_zadaci\MASTER_PSI\blok03\projekatNOVO\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
 D:\miki_zadaci\MASTER_PSI\blok03\projekatNOVO\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
 D:\miki_zadaci\MASTER_PSI\blok03\projekatNOVO\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
+C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
+C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
+C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
+C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\bin\Debug\Common.dll
+C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.dll
+C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
+C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
+C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.pdb
+C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.xml
+C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
+C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
+C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
