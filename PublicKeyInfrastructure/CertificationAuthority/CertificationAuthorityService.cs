@@ -79,7 +79,7 @@ namespace CertificationAuthority
                 }
             }
 
-            retVal = new CertificateDto(newCertificate, newCertificate.PrivateKey);
+            retVal = new CertificateDto(newCertificate);
             return retVal;
         }
 
@@ -120,13 +120,13 @@ namespace CertificationAuthority
             retVal.ActiveCertificates = new HashSet<CertificateDto>();
             foreach(var cer in activeCertificates)
             {
-                retVal.ActiveCertificates.Add(new CertificateDto(cer, cer.PrivateKey));
+                retVal.ActiveCertificates.Add(new CertificateDto(cer));
             }
 
             retVal.RevocationList = new HashSet<CertificateDto>();
             foreach(var cer in revocationList)
             {
-                retVal.RevocationList.Add(new CertificateDto(cer, cer.PrivateKey));
+                retVal.RevocationList.Add(new CertificateDto(cer));
             }
 
             retVal.ClientDict = new Dictionary<string, string>();
@@ -148,9 +148,6 @@ namespace CertificationAuthority
             foreach(var cerDto in param.ActiveCertificates)
             {
                 X509Certificate2 cert = cerDto.GetCert();
-                AsymmetricAlgorithm privateKey = new RSACryptoServiceProvider();
-                privateKey.FromXmlString(cerDto.GetStringPrivateKey());
-                cert.PrivateKey = privateKey;
                 activeCertificates.Add(cert);
                 CertificateHandler.ExportToFileSystem(X509ContentType.Pfx, cert, cert.SubjectName.Name);
             }
@@ -160,9 +157,6 @@ namespace CertificationAuthority
             {
                 //mozda ubaciti i brisanje postojeceg sertifikata iz foldera
                 X509Certificate2 cert = cerDto.GetCert();
-                AsymmetricAlgorithm privateKey = new RSACryptoServiceProvider();
-                privateKey.FromXmlString(cerDto.GetStringPrivateKey());
-                cert.PrivateKey = privateKey;
                 revocationList.Add(cert);
             }
 

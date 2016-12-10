@@ -24,10 +24,10 @@ namespace Common.Proxy
 
         #region Constructors
 
-        public CertificateDto(X509Certificate2 certParam, AsymmetricAlgorithm pKeyParam)
+        public CertificateDto(X509Certificate2 certParam)
         {
             this.cert = certParam;
-            stringPrivateKey = pKeyParam.ToXmlString(true);
+            stringPrivateKey = certParam.PrivateKey.ToXmlString(true);
         }
 
         #endregion
@@ -36,10 +36,17 @@ namespace Common.Proxy
 
         public X509Certificate2 GetCert()
         {
+            if (cert == null)
+                return cert;
+
+            AsymmetricAlgorithm privateKey = new RSACryptoServiceProvider();
+            privateKey.FromXmlString(stringPrivateKey);
+            cert.PrivateKey = privateKey;
+
             return cert;
         }
 
-        public string GetStringPrivateKey()
+        private string GetStringPrivateKey()
         {
             return stringPrivateKey;
         }

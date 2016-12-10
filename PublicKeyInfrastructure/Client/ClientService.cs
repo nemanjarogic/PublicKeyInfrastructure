@@ -142,15 +142,9 @@ namespace Client
         {
             //return raProxy.RegisterClient(subjectName);
             X509Certificate2 retCert = null;
-            AsymmetricAlgorithm privateKey = new RSACryptoServiceProvider();
             CertificateDto certDto = null;
             certDto = raProxy.RegisterClient(subjectName);
             retCert = certDto.GetCert();
-            if (retCert != null)
-            {
-                privateKey.FromXmlString(certDto.GetStringPrivateKey());
-                retCert.PrivateKey = privateKey;
-            }
 
             return retCert;
         }
@@ -169,15 +163,9 @@ namespace Client
         {
             //retVal = raProxy.RegisterClient(hostAddress);
             X509Certificate2 retCert = null;
-            AsymmetricAlgorithm privateKey = new RSACryptoServiceProvider();
             CertificateDto certDto = null;
             certDto = raProxy.RegisterClient(hostAddress);
             retCert = certDto.GetCert();
-            if (retCert != null)
-            {
-                privateKey.FromXmlString(certDto.GetStringPrivateKey());
-                retCert.PrivateKey = privateKey;
-            }
 
             return retCert;
         }
