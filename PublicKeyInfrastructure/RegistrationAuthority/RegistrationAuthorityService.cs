@@ -32,17 +32,17 @@ namespace RegistrationAuthority
 
         #region Public methods
 
-        public X509Certificate2 RegisterClient(string address)
+        public CertificateDto RegisterClient(string address)
         {
-            X509Certificate2 certificate = null;
+            CertificateDto certDto = null;
 
             if (!String.IsNullOrEmpty(address))
             {
                 string subject = ServiceSecurityContext.Current.PrimaryIdentity.Name.Replace('\\','_').Trim();
-                certificate = CAProxy.GenerateCertificate(subject, address);
+                certDto = CAProxy.GenerateCertificate(subject, address);
             }
 
-            return certificate;
+            return certDto;
         }
 
         #endregion

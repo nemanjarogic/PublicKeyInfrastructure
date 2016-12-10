@@ -1,4 +1,5 @@
-﻿using Common.Server;
+﻿using Common.Proxy;
+using Common.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,11 +50,11 @@ namespace RegistrationAuthority
 
         public static void testCAProxy()
         {
-            X509Certificate2 certificate = null;
+            CertificateDto certDto = null;
             Console.WriteLine("Test of using CAProxy in RA started...");
             RegistrationAuthorityService service = new RegistrationAuthorityService();
-            certificate = service.RegisterClient("testClient");
-            Console.WriteLine("Test of using CAProxy in RA finished. Name of new certificate - " + ((certificate != null) ? certificate.SubjectName.ToString() : "registration not implemented"));
+            certDto = service.RegisterClient("testClient");
+            Console.WriteLine("Test of using CAProxy in RA finished. Name of new certificate - " + ((certDto.GetCert() != null) ? certDto.GetCert().SubjectName.ToString() : "registration not implemented"));
         }
 
         #endregion

@@ -19,7 +19,6 @@ namespace Common.Proxy
         private static string addressOfHotCAHost = null;
         private static string addressOfBackupCAHost = null;
         private static NetTcpBinding binding = null;
-        private static string CERT_FOLDER_PATH = @"..\..\SecurityStore\";
 
         private enum EnumCAServerState { BothOn = 0, OnlyActiveOn = 1, BothOff = 2 };
         private static EnumCAServerState CA_SERVER_STATE = EnumCAServerState.BothOn;
@@ -59,30 +58,14 @@ namespace Common.Proxy
 
         private static bool IntegrityUpdate(CAProxy activeProxy, CAProxy nonActiveProxy)
         {
+            //TODO: OSLOBODITI INTEGRITY UPDATE
             return false;
 
             bool retVal = false;
-            object objModel = null;
+            CAModelDto objModel = null;
 
-            //TODO: implementirati integrity update
             objModel = activeProxy.factory.GetModel();
             retVal = nonActiveProxy.factory.SetModel(objModel);
-
-            /*try
-            {
-                using (CAProxy activeProxy = new CAProxy(binding, ACTIVE_SERVER_ADDRESS))
-                {
-                    objModel = activeProxy.factory.GetModel();
-                }
-                using (CAProxy nonActiveProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
-                {
-                    retVal = nonActiveProxy.factory.SetModel(objModel);
-                }
-            } 
-            catch(EndpointNotFoundException exEndpoint)
-            {
-                Console.WriteLine("Integrity update failed!");
-            }*/
 
             return retVal;
         }
@@ -91,8 +74,9 @@ namespace Common.Proxy
 
         #region Public methods
 
-        public static X509Certificate2 GenerateCertificate(string subject, string address)
+        public static CertificateDto GenerateCertificate(string subject, string address)
         {
+            CertificateDto retCertDto = null;
             X509Certificate2 certificate = null;
 
             try
@@ -100,10 +84,11 @@ namespace Common.Proxy
                 //try communication with ACTIVE CA server
                 using (CAProxy activeProxy = new CAProxy(binding, ACTIVE_SERVER_ADDRESS))
                 {
-                    certificate = activeProxy.factory.GenerateCertificate(subject, address);
+                    retCertDto = activeProxy.factory.GenerateCertificate(subject, address);
+                    certificate = retCertDto.GetCert();
                     if (certificate != null)
                     {
-                        FileStream certFileStream = activeProxy.factory.GetFileStreamOfCertificate(subject);
+                        //FileStream certFileStream = activeProxy.factory.GetFileStreamOfCertificate(subject);
                         //TODO: obavezno pogledati kada zatvoriti ovaj filestream (na CAProxy-u ili na CAService-u)!!!!
 
                         #region try replication to NONACTIVE CA server
@@ -114,7 +99,8 @@ namespace Common.Proxy
                             {
                                 if (CA_SERVER_STATE == EnumCAServerState.BothOn)
                                 {
-                                    nonActiveProxy.factory.SaveCertificateToBackupDisc(certificate, certFileStream, subject);
+                                    //TODO: srediti REPLICIRANJE novokreiranog sertifikata na backup CA servis
+                                    //nonActiveProxy.factory.SaveCertificateToBackupDisc(certificate, certFileStream, subject);
                                     //mozda ovde zatvoriti file stream
                                 }
                                 else if (CA_SERVER_STATE == EnumCAServerState.OnlyActiveOn)
@@ -140,7 +126,8 @@ namespace Common.Proxy
                     //try communication with NONACTIVE CA server
                     using (CAProxy backupProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
                     {
-                        certificate = backupProxy.factory.GenerateCertificate(subject, address);
+                        retCertDto = backupProxy.factory.GenerateCertificate(subject, address);
+                        certificate = retCertDto.GetCert();
 
                         SwitchActiveNonActiveAddress();
                         CA_SERVER_STATE = EnumCAServerState.OnlyActiveOn;
@@ -150,12 +137,12 @@ namespace Common.Proxy
                 {
                     Console.WriteLine("Both of CA servers not working!");
                     CA_SERVER_STATE = EnumCAServerState.BothOff;
-                    return certificate;
+                    return retCertDto;
                 }
 
             }
 
-            return certificate;
+            return retCertDto;
         }
 
 

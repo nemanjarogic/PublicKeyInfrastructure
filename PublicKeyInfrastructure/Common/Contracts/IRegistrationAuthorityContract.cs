@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Proxy;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -12,6 +13,6 @@ namespace Common.Server
     public interface IRegistrationAuthorityContract
     {
         [OperationContract]
-        X509Certificate2 RegisterClient(string address);
+        CertificateDto RegisterClient(string address);
     }
 }

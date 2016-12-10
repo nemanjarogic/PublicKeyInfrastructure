@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Proxy;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Common.Server
     public interface ICertificationAuthorityContract
     {
         [OperationContract]
-        X509Certificate2 GenerateCertificate(string subject, string address);
+        CertificateDto GenerateCertificate(string subject, string address);
 
         [OperationContract]
         bool IsCertificateActive(X509Certificate2 certificate);
@@ -28,9 +29,9 @@ namespace Common.Server
         bool SaveCertificateToBackupDisc(X509Certificate2 certificate, FileStream stream, string certFileName);
 
         [OperationContract]
-        object GetModel();
+        CAModelDto GetModel();
 
         [OperationContract]
-        bool SetModel(object param);
+        bool SetModel(CAModelDto param);
     }
 }

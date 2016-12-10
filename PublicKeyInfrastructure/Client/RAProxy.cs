@@ -6,6 +6,7 @@ using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
+using Common.Proxy;
 
 namespace Client
 {
@@ -19,7 +20,7 @@ namespace Client
             raProxy = this.CreateChannel();
         }
 
-        public X509Certificate2 RegisterClient(string subjectName)
+        public CertificateDto RegisterClient(string subjectName)
         {
             return raProxy.RegisterClient(subjectName);
         }

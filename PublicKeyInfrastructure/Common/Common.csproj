@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -45,7 +46,9 @@
     <Compile Include="Contracts\IRegistrationAuthorityContract.cs" />
     <Compile Include="Contracts\IValidationAuthorityContract.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Proxy\CAModelDto.cs" />
     <Compile Include="Proxy\CAProxy.cs" />
+    <Compile Include="Proxy\CertificateDto.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

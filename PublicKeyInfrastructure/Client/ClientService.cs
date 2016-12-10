@@ -1,5 +1,6 @@
 ﻿using Client.Database;
 using Common.Client;
+using Common.Proxy;
 using Cryptography.AES;
 using System;
 using System.Collections.Generic;
@@ -139,7 +140,19 @@ namespace Client
 
         public X509Certificate2 Register(string subjectName)
         {
-            return raProxy.RegisterClient(subjectName);
+            //return raProxy.RegisterClient(subjectName);
+            X509Certificate2 retCert = null;
+            AsymmetricAlgorithm privateKey = new RSACryptoServiceProvider();
+            CertificateDto certDto = null;
+            certDto = raProxy.RegisterClient(subjectName);
+            retCert = certDto.GetCert();
+            if (retCert != null)
+            {
+                privateKey.FromXmlString(certDto.GetStringPrivateKey());
+                retCert.PrivateKey = privateKey;
+            }
+
+            return retCert;
         }
 
         public byte[] RandomGenerateKey()
@@ -154,11 +167,19 @@ namespace Client
 
         public X509Certificate2 LoadMyCertificate()
         {
-            X509Certificate2 retVal = new X509Certificate2();
+            //retVal = raProxy.RegisterClient(hostAddress);
+            X509Certificate2 retCert = null;
+            AsymmetricAlgorithm privateKey = new RSACryptoServiceProvider();
+            CertificateDto certDto = null;
+            certDto = raProxy.RegisterClient(hostAddress);
+            retCert = certDto.GetCert();
+            if (retCert != null)
+            {
+                privateKey.FromXmlString(certDto.GetStringPrivateKey());
+                retCert.PrivateKey = privateKey;
+            }
 
-            retVal = raProxy.RegisterClient(hostAddress);
-
-            return retVal;
+            return retCert;
         }
 
         public X509Certificate2 SendCert(X509Certificate2 cert)

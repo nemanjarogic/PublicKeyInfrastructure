@@ -1,4 +1,5 @@
-﻿using Common.Server;
+﻿using Common.Proxy;
+using Common.Server;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
@@ -19,9 +20,12 @@ namespace CertificationAuthority
     {
         #region Fields
 
+        #region CA model
         private HashSet<X509Certificate2> activeCertificates;
         private HashSet<X509Certificate2> revocationList;
         private Dictionary<string, string> clientDict;
+        #endregion
+
         private AsymmetricKeyParameter caPrivateKey = null;
         private X509Certificate2 caCertificate = null;
 
@@ -59,8 +63,9 @@ namespace CertificationAuthority
         /// <param name="subject">Subject name</param>
         /// <param name="address">Host address of client</param>
         /// <returns></returns>
-        public X509Certificate2 GenerateCertificate(string subject, string address)
+        public CertificateDto GenerateCertificate(string subject, string address)
         {
+            CertificateDto retVal = null;
             X509Certificate2 newCertificate = null;
 
             newCertificate = IsCertificatePublished(subject);
@@ -74,7 +79,8 @@ namespace CertificationAuthority
                 }
             }
 
-            return newCertificate;
+            retVal = new CertificateDto(newCertificate, newCertificate.PrivateKey);
+            return retVal;
         }
 
         public bool WithdrawCertificate(X509Certificate2 certificate)
@@ -106,16 +112,68 @@ namespace CertificationAuthority
             return true;
         }
 
-        public object GetModel()
+        public CAModelDto GetModel()
         {
-            throw new NotImplementedException();
             //TODO: implementirati getModel na CA servisu 
+            CAModelDto retVal = new CAModelDto();
+
+            retVal.ActiveCertificates = new HashSet<CertificateDto>();
+            foreach(var cer in activeCertificates)
+            {
+                retVal.ActiveCertificates.Add(new CertificateDto(cer, cer.PrivateKey));
+            }
+
+            retVal.RevocationList = new HashSet<CertificateDto>();
+            foreach(var cer in revocationList)
+            {
+                retVal.RevocationList.Add(new CertificateDto(cer, cer.PrivateKey));
+            }
+
+            retVal.ClientDict = new Dictionary<string, string>();
+            foreach(var pair in clientDict)
+            {
+                retVal.ClientDict.Add(pair.Key, pair.Value);
+            }
+
+            return retVal;
         }
 
-        public bool SetModel(object param)
+        public bool SetModel(CAModelDto param)
         {
-            throw new NotImplementedException();
             //TODO: implementirati setModel na CA servisu
+            bool retVal = false;
+
+            activeCertificates.Clear();
+            //mozda i obrisati postojece sertifikate u folderu ili racunati da ce oni biti pregazeni novim fajlovima
+            foreach(var cerDto in param.ActiveCertificates)
+            {
+                X509Certificate2 cert = cerDto.GetCert();
+                AsymmetricAlgorithm privateKey = new RSACryptoServiceProvider();
+                privateKey.FromXmlString(cerDto.GetStringPrivateKey());
+                cert.PrivateKey = privateKey;
+                activeCertificates.Add(cert);
+                CertificateHandler.ExportToFileSystem(X509ContentType.Pfx, cert, cert.SubjectName.Name);
+            }
+
+            revocationList.Clear();
+            foreach (var cerDto in param.RevocationList)
+            {
+                //mozda ubaciti i brisanje postojeceg sertifikata iz foldera
+                X509Certificate2 cert = cerDto.GetCert();
+                AsymmetricAlgorithm privateKey = new RSACryptoServiceProvider();
+                privateKey.FromXmlString(cerDto.GetStringPrivateKey());
+                cert.PrivateKey = privateKey;
+                revocationList.Add(cert);
+            }
+
+            clientDict.Clear();
+            foreach (var pair in param.ClientDict)
+            {
+                clientDict.Add(pair.Key, pair.Value);
+            }
+
+            retVal = true;
+            return retVal;
         }
 
         #endregion 

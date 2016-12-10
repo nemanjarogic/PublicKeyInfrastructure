@@ -229,7 +229,7 @@ namespace CertificationAuthority
         /// <param name="certificate">Certificate to export</param>
         /// <param name="subjectName">Subject name(name of file on system)</param>
         /// <returns></returns>
-        private static bool ExportToFileSystem(X509ContentType contentType, X509Certificate2 certificate , string subjectName)
+        public static bool ExportToFileSystem(X509ContentType contentType, X509Certificate2 certificate , string subjectName)
         {
             bool isValidType = false;
             bool isExportDone = false;
