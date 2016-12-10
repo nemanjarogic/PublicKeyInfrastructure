@@ -8,6 +8,7 @@ using System.ServiceModel;
 using Common.Client;
 using System.Security.Principal;
 using Cryptography.AES;
+using Common.Proxy;
 
 namespace Client
 {
@@ -15,8 +16,10 @@ namespace Client
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Client node\n\n");
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
+            Console.CancelKeyPress += CurrentDomain_ProcessExit;
 
+            Console.WriteLine("Client node\n\n");
             Console.Write("Host service port: ");
             string port = Console.ReadLine();
             string address = string.Format("net.tcp://localhost:{0}/Client", port);
@@ -71,6 +74,18 @@ namespace Client
 
             Console.ReadKey();
             host.Close();
+            
+        }
+
+        private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            NetTcpBinding binding = new NetTcpBinding();
+            binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
+            string address = "net.tcp://localhost:10002/RegistrationAuthorityService";
+            using (RAProxy raProxy = new RAProxy(address, binding))
+            {
+                //caProxy.RemoveMeFromList();
+            }
         }
     }
 }
