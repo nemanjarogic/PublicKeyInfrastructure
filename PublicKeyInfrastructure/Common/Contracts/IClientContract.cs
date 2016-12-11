@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
+using Common.Proxy;
 
 namespace Common.Client
 {
@@ -25,7 +26,7 @@ namespace Common.Client
         String GetSessionId();
         
         [OperationContract]
-        X509Certificate2 SendCert(X509Certificate2 cert);
+        CertificateDto SendCert(CertificateDto cert);
         [OperationContract]
         bool SendKey(byte[] key);
         [OperationContract]

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.ServiceModel;
 using Common.Client;
 using System.Security.Cryptography.X509Certificates;
+using Common.Proxy;
 
 namespace Client
 {
@@ -34,7 +35,7 @@ namespace Client
             return this.proxy.GetSessionId();
         }
 
-        public X509Certificate2 SendCert(X509Certificate2 cert)
+        public CertificateDto SendCert(CertificateDto cert)
         {
             return this.proxy.SendCert(cert);
         }

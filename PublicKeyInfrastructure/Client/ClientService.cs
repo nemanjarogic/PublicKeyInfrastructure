@@ -94,7 +94,7 @@ namespace Client
 
             try
             {
-                X509Certificate2 serverCert = serverProxy.SendCert(myCertificate);
+                CertificateDto serverCert = serverProxy.SendCert(new CertificateDto(myCertificate));
 
                 if(serverCert == null)
                 {
@@ -102,8 +102,9 @@ namespace Client
                     return;
                 }
 
-                RSACryptoServiceProvider publicKey = serverCert.PublicKey.Key as RSACryptoServiceProvider;
-                bool success = serverProxy.SendKey(publicKey.Encrypt(messageKey, true));
+                RSACryptoServiceProvider publicKey = serverCert.GetCert().PublicKey.Key as RSACryptoServiceProvider;
+                byte[] res = publicKey.Encrypt(messageKey, true);
+                bool success = serverProxy.SendKey(res);
                 if (success)
                 {
                     sqliteWrapper.InsertToTable(serviceName, sd.Address);
@@ -145,17 +146,6 @@ namespace Client
             }
         }
 
-        public X509Certificate2 Register(string subjectName)
-        {
-            //return raProxy.RegisterClient(subjectName);
-            X509Certificate2 retCert = null;
-            CertificateDto certDto = null;
-            certDto = raProxy.RegisterClient(subjectName);
-            retCert = certDto.GetCert();
-
-            return retCert;
-        }
-
         public byte[] RandomGenerateKey()
         {
             byte[] retVal = new byte[16];
@@ -177,9 +167,9 @@ namespace Client
             return retCert;
         }
 
-        public X509Certificate2 SendCert(X509Certificate2 cert)
+        public CertificateDto SendCert(CertificateDto certDto)
         {
-            if(!vaProxy.isCertificateValidate(cert))
+            if(!vaProxy.isCertificateValidate(certDto.GetCert()))
             {
                 return null;
             }
@@ -190,7 +180,7 @@ namespace Client
             /*Provjeri cert*/
             clientSessions.Add(new SessionData(null, otherSide, callbackSession, proxySession));
 
-            return myCertificate;
+            return new CertificateDto(myCertificate);
         }
 
         public bool SendKey(byte[] key)
@@ -201,7 +191,8 @@ namespace Client
             if (sd != null)
             {
                 RSACryptoServiceProvider privateKey = myCertificate.PrivateKey as RSACryptoServiceProvider;
-                sd.AesAlgorithm = new AES128_ECB(privateKey.Decrypt(key, true));
+                byte[] result = privateKey.Decrypt(key, true);
+                sd.AesAlgorithm = new AES128_ECB(result);
                 sqliteWrapper.InsertToTable(serviceName, sd.Address);
             }
             return true;

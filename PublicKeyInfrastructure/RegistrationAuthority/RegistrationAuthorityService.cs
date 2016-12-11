@@ -39,6 +39,8 @@ namespace RegistrationAuthority
             if (!String.IsNullOrEmpty(address))
             {
                 string subject = ServiceSecurityContext.Current.PrimaryIdentity.Name.Replace('\\','_').Trim();
+                string port = address.Split(':')[2].Split('/')[0];
+                subject = subject.Replace('-', '_') + port;
                 certDto = CAProxy.GenerateCertificate(subject, address);
             }
 
