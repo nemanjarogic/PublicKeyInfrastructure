@@ -194,7 +194,6 @@ namespace Client
                 RSACryptoServiceProvider privateKey = myCertificate.PrivateKey as RSACryptoServiceProvider;
                 byte[] result = privateKey.Decrypt(key, true);
                 sd.AesAlgorithm = new AES128_ECB(result);
-                sqliteWrapper.InsertToTable(sd.Address);
             }
             return true;
         }
@@ -220,6 +219,7 @@ namespace Client
             if (sd != null)
             {
                 sd.Address = otherAddress;
+                sqliteWrapper.InsertToTable(sd.Address);
                 return string.Format("{0}|{1}", sd.CallbackSessionId, sd.ProxySessionId);
             }
             return null;
