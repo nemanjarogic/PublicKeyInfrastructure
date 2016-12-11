@@ -26,10 +26,10 @@ namespace Client
 
             ServiceHost host = new ServiceHost(new ClientService(address));
             NetTcpBinding binding = new NetTcpBinding();
-            binding.SendTimeout = new TimeSpan(0, 0, 5);
-            binding.ReceiveTimeout = new TimeSpan(0, 0, 5);
-            binding.OpenTimeout = new TimeSpan(0, 0, 5);
-            binding.CloseTimeout = new TimeSpan(0, 0, 5);
+            binding.SendTimeout = new TimeSpan(0, 5, 5);
+            binding.ReceiveTimeout = new TimeSpan(0, 5, 5);
+            binding.OpenTimeout = new TimeSpan(0, 5, 5);
+            binding.CloseTimeout = new TimeSpan(0, 5, 5);
 
             host.AddServiceEndpoint(typeof(IClientContract), binding, address);
                     

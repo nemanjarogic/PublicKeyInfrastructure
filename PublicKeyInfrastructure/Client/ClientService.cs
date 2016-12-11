@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Client
 {
-    [ServiceBehavior(InstanceContextMode=InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Multiple)]
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Multiple)]
     public class ClientService : IClientContract
     {
         private HashSet<SessionData> clientSessions;
@@ -26,7 +26,7 @@ namespace Client
         private VAProxy vaProxy;
         private RAProxy raProxy;
 
-        public ClientService(string hostAddress) 
+        public ClientService(string hostAddress)
         {
             NetTcpBinding raBinding = new NetTcpBinding();
             raBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
@@ -44,10 +44,11 @@ namespace Client
             InitializeDatabase();
         }
 
-        public string GetSessionId(){
+        public string GetSessionId()
+        {
             return OperationContext.Current.SessionId;
         }
-        
+
         public ClientService()
         {
             //myCertificate = LoadMyCertificate();
@@ -58,7 +59,7 @@ namespace Client
         {
             string subjectName = WindowsIdentity.GetCurrent().Name;
             string port = hostAddress.Split(':')[2].Split('/')[0];
-            string subjName = subjectName.Replace('\\','_').Replace('-','_');
+            string subjName = subjectName.Replace('\\', '_').Replace('-', '_');
             serviceName = subjName + port;
 
             sqliteWrapper = new SQLiteWrapper();
@@ -69,9 +70,9 @@ namespace Client
 
         public void StartComunication(string address)
         {
-            foreach(var sessionData in clientSessions)
+            foreach (var sessionData in clientSessions)
             {
-                if(sessionData.Address.Equals(address))
+                if (sessionData.Address.Equals(address))
                 {
                     Console.WriteLine("Vec je ostvarena konekcija.");
                     return;
@@ -79,10 +80,10 @@ namespace Client
             }
 
             NetTcpBinding binding = new NetTcpBinding();
-            binding.SendTimeout = new TimeSpan(0, 0, 5);
-            binding.ReceiveTimeout = new TimeSpan(0, 0, 5);
-            binding.OpenTimeout = new TimeSpan(0, 0, 5);
-            binding.CloseTimeout = new TimeSpan(0, 0, 5);
+            binding.SendTimeout = new TimeSpan(0, 5, 5);
+            binding.ReceiveTimeout = new TimeSpan(0, 5, 5);
+            binding.OpenTimeout = new TimeSpan(0, 5, 5);
+            binding.CloseTimeout = new TimeSpan(0, 5, 5);
             IClientContract serverProxy = new ClientProxy(new EndpointAddress(address), binding, this);
             byte[] messageKey = RandomGenerateKey();
 
@@ -93,26 +94,32 @@ namespace Client
 
             try
             {
-            X509Certificate2 serverCert = serverProxy.SendCert(null);
+                X509Certificate2 serverCert = serverProxy.SendCert(myCertificate);
 
-            RSACryptoServiceProvider publicKey = myCertificate.PublicKey.Key as RSACryptoServiceProvider;
-            bool success = serverProxy.SendKey(publicKey.Encrypt(messageKey, true)); 
-            if (success)
-            {
-                sqliteWrapper.InsertToTable(serviceName, sd.Address);
+                if(serverCert == null)
+                {
+                    Console.WriteLine("Cert nije validan");
+                    return;
+                }
+
+                RSACryptoServiceProvider publicKey = serverCert.PublicKey.Key as RSACryptoServiceProvider;
+                bool success = serverProxy.SendKey(publicKey.Encrypt(messageKey, true));
+                if (success)
+                {
+                    sqliteWrapper.InsertToTable(serviceName, sd.Address);
+                }
+                object sessionInfo = serverProxy.GetSessionInfo(hostAddress);
+
+                string[] sessionId = ((string)sessionInfo).Split('|');
+                sd.CallbackSessionId = sessionId[0];
+                sd.ProxySessionId = sessionId[1];
+                clientSessions.Add(sd);
             }
-            object sessionInfo = serverProxy.GetSessionInfo(hostAddress);
-
-            string[] sessionId = ((string)sessionInfo).Split('|');
-            sd.CallbackSessionId = sessionId[0];
-            sd.ProxySessionId = sessionId[1];
-            clientSessions.Add(sd);
-        }
-            catch(EndpointNotFoundException)
+            catch (EndpointNotFoundException)
             {
                 Console.WriteLine("Druga strana nije aktivna");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine("Exception: {0}", e.Message);
             }
@@ -121,15 +128,15 @@ namespace Client
         public void CallPay(byte[] message, string address)
         {
             string serviceId = OperationContext.Current.SessionId;
-            foreach(SessionData sd in clientSessions)
+            foreach (SessionData sd in clientSessions)
             {
-                if(sd.Address.Equals(address))
+                if (sd.Address.Equals(address))
                 {
                     try
                     {
-                    sd.Proxy.Pay(sd.AesAlgorithm.Encrypt(message));
+                        sd.Proxy.Pay(sd.AesAlgorithm.Encrypt(message));
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         Console.WriteLine(e.Message);
                     }
@@ -172,6 +179,10 @@ namespace Client
 
         public X509Certificate2 SendCert(X509Certificate2 cert)
         {
+            if(!vaProxy.isCertificateValidate(cert))
+            {
+                return null;
+            }
             IClientContract otherSide = OperationContext.Current.GetCallbackChannel<IClientContract>();
             string callbackSession = otherSide.GetSessionId();
             string proxySession = OperationContext.Current.SessionId;
@@ -179,15 +190,15 @@ namespace Client
             /*Provjeri cert*/
             clientSessions.Add(new SessionData(null, otherSide, callbackSession, proxySession));
 
-            return null;
+            return myCertificate;
         }
 
         public bool SendKey(byte[] key)
         {
             /*Ako je kljuc validan vrati true*/
             SessionData sd = GetSession(OperationContext.Current.SessionId);
-            
-            if(sd != null)
+
+            if (sd != null)
             {
                 RSACryptoServiceProvider privateKey = myCertificate.PrivateKey as RSACryptoServiceProvider;
                 sd.AesAlgorithm = new AES128_ECB(privateKey.Decrypt(key, true));
@@ -198,9 +209,9 @@ namespace Client
 
         private SessionData GetSession(string sessionId)
         {
-            foreach(SessionData sd in clientSessions)
+            foreach (SessionData sd in clientSessions)
             {
-                if(sd.IsValidSession(sessionId))
+                if (sd.IsValidSession(sessionId))
                 {
                     return sd;
                 }
@@ -214,7 +225,7 @@ namespace Client
             SessionData sd = GetSession(sessionId);
 
             Console.WriteLine("Session is opened");
-            if(sd != null)
+            if (sd != null)
             {
                 sd.Address = otherAddress;
                 return string.Format("{0}|{1}", sd.CallbackSessionId, sd.ProxySessionId);
