@@ -9,6 +9,7 @@ using Common.Client;
 using System.Security.Principal;
 using Cryptography.AES;
 using Common.Proxy;
+using Client.Database;
 
 namespace Client
 {
@@ -23,8 +24,9 @@ namespace Client
             Console.Write("Host service port: ");
             string port = Console.ReadLine();
             string address = string.Format("net.tcp://localhost:{0}/Client", port);
+            IDatabaseWrapper dbWrapper = new SQLiteWrapper();
 
-            ServiceHost host = new ServiceHost(new ClientService(address));
+            ServiceHost host = new ServiceHost(new ClientService(address, dbWrapper));
             NetTcpBinding binding = new NetTcpBinding();
             binding.SendTimeout = new TimeSpan(0, 5, 5);
             binding.ReceiveTimeout = new TimeSpan(0, 5, 5);
@@ -45,10 +47,11 @@ namespace Client
             {
                 Console.WriteLine("\n1.Connect to other client");
                 Console.WriteLine("2.Send message");
-                Console.WriteLine("3.End");
+                Console.WriteLine("3.Connected to...");
+                Console.WriteLine("4.End");
 
                 string option = Console.ReadLine();
-                if (option.Equals("3")) break;
+                if (option.Equals("4")) break;
 
                 switch(option)
                 {
@@ -68,7 +71,10 @@ namespace Client
                         proxy.CallPay(System.Text.Encoding.UTF8.GetBytes(message), clientAddres);
 
                         break;
-
+                    case "3":
+                        Console.WriteLine("Connected Clients:");
+                        dbWrapper.ListAllRecordsFromTable();
+                        break;
                 }
             }
 

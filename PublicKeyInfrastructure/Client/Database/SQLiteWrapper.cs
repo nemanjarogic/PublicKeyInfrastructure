@@ -12,17 +12,21 @@ namespace Client.Database
     {
         SQLiteConnection m_dbConnection;
 
+        public string TheTableName { get; set; }
+        public string TheDatabaseName { get; set; }
+
         public void CreateDatabase(string dbName)
         {
             if (!File.Exists(dbName + ".sqlite"))
             {
                 SQLiteConnection.CreateFile(dbName + ".sqlite");
+                TheDatabaseName = dbName;
             }
         }
 
-        public void ConnectToDatabase(string dbname)
+        public void ConnectToDatabase()
         {
-            m_dbConnection = new SQLiteConnection("Data Source=" + dbname + ".sqlite;Version=3;");
+            m_dbConnection = new SQLiteConnection("Data Source=" + TheDatabaseName + ".sqlite;Version=3;");
             m_dbConnection.Open();
         }
 
@@ -32,19 +36,20 @@ namespace Client.Database
                          "; create table if not exists " + tableName + " (Id INTEGER  PRIMARY KEY, TimeStamp DATETIME, ConnectedTo varchar(20))";/*yyyy-MM-dd HH:mm:ss*/
             SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
             command.ExecuteNonQuery();
+            TheTableName = tableName;
         }
 
-        public void InsertToTable(string tableName, string serviceName)
+        public void InsertToTable(string serviceName)
         {
             DateTime timeNow = DateTime.Now;
-            string sql = "insert into " + tableName + " (Id, TimeStamp, ConnectedTo) values (NULL, '" + timeNow.ToString("yyyy-MM-dd HH:mm:ss") + "', '" + serviceName + "')";
+            string sql = "insert into " + TheTableName + " (Id, TimeStamp, ConnectedTo) values (NULL, '" + timeNow.ToString("yyyy-MM-dd HH:mm:ss") + "', '" + serviceName + "')";
             SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
             command.ExecuteNonQuery();
         }
 
-        public void ListAllRecordsFromTable(string tableName)
+        public void ListAllRecordsFromTable()
         {
-            string sql = "select * from " + tableName;
+            string sql = "select * from " + TheTableName;
             SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
             SQLiteDataReader reader = command.ExecuteReader();
             Console.WriteLine("Id \t TimeStamp \t\t ConnectedTo");
@@ -53,13 +58,13 @@ namespace Client.Database
                 Console.WriteLine(reader["Id"] + "\t" + reader["TimeStamp"] + "\t" + reader["ConnectedTo"]);     
         }
 
-        public void DropDatabase(string dbName)
+        public void DropDatabase()
         {
 
-            if (File.Exists(dbName + ".sqlite"))
+            if (File.Exists(TheDatabaseName + ".sqlite"))
             {
                 m_dbConnection.Close();
-                File.Delete(dbName + ".sqlite");
+                File.Delete(TheDatabaseName + ".sqlite");
             }
         }
     }

@@ -26,7 +26,8 @@ namespace Client
         private VAProxy vaProxy;
         private RAProxy raProxy;
 
-        public ClientService(string hostAddress)
+       
+        public ClientService(string hostAddress, IDatabaseWrapper dbWrapper)
         {
             NetTcpBinding raBinding = new NetTcpBinding();
             raBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
@@ -41,7 +42,7 @@ namespace Client
             clientSessions = new HashSet<SessionData>();
             this.hostAddress = hostAddress;
             myCertificate = LoadMyCertificate(); //myCertificate = new X509Certificate2(@"D:\Fakultet\Master\Blok3\Security\WCFClient.pfx", "12345");
-            InitializeDatabase();
+            InitializeDatabase(dbWrapper);
         }
 
         public string GetSessionId()
@@ -55,16 +56,16 @@ namespace Client
             //InitializeDatabase();
         }
 
-        private void InitializeDatabase()
+        private void InitializeDatabase(IDatabaseWrapper dbWrapper)
         {
             string subjectName = WindowsIdentity.GetCurrent().Name;
             string port = hostAddress.Split(':')[2].Split('/')[0];
             string subjName = subjectName.Replace('\\', '_').Replace('-', '_');
             serviceName = subjName + port;
 
-            sqliteWrapper = new SQLiteWrapper();
-            sqliteWrapper.CreateDatabase("Connections");
-            sqliteWrapper.ConnectToDatabase("Connections");
+            sqliteWrapper = dbWrapper;
+            sqliteWrapper.CreateDatabase("Connections" + port);
+            sqliteWrapper.ConnectToDatabase();
             sqliteWrapper.CreateTable(serviceName);
         }
 
@@ -107,7 +108,7 @@ namespace Client
                 bool success = serverProxy.SendKey(res);
                 if (success)
                 {
-                    sqliteWrapper.InsertToTable(serviceName, sd.Address);
+                    sqliteWrapper.InsertToTable(sd.Address);
                 }
                 object sessionInfo = serverProxy.GetSessionInfo(hostAddress);
 
@@ -193,7 +194,7 @@ namespace Client
                 RSACryptoServiceProvider privateKey = myCertificate.PrivateKey as RSACryptoServiceProvider;
                 byte[] result = privateKey.Decrypt(key, true);
                 sd.AesAlgorithm = new AES128_ECB(result);
-                sqliteWrapper.InsertToTable(serviceName, sd.Address);
+                sqliteWrapper.InsertToTable(sd.Address);
             }
             return true;
         }

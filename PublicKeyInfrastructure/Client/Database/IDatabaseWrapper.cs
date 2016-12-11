@@ -8,11 +8,14 @@ namespace Client.Database
 {
     public interface IDatabaseWrapper
     {
+        string TheTableName { get; set; }
+        string TheDatabaseName { get; set; }
+
         void CreateDatabase(string dbName);
-        void ConnectToDatabase(string dbname);
+        void ConnectToDatabase();
         void CreateTable(string tableName);
-        void InsertToTable(string tableName, string serviceName);
-        void ListAllRecordsFromTable(string tableName);
-        void DropDatabase(string dbName);
+        void InsertToTable(string serviceName);
+        void ListAllRecordsFromTable();
+        void DropDatabase();
     }
 }
