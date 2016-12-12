@@ -84,9 +84,39 @@ namespace CertificationAuthority
             return retVal;
         }
 
-        public bool WithdrawCertificate(X509Certificate2 certificate)
+        /// <summary>
+        /// Withdraw certificate and put them in CRL(Certificate Revocation List).
+        /// Certificate can be withdrawn if his private key is compromited for example.
+        /// </summary>
+        /// <param name="certificate">Certificate</param>
+        /// <returns></returns>
+        public bool WithdrawCertificate(string subjectName)
         {
-            throw new NotImplementedException();
+            bool isCertificateWithdrawn = false;
+            X509Certificate2 activeCer = null;
+
+            subjectName = "CN=" + subjectName;
+            foreach(var item in activeCertificates)
+            {
+                if(item.SubjectName.Name.Equals(subjectName))
+                {
+                    activeCer = item;
+                    break;
+                }
+            }
+
+            if (activeCer != null)
+            {
+                activeCertificates.Remove(activeCer);
+                if (!IsCertificateInCollection(activeCer, revocationList))
+                {
+                    revocationList.Add(activeCer);
+                    isCertificateWithdrawn = true;
+                }
+
+            }
+
+            return isCertificateWithdrawn;
         }
 
         /// <summary>

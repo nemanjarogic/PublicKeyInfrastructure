@@ -20,7 +20,7 @@ namespace Common.Server
         bool IsCertificateActive(X509Certificate2 certificate);
 
         [OperationContract]
-        bool WithdrawCertificate(X509Certificate2 certificate);
+        bool WithdrawCertificate(string subjectName);
 
         [OperationContract]
         bool SaveCertificateToBackupDisc(CertificateDto certDto);
