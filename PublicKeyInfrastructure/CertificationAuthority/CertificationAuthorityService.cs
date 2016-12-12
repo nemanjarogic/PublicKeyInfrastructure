@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace CertificationAuthority
 {
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.Single)]
     public class CertificationAuthorityService : ICertificationAuthorityContract
     {
         #region Fields
@@ -88,9 +89,25 @@ namespace CertificationAuthority
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Check if specified certificate is active.
+        /// Active certificate is issued by CA and doesn't belong to CRL(Certificate Revocation List)
+        /// </summary>
+        /// <param name="certificate">Specified certificate</param>
+        /// <returns></returns>
         public bool IsCertificateActive(X509Certificate2 certificate)
         {
-            return true;
+            bool isCertificateActive = false;
+
+            if(!IsCertificateInCollection(certificate, revocationList))
+            {
+                if(IsCertificateInCollection(certificate, activeCertificates))
+                {
+                    isCertificateActive = true;
+                }
+            }
+
+            return isCertificateActive;
         }
 
         public FileStream GetFileStreamOfCertificate(string certFileName)
@@ -235,6 +252,32 @@ namespace CertificationAuthority
             }
 
             return certificate;
+        }
+
+        /// <summary>
+        /// Check does certificate belong to specifed collection
+        /// </summary>
+        /// <param name="cer">Certificate</param>
+        /// <param name="collection">Collection</param>
+        /// <returns></returns>
+        private bool IsCertificateInCollection(X509Certificate2 cer, HashSet<X509Certificate2> collection)
+        {
+            bool isCertificateInCollection = false;
+
+            foreach (var item in collection)
+            {
+                if(item.Issuer.Equals(cer.Issuer) && item.SubjectName.Name.Equals(cer.SubjectName.Name) && item.Thumbprint.Equals(cer.Thumbprint) 
+                    && item.SignatureAlgorithm.Value.Equals(cer.SignatureAlgorithm.Value) && item.SerialNumber.Equals(cer.SerialNumber) 
+                    && item.PublicKey.ToString().Equals(cer.PublicKey.ToString()) && item.NotAfter.ToLongDateString().Equals(cer.NotAfter.ToLongDateString())
+                    && item.NotBefore.ToLongDateString().Equals(cer.NotBefore.ToLongDateString()))
+                {
+                    isCertificateInCollection = true;
+                    break;
+                }
+            }
+
+
+            return isCertificateInCollection;
         }
 
         #endregion 
