@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Common.Proxy
@@ -25,14 +26,26 @@ namespace Common.Proxy
         private static string ACTIVE_SERVER_ADDRESS = null;
         private static string NON_ACTIVE_SERVER_ADDRESS = null;
 
+        private static object objLock = new object();
+
         static CAProxy()
         {
             binding = new NetTcpBinding();
             binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
+            
             addressOfHotCAHost = "net.tcp://localhost:10000/CertificationAuthority";
             addressOfBackupCAHost = "net.tcp://localhost:10001/CertificationAuthorityBACKUP";
+
+            //addressOfHotCAHost = "net.tcp://10.1.212.118:10000/CertificationAuthority";
+            //addressOfBackupCAHost = "net.tcp://localhost:10000/CertificationAuthority";
+
             ACTIVE_SERVER_ADDRESS = addressOfHotCAHost;
             NON_ACTIVE_SERVER_ADDRESS = addressOfBackupCAHost;
+
+            //TryIntegrityUpdate();
+            Task task1 = Task.Factory.StartNew(() => TryIntegrityUpdate());
+
+            Console.WriteLine("asdasdsa");
         }
 
         #endregion
@@ -56,11 +69,38 @@ namespace Common.Proxy
             ACTIVE_SERVER_ADDRESS = temp;
         }
 
+        private static void TryIntegrityUpdate()
+        {
+            while (true)
+            {
+                Thread.Sleep(2000);
+                if (CA_SERVER_STATE == EnumCAServerState.OnlyActiveOn)
+                {
+                    lock (objLock)
+                    {
+
+                        try
+                        {
+                            using (CAProxy activeProxy = new CAProxy(binding, ACTIVE_SERVER_ADDRESS))
+                            {
+                                using (CAProxy nonActiveProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
+                                {
+                                    //Task task1 = Task.Factory.StartNew(() => IntegrityUpdate(activeProxy, nonActiveProxy));
+                                    IntegrityUpdate(activeProxy, nonActiveProxy);
+                                }
+                            }
+                        }
+                        catch (EndpointNotFoundException exEndpoint)
+                        {
+
+                        }
+                    }
+                }
+            }
+        }
+
         private static bool IntegrityUpdate(CAProxy activeProxy, CAProxy nonActiveProxy)
         {
-            //TODO: OSLOBODITI INTEGRITY UPDATE
-            return false;
-
             bool retVal = false;
             CAModelDto objModel = null;
 
@@ -79,61 +119,65 @@ namespace Common.Proxy
             CertificateDto retCertDto = null;
             X509Certificate2 certificate = null;
 
-            try
+            lock (objLock)
             {
-                //try communication with ACTIVE CA server
-                using (CAProxy activeProxy = new CAProxy(binding, ACTIVE_SERVER_ADDRESS))
-                {
-                    retCertDto = activeProxy.factory.GenerateCertificate(subject, address);
-                    certificate = retCertDto.GetCert();
-                    if (certificate != null)
-                    {
-                        #region try replication to NONACTIVE CA server
-                        try
-                        {
-                            //replicate to NONACTIVE server
-                            using (CAProxy nonActiveProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
-                            {
-                                if (CA_SERVER_STATE == EnumCAServerState.BothOn)
-                                {
-                                    nonActiveProxy.factory.SaveCertificateToBackupDisc(new CertificateDto(certificate));
-                                }
-                                else if (CA_SERVER_STATE == EnumCAServerState.OnlyActiveOn)
-                                {
-                                    IntegrityUpdate(activeProxy, nonActiveProxy);
-                                    CA_SERVER_STATE = EnumCAServerState.BothOn;
-                                }
-                            }
-                        }
-                        catch (EndpointNotFoundException exNONACTIVE)
-                        {
-                            CA_SERVER_STATE = EnumCAServerState.OnlyActiveOn;
-                        }
-                        #endregion
-                    }
-                }
-            }
-            catch (EndpointNotFoundException exACTIVE)
-            {
+
                 try
                 {
-                    //try communication with NONACTIVE CA server
-                    using (CAProxy backupProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
+                    //try communication with ACTIVE CA server
+                    using (CAProxy activeProxy = new CAProxy(binding, ACTIVE_SERVER_ADDRESS))
                     {
-                        retCertDto = backupProxy.factory.GenerateCertificate(subject, address);
+                        retCertDto = activeProxy.factory.GenerateCertificate(subject, address);
                         certificate = retCertDto.GetCert();
-
-                        SwitchActiveNonActiveAddress();
-                        CA_SERVER_STATE = EnumCAServerState.OnlyActiveOn;
+                        if (certificate != null)
+                        {
+                            #region try replication to NONACTIVE CA server
+                            try
+                            {
+                                //replicate to NONACTIVE server
+                                using (CAProxy nonActiveProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
+                                {
+                                    if (CA_SERVER_STATE == EnumCAServerState.BothOn)
+                                    {
+                                        nonActiveProxy.factory.SaveCertificateToBackupDisc(new CertificateDto(certificate));
+                                    }
+                                    else if (CA_SERVER_STATE == EnumCAServerState.OnlyActiveOn)
+                                    {
+                                        IntegrityUpdate(activeProxy, nonActiveProxy);
+                                        CA_SERVER_STATE = EnumCAServerState.BothOn;
+                                    }
+                                }
+                            }
+                            catch (EndpointNotFoundException exNONACTIVE)
+                            {
+                                CA_SERVER_STATE = EnumCAServerState.OnlyActiveOn;
+                            }
+                            #endregion
+                        }
                     }
                 }
-                catch (EndpointNotFoundException exNONACTIVE)
+                catch (EndpointNotFoundException exACTIVE)
                 {
-                    Console.WriteLine("Both of CA servers not working!");
-                    CA_SERVER_STATE = EnumCAServerState.BothOff;
-                    return retCertDto;
-                }
+                    try
+                    {
+                        //try communication with NONACTIVE CA server
+                        using (CAProxy backupProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
+                        {
+                            retCertDto = backupProxy.factory.GenerateCertificate(subject, address);
+                            certificate = retCertDto.GetCert();
 
+                            SwitchActiveNonActiveAddress();
+                            CA_SERVER_STATE = EnumCAServerState.OnlyActiveOn;
+                        }
+                    }
+                    catch (EndpointNotFoundException exNONACTIVE)
+                    {
+                        Console.WriteLine("Both of CA servers not working!");
+                        CA_SERVER_STATE = EnumCAServerState.BothOff;
+                        //return retCertDto;
+                    }
+
+                }
             }
 
             return retCertDto;
@@ -149,34 +193,37 @@ namespace Common.Proxy
         {
             bool retValue = false;
 
-            try
-            {
-                //try communication with ACTIVE CA server
-                using (CAProxy activeProxy = new CAProxy(binding, ACTIVE_SERVER_ADDRESS))
-                {
-                    retValue = activeProxy.factory.IsCertificateActive(certificate);
-                }
-            }
-            catch (EndpointNotFoundException exACTIVE)
+            lock (objLock)
             {
                 try
                 {
-                    //try communication with NONACTIVE CA server
-                    using (CAProxy nonActiveProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
+                    //try communication with ACTIVE CA server
+                    using (CAProxy activeProxy = new CAProxy(binding, ACTIVE_SERVER_ADDRESS))
                     {
-                        retValue = nonActiveProxy.factory.IsCertificateActive(certificate);
-
-                        SwitchActiveNonActiveAddress();
-                        CA_SERVER_STATE = EnumCAServerState.OnlyActiveOn;
+                        retValue = activeProxy.factory.IsCertificateActive(certificate);
                     }
                 }
-                catch (EndpointNotFoundException exNONACTIVE)
+                catch (EndpointNotFoundException exACTIVE)
                 {
-                    Console.WriteLine("Both of CA servers not working!");
-                    CA_SERVER_STATE = EnumCAServerState.BothOff;
-                    return retValue;
-                }
+                    try
+                    {
+                        //try communication with NONACTIVE CA server
+                        using (CAProxy nonActiveProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
+                        {
+                            retValue = nonActiveProxy.factory.IsCertificateActive(certificate);
 
+                            SwitchActiveNonActiveAddress();
+                            CA_SERVER_STATE = EnumCAServerState.OnlyActiveOn;
+                        }
+                    }
+                    catch (EndpointNotFoundException exNONACTIVE)
+                    {
+                        Console.WriteLine("Both of CA servers not working!");
+                        CA_SERVER_STATE = EnumCAServerState.BothOff;
+                        //return retValue;
+                    }
+
+                }
             }
 
             return retValue;
