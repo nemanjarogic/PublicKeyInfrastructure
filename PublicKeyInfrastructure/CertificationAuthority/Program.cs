@@ -1,4 +1,5 @@
-﻿using Common.Server;
+﻿using Common.Proxy;
+using Common.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +42,81 @@ namespace CertificationAuthority
             ServiceHost host = new ServiceHost(typeof(CertificationAuthorityService));
             host.AddServiceEndpoint(typeof(ICertificationAuthorityContract), binding, address);
             
+
+            int menuOption = 0;
+            bool hostOpened = false;
+
             try
+            {
+        
+                while (true)
+                {
+                    #region Menu print
+                    Console.WriteLine("------------------------------------------------------------");
+                    Console.WriteLine("--MENU--");
+                    if (!hostOpened)
+                    {
+                        Console.WriteLine("1. Turn server ON");
+                    }
+                    else
+                    {
+                        Console.WriteLine("1. Turn server OFF");
+                    }
+                    Console.WriteLine("2. Withdraw certificate...");
+                    Console.WriteLine("------------------------------------------------------------");
+                    Console.Write("Insert menu option: ");
+                    menuOption = Int32.Parse(Console.ReadLine());
+                    #endregion
+
+                    if (menuOption == 1)
+                    {
+                        if (!hostOpened)
+                        {
+                            //OTVARANJE HOSTA
+                            host.Open();
+                            hostOpened = true;
+                            Console.WriteLine("CertificationAuthority is started [address: {0}].\nPress <enter> to stop ...", address);
+                        }
+                        else
+                        {
+                            //ZATVARANJE HOSTA
+                            host.Close();
+                            hostOpened = false;
+                            Console.WriteLine("Host closed [address: {0}]", address);
+                        }
+                    }
+                    else if (menuOption == 2)
+                    {
+                        //POVLACENJE SERTIFIKATA PREKO CAPROXY-A!!!
+                        string certName = null;
+                        bool succ = false;
+                        Console.WriteLine("Insert certificate name:");
+                        certName = Console.ReadLine();
+                        succ = CAProxy.WithdrawCertificate(certName);
+                        if (succ)
+                        {
+                            Console.WriteLine("Withdrawing successfull");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Withdrawing not successfull");
+                        }
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("[ERROR] {0}", e.Message);
+                Console.WriteLine("[StackTrace] {0}", e.StackTrace);
+            }
+            finally
+            {
+                host.Abort();
+                host.Close();
+            }
+
+            /*try
             {
                 host.Open();
                 Console.WriteLine("CertificationAuthority is started [address: {0}].\nPress <enter> to stop ...", address);
@@ -56,7 +131,7 @@ namespace CertificationAuthority
             {
                 host.Abort();
                 host.Close();
-            }
+            }*/
 
             mainSemaphore.Release();
         }
