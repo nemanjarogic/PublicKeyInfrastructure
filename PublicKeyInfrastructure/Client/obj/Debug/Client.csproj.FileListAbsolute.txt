@@ -94,3 +94,6 @@ C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Deb
 C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
 C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
 C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
+C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
+C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
+C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
