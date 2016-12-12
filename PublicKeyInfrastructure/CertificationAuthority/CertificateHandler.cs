@@ -227,6 +227,11 @@ namespace CertificationAuthority
                     fileName = subjectName.Trim() + fileExtension;
                 }
 
+                if(fileName.Contains("="))
+                {
+                    fileName = fileName.Split('=')[1];
+                }
+
                 File.WriteAllBytes(@"..\..\SecurityStore\" + fileName, certData);
                 isExportDone = true;
             }
