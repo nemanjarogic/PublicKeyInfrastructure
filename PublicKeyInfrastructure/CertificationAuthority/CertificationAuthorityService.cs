@@ -190,7 +190,7 @@ namespace CertificationAuthority
             CertificateHandler.ReplaceCACertificateInStore(caCertificate, param.CaCertificate.GetCert());
             caCertificate = param.CaCertificate.GetCert();
             caPrivateKey = DotNetUtilities.GetKeyPair(caCertificate.PrivateKey).Private;
-
+            CertificateHandler.ExportToFileSystem(X509ContentType.Pfx, caCertificate, caCertificate.SubjectName.Name);
 
             activeCertificates.Clear();
             //mozda i obrisati postojece sertifikate u folderu ili racunati da ce oni biti pregazeni novim fajlovima
