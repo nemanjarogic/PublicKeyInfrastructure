@@ -28,11 +28,21 @@ namespace Common.Proxy
 
         private static object objLock = new object();
 
+        #endregion
+
+        #region Constructor
+
+        private CAProxy(NetTcpBinding binding, string address)
+            : base(binding, address)
+        {
+            factory = this.CreateChannel();
+        }
+
         static CAProxy()
         {
             binding = new NetTcpBinding();
             binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
-            
+
             addressOfHotCAHost = "net.tcp://localhost:10000/CertificationAuthority";
             addressOfBackupCAHost = "net.tcp://localhost:10001/CertificationAuthorityBACKUP";
 
@@ -46,16 +56,6 @@ namespace Common.Proxy
             Task task1 = Task.Factory.StartNew(() => TryIntegrityUpdate());
 
             Console.WriteLine("asdasdsa");
-        }
-
-        #endregion
-
-        #region Constructor
-
-        private CAProxy(NetTcpBinding binding, string address)
-            : base(binding, address)
-        {
-            factory = this.CreateChannel();
         }
 
         #endregion
@@ -174,9 +174,7 @@ namespace Common.Proxy
                     {
                         Console.WriteLine("Both of CA servers not working!");
                         CA_SERVER_STATE = EnumCAServerState.BothOff;
-                        //return retCertDto;
                     }
-
                 }
             }
 
@@ -184,9 +182,43 @@ namespace Common.Proxy
         }
 
 
-        public bool WithdrawCertificate(X509Certificate2 certificate)
+        public static bool WithdrawCertificate(string subjectName)
         {
-            throw new NotImplementedException();
+            bool retValue = false;
+
+            lock(objLock)
+            {
+                try
+                {
+                    //try communication with ACTIVE CA server
+                    using (CAProxy activeProxy = new CAProxy(binding, ACTIVE_SERVER_ADDRESS))
+                    {
+                        retValue = activeProxy.factory.WithdrawCertificate(subjectName);
+                    }
+                }
+                catch (EndpointNotFoundException exACTIVE)
+                {
+                    try
+                    {
+                        //try communication with NONACTIVE CA server
+                        using (CAProxy nonActiveProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
+                        {
+                            retValue = nonActiveProxy.factory.WithdrawCertificate(subjectName);
+
+                            SwitchActiveNonActiveAddress();
+                            CA_SERVER_STATE = EnumCAServerState.OnlyActiveOn;
+                        }
+                    }
+                    catch (EndpointNotFoundException exNONACTIVE)
+                    {
+                        Console.WriteLine("Both of CA servers not working!");
+                        CA_SERVER_STATE = EnumCAServerState.BothOff;
+                    }
+
+                }
+            }
+
+            return retValue;
         }
 
         public static bool IsCertificateActive(X509Certificate2 certificate)
@@ -220,7 +252,6 @@ namespace Common.Proxy
                     {
                         Console.WriteLine("Both of CA servers not working!");
                         CA_SERVER_STATE = EnumCAServerState.BothOff;
-                        //return retValue;
                     }
 
                 }
