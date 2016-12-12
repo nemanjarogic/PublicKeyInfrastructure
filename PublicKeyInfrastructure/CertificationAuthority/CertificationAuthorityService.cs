@@ -142,6 +142,8 @@ namespace CertificationAuthority
                 retVal.ClientDict.Add(pair.Key, pair.Value);
             }
 
+            retVal.CaCertificate = new CertificateDto(caCertificate);
+
             return retVal;
         }
 
@@ -149,6 +151,16 @@ namespace CertificationAuthority
         {
             //TODO: implementirati setModel na CA servisu
             bool retVal = false;
+            
+            if (File.Exists(PFX_PATH))
+            {
+                System.IO.File.Delete(PFX_PATH);
+            }
+
+            CertificateHandler.ReplaceCACertificateInStore(caCertificate, param.CaCertificate.GetCert());
+            caCertificate = param.CaCertificate.GetCert();
+            caPrivateKey = DotNetUtilities.GetKeyPair(caCertificate.PrivateKey).Private;
+
 
             activeCertificates.Clear();
             //mozda i obrisati postojece sertifikate u folderu ili racunati da ce oni biti pregazeni novim fajlovima
