@@ -93,21 +93,11 @@ namespace CertificationAuthority
             return true;
         }
 
-        public FileStream GetFileStreamOfCertificate(string certFileName)
+        public bool SaveCertificateToBackupDisc(CertificateDto certDto)
         {
-            return new FileStream(CERT_FOLDER_PATH + @"\" + certFileName + ".pfx", FileMode.Open, FileAccess.Read);
-        }
-
-        public bool SaveCertificateToBackupDisc(X509Certificate2 certificate, FileStream stream, string certFileName)
-        {
-            //save file to disk
-            var fileStream = File.Create(CERT_FOLDER_PATH + @"\" + certFileName + ".pfx");
-            stream.Seek(0, SeekOrigin.Begin);
-            stream.CopyTo(fileStream);
-            fileStream.Close();
-
-            //add cert to list
+            X509Certificate2 certificate = certDto.GetCert();
             activeCertificates.Add(certificate);
+            CertificateHandler.ExportToFileSystem(X509ContentType.Pfx, certificate, certificate.SubjectName.Name);
 
             return true;
         }

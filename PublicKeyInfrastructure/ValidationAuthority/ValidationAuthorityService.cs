@@ -46,11 +46,6 @@ namespace ValidationAuthority
                 //TODO: ISPRAVITI USLOV DA POREDI VREMENA U CILJU PROVERE ISTEKA SERTIFIKATA
                 if (/*DateTime.Compare(DateTime.Now, certificate.NotBefore) >= 0 && DateTime.Compare(DateTime.Now, certificate.NotAfter) <= 0*/true)
                 {
-                    /*using (CAProxy caProxy = new CAProxy(binding, address))
-                    {
-                        retValue = caProxy.IsCertificateActive(certificate);
-                    }*/
-
                     retValue = CAProxy.IsCertificateActive(certificate);
                 }
                 else
