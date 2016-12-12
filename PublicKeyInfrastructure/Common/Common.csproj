@@ -50,6 +50,7 @@
     <Compile Include="Proxy\CAModelDto.cs" />
     <Compile Include="Proxy\CAProxy.cs" />
     <Compile Include="Proxy\CertificateDto.cs" />
+    <Compile Include="Proxy\ClientProxy.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

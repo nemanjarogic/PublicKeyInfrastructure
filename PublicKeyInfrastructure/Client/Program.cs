@@ -70,8 +70,9 @@ namespace Client
             }
 
             ClientProxy proxy = new ClientProxy(
-            new EndpointAddress(string.Format("net.tcp://{0}:{1}/Client", localIp, port)),
-            new NetTcpBinding(), new ClientService());
+                new EndpointAddress(string.Format("net.tcp://{0}:{1}/Client", localIp, port)),
+                new NetTcpBinding(), new ClientService()
+            );
 
             while(true)
             {
