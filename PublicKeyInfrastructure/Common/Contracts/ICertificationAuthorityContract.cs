@@ -23,10 +23,7 @@ namespace Common.Server
         bool WithdrawCertificate(X509Certificate2 certificate);
 
         [OperationContract]
-        FileStream GetFileStreamOfCertificate(string certFileName);
-
-        [OperationContract]
-        bool SaveCertificateToBackupDisc(X509Certificate2 certificate, FileStream stream, string certFileName);
+        bool SaveCertificateToBackupDisc(CertificateDto certDto);
 
         [OperationContract]
         CAModelDto GetModel();
