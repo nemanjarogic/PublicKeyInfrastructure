@@ -27,9 +27,14 @@ namespace Common.Client
         
         [OperationContract]
         CertificateDto SendCert(CertificateDto cert);
+        
         [OperationContract]
         bool SendKey(byte[] key);
+
         [OperationContract]
         object GetSessionInfo(string otherAddress);
+
+        [OperationContract]
+        void RemoveInvalidClient(string clientAddress);
     }
 }

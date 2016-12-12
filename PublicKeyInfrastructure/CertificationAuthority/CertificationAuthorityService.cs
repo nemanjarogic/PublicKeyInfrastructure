@@ -45,7 +45,7 @@ namespace CertificationAuthority
             revocationList = new HashSet<X509Certificate2>();
             clientDict = new Dictionary<string, string>();
 
-            CA_SUBJECT_NAME = "PKI_CA";
+            CA_SUBJECT_NAME = "CN=PKI_CA";
             PFX_PATH = @"..\..\SecurityStore\PKI_CA.pfx";
             PFX_PASSWORD = "123";
             CERT_FOLDER_PATH = @"..\..\SecurityStore\";

@@ -18,15 +18,16 @@ namespace Client
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Multiple)]
     public class ClientService : IClientContract
     {
-        private HashSet<SessionData> clientSessions;
+        private Dictionary<string, SessionData> clientSessions;
         private X509Certificate2 myCertificate;
         private string hostAddress;
         private string serviceName;
         private IDatabaseWrapper sqliteWrapper;
         private VAProxy vaProxy;
         private RAProxy raProxy;
+        private int tempSessionNum = 0;
+        private object objLock = new Object();
 
-       
         public ClientService(string hostAddress, IDatabaseWrapper dbWrapper)
         {
             NetTcpBinding raBinding = new NetTcpBinding();
@@ -39,22 +40,13 @@ namespace Client
             vaProxy = new VAProxy(vaAddress, vaBinding);
             raProxy = new RAProxy(raAddress, raBinding);
 
-            clientSessions = new HashSet<SessionData>();
+            clientSessions = new Dictionary<string, SessionData>();
             this.hostAddress = hostAddress;
-            myCertificate = LoadMyCertificate(); //myCertificate = new X509Certificate2(@"D:\Fakultet\Master\Blok3\Security\WCFClient.pfx", "12345");
+            myCertificate = LoadMyCertificate();
             InitializeDatabase(dbWrapper);
         }
 
-        public string GetSessionId()
-        {
-            return OperationContext.Current.SessionId;
-        }
-
-        public ClientService()
-        {
-            //myCertificate = LoadMyCertificate();
-            //InitializeDatabase();
-        }
+        public ClientService() { }
 
         private void InitializeDatabase(IDatabaseWrapper dbWrapper)
         {
@@ -71,13 +63,10 @@ namespace Client
 
         public void StartComunication(string address)
         {
-            foreach (var sessionData in clientSessions)
+            if (clientSessions.ContainsKey(address))
             {
-                if (sessionData.Address.Equals(address))
-                {
-                    Console.WriteLine("Vec je ostvarena konekcija.");
-                    return;
-                }
+                Console.WriteLine("You are already connected to client: {0}", address);
+                return;
             }
 
             NetTcpBinding binding = new NetTcpBinding();
@@ -86,75 +75,99 @@ namespace Client
             binding.OpenTimeout = new TimeSpan(0, 5, 5);
             binding.CloseTimeout = new TimeSpan(0, 5, 5);
             IClientContract serverProxy = new ClientProxy(new EndpointAddress(address), binding, this);
-            byte[] messageKey = RandomGenerateKey();
 
-            SessionData sd = new SessionData(new AES128_ECB(messageKey), serverProxy);
-            sd.Address = address;
+            byte[] sessionKey = RandomGenerateKey();
+            SessionData sd = new SessionData() { AesAlgorithm = new AES128_ECB(sessionKey), Proxy = serverProxy, Address = address };
 
-            clientSessions.Add(sd);
+            CertificateDto serverCert = serverProxy.SendCert(new CertificateDto(myCertificate));
 
+            if (serverCert == null)
+            {
+                Console.WriteLine("My certificate is not valid!");
+                return;
+            }
+
+            byte[] encryptedSessionKey = null;
             try
             {
-                CertificateDto serverCert = serverProxy.SendCert(new CertificateDto(myCertificate));
+                RSACryptoServiceProvider publicKey = (RSACryptoServiceProvider)serverCert.GetCert().PublicKey.Key;
 
-                if(serverCert == null)
+                if (publicKey != null)
                 {
-                    Console.WriteLine("Cert nije validan");
+                    encryptedSessionKey = publicKey.Encrypt(sessionKey, true);
+                }
+                else
+                {
+                    Console.WriteLine("Error, public key is null");
                     return;
                 }
-
-                RSACryptoServiceProvider publicKey = serverCert.GetCert().PublicKey.Key as RSACryptoServiceProvider;
-                byte[] res = publicKey.Encrypt(messageKey, true);
-                bool success = serverProxy.SendKey(res);
-                if (success)
-                {
-                    sqliteWrapper.InsertToTable(sd.Address);
-                }
-                object sessionInfo = serverProxy.GetSessionInfo(hostAddress);
-
-                string[] sessionId = ((string)sessionInfo).Split('|');
-                sd.CallbackSessionId = sessionId[0];
-                sd.ProxySessionId = sessionId[1];
-                clientSessions.Add(sd);
-            }
-            catch (EndpointNotFoundException)
-            {
-                Console.WriteLine("Druga strana nije aktivna");
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception: {0}", e.Message);
+                Console.WriteLine("Error: {0}", e.Message);
             }
-        }
-
-        public void CallPay(byte[] message, string address)
-        {
-            string serviceId = OperationContext.Current.SessionId;
-            foreach (SessionData sd in clientSessions)
+            bool success = serverProxy.SendKey(encryptedSessionKey);
+            if (success)
             {
-                if (sd.Address.Equals(address))
+                sqliteWrapper.InsertToTable(sd.Address);
+
+                object sessionInfo = serverProxy.GetSessionInfo(hostAddress);
+                if (sessionInfo != null)
                 {
-                    try
+                    string[] sessionId = ((string)sessionInfo).Split('|');
+                    sd.CallbackSessionId = sessionId[0];
+                    sd.ProxySessionId = sessionId[1];
+                    lock (objLock)
                     {
-                        sd.Proxy.Pay(sd.AesAlgorithm.Encrypt(message));
+                        clientSessions.Add(sd.Address, sd);
                     }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
-                    return;
                 }
             }
+            else
+            {
+                Console.WriteLine("Starting communication failed!");
+            }
         }
 
-        public byte[] RandomGenerateKey()
+        public CertificateDto SendCert(CertificateDto certDto)
         {
-            byte[] retVal = new byte[16];
-            for (int i = 0; i < 16; i++)
+            if (!vaProxy.isCertificateValidate(certDto.GetCert()))
             {
-                retVal[i] = (byte)(new Random().Next(1, 10000));
+                return null;
             }
-            return retVal;
+            IClientContract otherSide = OperationContext.Current.GetCallbackChannel<IClientContract>();
+            string callbackSession = otherSide.GetSessionId();
+            string proxySession = OperationContext.Current.SessionId;
+
+            SessionData newSd = new SessionData(null, otherSide, callbackSession, proxySession);
+            newSd.Address = string.Format("temp{0}", tempSessionNum++);
+            clientSessions.Add(newSd.Address, newSd);
+
+            return new CertificateDto(myCertificate);
+        }
+
+        public bool SendKey(byte[] key)
+        {
+            SessionData sd = GetSession(OperationContext.Current.SessionId);
+            if (sd != null)
+            {
+                try
+                {
+                    RSACryptoServiceProvider privateKey = (RSACryptoServiceProvider)myCertificate.PrivateKey;
+                    byte[] result = privateKey.Decrypt(key, true);
+                    sd.AesAlgorithm = new AES128_ECB(result);
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    lock (objLock)
+                    {
+                        clientSessions.Remove(sd.Address);
+                    }
+                    Console.WriteLine(e.Message);
+                }
+            }
+            return false;
         }
 
         public X509Certificate2 LoadMyCertificate()
@@ -168,58 +181,39 @@ namespace Client
             return retCert;
         }
 
-        public CertificateDto SendCert(CertificateDto certDto)
-        {
-            if(!vaProxy.isCertificateValidate(certDto.GetCert()))
-            {
-                return null;
-            }
-            IClientContract otherSide = OperationContext.Current.GetCallbackChannel<IClientContract>();
-            string callbackSession = otherSide.GetSessionId();
-            string proxySession = OperationContext.Current.SessionId;
-
-            /*Provjeri cert*/
-            clientSessions.Add(new SessionData(null, otherSide, callbackSession, proxySession));
-
-            return new CertificateDto(myCertificate);
-        }
-
-        public bool SendKey(byte[] key)
-        {
-            /*Ako je kljuc validan vrati true*/
-            SessionData sd = GetSession(OperationContext.Current.SessionId);
-
-            if (sd != null)
-            {
-                RSACryptoServiceProvider privateKey = myCertificate.PrivateKey as RSACryptoServiceProvider;
-                byte[] result = privateKey.Decrypt(key, true);
-                sd.AesAlgorithm = new AES128_ECB(result);
-            }
-            return true;
-        }
-
         private SessionData GetSession(string sessionId)
         {
-            foreach (SessionData sd in clientSessions)
+            foreach (var sd in clientSessions)
             {
-                if (sd.IsValidSession(sessionId))
+                if (sd.Value.IsValidSession(sessionId))
                 {
-                    return sd;
+                    return sd.Value;
                 }
             }
             return null;
+        }
+
+        public string GetSessionId()
+        {
+            return OperationContext.Current.SessionId;
         }
 
         public object GetSessionInfo(string otherAddress)
         {
             string sessionId = OperationContext.Current.SessionId;
             SessionData sd = GetSession(sessionId);
-
-            Console.WriteLine("Session is opened");
             if (sd != null)
             {
-                sd.Address = otherAddress;
+                lock (objLock)
+                {
+                    clientSessions.Remove(sd.Address);
+                    sd.Address = otherAddress;
+                    clientSessions.Add(sd.Address, sd);
+                }
                 sqliteWrapper.InsertToTable(sd.Address);
+
+                Console.WriteLine("Session is opened");
+
                 return string.Format("{0}|{1}", sd.CallbackSessionId, sd.ProxySessionId);
             }
             return null;
@@ -230,6 +224,54 @@ namespace Client
             string sessionId = OperationContext.Current.SessionId;
             SessionData sd = GetSession(sessionId);
             Console.WriteLine(sd.Address + " paid: " + System.Text.Encoding.UTF8.GetString(sd.AesAlgorithm.Decrypt(message)));
+        }
+
+        public void CallPay(byte[] message, string address)
+        {
+            SessionData session = null;
+
+            if (clientSessions.TryGetValue(address, out session))
+            {
+                try
+                {
+                    session.Proxy.Pay(session.AesAlgorithm.Encrypt(message));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+        }
+
+        public byte[] RandomGenerateKey()
+        {
+            byte[] retVal = new byte[16];
+            Random rnd = new Random(Environment.TickCount);
+            for (int i = 0; i < 16; i++)
+            {
+                retVal[i] = (byte)rnd.Next();
+            }
+            return retVal;
+        }
+
+        public void RemoveInvalidClient(string clientAddress)
+        {
+            string delClientKey = null;
+            foreach (var client in clientSessions)
+            {
+                if (client.Value.Address.Equals(clientAddress))
+                {
+                    delClientKey = client.Key;
+                    break;
+                }
+            }
+            lock (objLock)
+            {
+                if (delClientKey != null)
+                {
+                    clientSessions.Remove(delClientKey);
+                }
+            }
         }
     }
 }
