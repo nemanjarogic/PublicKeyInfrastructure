@@ -1,4 +1,5 @@
-﻿using Common.Proxy;
+﻿using Common;
+using Common.Proxy;
 using Common.Server;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Security;
@@ -51,6 +52,7 @@ namespace CertificationAuthority
             CERT_FOLDER_PATH = @"..\..\SecurityStore\";
 
             PrepareCAService();
+            Audit.WriteEvent("CertificationAuthorityService initialized.", EventLogEntryType.Information);
         }
 
         #endregion
@@ -77,6 +79,9 @@ namespace CertificationAuthority
                 {
                     activeCertificates.Add(newCertificate);
                     clientDict.Add(subject, address);
+
+                    string logMessage = "Certificate with subject name '" + subject + "' is issued by '" + CA_SUBJECT_NAME + "'";
+                    Audit.WriteEvent(logMessage, EventLogEntryType.Information);
                 }
             }
 
@@ -111,7 +116,15 @@ namespace CertificationAuthority
                 {
                     revocationList.Add(activeCer);
                     clientAddress = clientDict[subjectName];
+
+                    string logMessage = "Certificate with subject name '" + subjectName + "' is revoked.";
+                    Audit.WriteEvent(logMessage, EventLogEntryType.Information);
                 }
+            }
+            else
+            {
+                string logMessage = "Revocaton of certificate with subject name '" + subjectName + "' failed. Specified certificate isn't active.";
+                Audit.WriteEvent(logMessage, EventLogEntryType.Warning);
             }
 
             return clientAddress;
