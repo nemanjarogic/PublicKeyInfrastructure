@@ -89,16 +89,15 @@ namespace CertificationAuthority
         /// Certificate can be withdrawn if his private key is compromited for example.
         /// </summary>
         /// <param name="certificate">Certificate</param>
-        /// <returns></returns>
-        public bool WithdrawCertificate(string subjectName)
+        /// <returns>Endpoint address of client which certificate is withdrawn.</returns>
+        public string WithdrawCertificate(string subjectName)
         {
-            bool isCertificateWithdrawn = false;
+            string clientAddress = null;
             X509Certificate2 activeCer = null;
 
-            subjectName = "CN=" + subjectName;
             foreach(var item in activeCertificates)
             {
-                if(item.SubjectName.Name.Equals(subjectName))
+                if (item.SubjectName.Name.Equals("CN=" + subjectName))
                 {
                     activeCer = item;
                     break;
@@ -111,12 +110,11 @@ namespace CertificationAuthority
                 if (!IsCertificateInCollection(activeCer, revocationList))
                 {
                     revocationList.Add(activeCer);
-                    isCertificateWithdrawn = true;
+                    clientAddress = clientDict[subjectName];
                 }
-
             }
 
-            return isCertificateWithdrawn;
+            return clientAddress;
         }
 
         /// <summary>

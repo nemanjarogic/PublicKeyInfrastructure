@@ -1,4 +1,5 @@
-﻿using Common.Server;
+﻿using Client;
+using Common.Server;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -56,58 +57,6 @@ namespace Common.Proxy
             Task task1 = Task.Factory.StartNew(() => TryIntegrityUpdate());
 
             Console.WriteLine("asdasdsa");
-        }
-
-        #endregion
-
-        #region Private methods
-
-        private static void SwitchActiveNonActiveAddress()
-        {
-            string temp = NON_ACTIVE_SERVER_ADDRESS;
-            NON_ACTIVE_SERVER_ADDRESS = ACTIVE_SERVER_ADDRESS;
-            ACTIVE_SERVER_ADDRESS = temp;
-        }
-
-        private static void TryIntegrityUpdate()
-        {
-            while (true)
-            {
-                Thread.Sleep(2000);
-                if (CA_SERVER_STATE == EnumCAServerState.OnlyActiveOn)
-                {
-                    lock (objLock)
-                    {
-
-                        try
-                        {
-                            using (CAProxy activeProxy = new CAProxy(binding, ACTIVE_SERVER_ADDRESS))
-                            {
-                                using (CAProxy nonActiveProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
-                                {
-                                    //Task task1 = Task.Factory.StartNew(() => IntegrityUpdate(activeProxy, nonActiveProxy));
-                                    IntegrityUpdate(activeProxy, nonActiveProxy);
-                                }
-                            }
-                        }
-                        catch (EndpointNotFoundException exEndpoint)
-                        {
-
-                        }
-                    }
-                }
-            }
-        }
-
-        private static bool IntegrityUpdate(CAProxy activeProxy, CAProxy nonActiveProxy)
-        {
-            bool retVal = false;
-            CAModelDto objModel = null;
-
-            objModel = activeProxy.factory.GetModel();
-            retVal = nonActiveProxy.factory.SetModel(objModel);
-
-            return retVal;
         }
 
         #endregion
@@ -181,10 +130,9 @@ namespace Common.Proxy
             return retCertDto;
         }
 
-
         public static bool WithdrawCertificate(string subjectName)
         {
-            bool retValue = false;
+            string clientAddress = null;
 
             lock(objLock)
             {
@@ -193,7 +141,7 @@ namespace Common.Proxy
                     //try communication with ACTIVE CA server
                     using (CAProxy activeProxy = new CAProxy(binding, ACTIVE_SERVER_ADDRESS))
                     {
-                        retValue = activeProxy.factory.WithdrawCertificate(subjectName);
+                        clientAddress = activeProxy.factory.WithdrawCertificate(subjectName);
                     }
                 }
                 catch (EndpointNotFoundException exACTIVE)
@@ -203,7 +151,7 @@ namespace Common.Proxy
                         //try communication with NONACTIVE CA server
                         using (CAProxy nonActiveProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
                         {
-                            retValue = nonActiveProxy.factory.WithdrawCertificate(subjectName);
+                            clientAddress = nonActiveProxy.factory.WithdrawCertificate(subjectName);
 
                             SwitchActiveNonActiveAddress();
                             CA_SERVER_STATE = EnumCAServerState.OnlyActiveOn;
@@ -216,9 +164,14 @@ namespace Common.Proxy
                     }
 
                 }
+
+                if(clientAddress != null)
+                {
+                    NotifyClientsAboutCertificateWithdraw(clientAddress);
+                }
             }
 
-            return retValue;
+            return clientAddress != null;
         }
 
         public static bool IsCertificateActive(X509Certificate2 certificate)
@@ -261,6 +214,72 @@ namespace Common.Proxy
         }
 
         #endregion
+
+
+        #region Private methods
+
+        private static void SwitchActiveNonActiveAddress()
+        {
+            string temp = NON_ACTIVE_SERVER_ADDRESS;
+            NON_ACTIVE_SERVER_ADDRESS = ACTIVE_SERVER_ADDRESS;
+            ACTIVE_SERVER_ADDRESS = temp;
+        }
+
+        private static void TryIntegrityUpdate()
+        {
+            while (true)
+            {
+                Thread.Sleep(2000);
+                if (CA_SERVER_STATE == EnumCAServerState.OnlyActiveOn)
+                {
+                    lock (objLock)
+                    {
+
+                        try
+                        {
+                            using (CAProxy activeProxy = new CAProxy(binding, ACTIVE_SERVER_ADDRESS))
+                            {
+                                using (CAProxy nonActiveProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
+                                {
+                                    //Task task1 = Task.Factory.StartNew(() => IntegrityUpdate(activeProxy, nonActiveProxy));
+                                    IntegrityUpdate(activeProxy, nonActiveProxy);
+                                }
+                            }
+                        }
+                        catch (EndpointNotFoundException exEndpoint)
+                        {
+
+                        }
+                    }
+                }
+            }
+        }
+
+        private static bool IntegrityUpdate(CAProxy activeProxy, CAProxy nonActiveProxy)
+        {
+            bool retVal = false;
+            CAModelDto objModel = null;
+
+            objModel = activeProxy.factory.GetModel();
+            retVal = nonActiveProxy.factory.SetModel(objModel);
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// When client certificate is withdrawn notify him about that.
+        /// </summary>
+        /// <param name="clientAddress">Client address</param>
+        private static void NotifyClientsAboutCertificateWithdraw(string clientAddress)
+        {
+            using (ClientProxy proxy = new ClientProxy(new EndpointAddress(clientAddress), new NetTcpBinding(), null))
+            {
+                proxy.RemoveInvalidClient(null);
+            }
+        }
+
+        #endregion
+
 
         #region IDisposable methods
 
