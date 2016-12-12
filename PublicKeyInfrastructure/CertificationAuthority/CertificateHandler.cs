@@ -239,6 +239,28 @@ namespace CertificationAuthority
             return isExportDone;
         }
 
+        /// <summary>
+        /// Replace CA certificate in store.
+        /// This action can be triggered on integrity update.
+        /// </summary>
+        /// <param name="oldCert">Old certificate</param>
+        /// <param name="newCert">New certificate</param>
+        /// <returns></returns>
+        public static bool ReplaceCACertificateInStore(X509Certificate2 oldCert, X509Certificate2 newCert)
+        {
+            bool isReplaceDone = false;
+
+            if(RemoveCertificateFromStore(oldCert, StoreName.Root, StoreLocation.LocalMachine))
+            {
+                if(AddCertificateToStore(newCert, StoreName.Root, StoreLocation.LocalMachine))
+                {
+                    isReplaceDone = true;
+                }
+            }
+
+            return isReplaceDone;
+        }
+
         #endregion
 
         #region Private methods
@@ -260,7 +282,7 @@ namespace CertificationAuthority
                 X509Store store = new X509Store(st, sl);
                 store.Open(OpenFlags.ReadWrite);
                 store.Add(cert);
-
+                
                 store.Close();
                 isCertificateAdded = true;
             }
@@ -270,6 +292,34 @@ namespace CertificationAuthority
             }
 
             return isCertificateAdded;
+        }
+
+        /// <summary>
+        /// Remove certificate from store.
+        /// </summary>
+        /// <param name="cert">Certificate to remove</param>
+        /// <param name="st">Store name</param>
+        /// <param name="sl">Store location</param>
+        /// <returns></returns>
+        private static bool RemoveCertificateFromStore(X509Certificate2 cert, StoreName st, StoreLocation sl)
+        {
+            bool isCertificateRemoved = false;
+
+            try
+            {
+                X509Store store = new X509Store(st, sl);
+                store.Open(OpenFlags.ReadWrite);
+                store.Remove(cert);
+
+                store.Close();
+                isCertificateRemoved = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception on removing certificate to store. Message: " + ex.Message);
+            }
+
+            return isCertificateRemoved;
         }
 
         #endregion

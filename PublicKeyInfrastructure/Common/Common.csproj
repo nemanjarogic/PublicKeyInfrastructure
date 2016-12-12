@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Audit.cs" />
     <Compile Include="Contracts\ICertificationAuthorityContract.cs" />
     <Compile Include="Contracts\IClientContract.cs" />
     <Compile Include="Contracts\IRegistrationAuthorityContract.cs" />

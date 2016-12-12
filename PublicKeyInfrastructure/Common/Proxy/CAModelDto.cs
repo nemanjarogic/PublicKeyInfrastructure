@@ -13,6 +13,7 @@ namespace Common.Proxy
         private HashSet<CertificateDto> activeCertificates;
         private HashSet<CertificateDto> revocationList;
         private Dictionary<string, string> clientDict;
+        private CertificateDto caCertificate;
 
         #endregion
 
@@ -54,7 +55,18 @@ namespace Common.Proxy
             }
         }
 
-        #endregion
+        public CertificateDto CaCertificate
+        {
+            get
+            {
+                return caCertificate;
+            }
+            set
+            {
+                caCertificate = value;
+            }
+        }
 
+        #endregion
     }
 }
