@@ -223,7 +223,7 @@ namespace Client
         {
             string sessionId = OperationContext.Current.SessionId;
             SessionData sd = GetSession(sessionId);
-            Console.WriteLine(sd.Address + " paid: " + System.Text.Encoding.UTF8.GetString(sd.AesAlgorithm.Decrypt(message)));
+            Console.WriteLine(string.Format("From: {0}, message: {1}", sd.Address, System.Text.Encoding.UTF8.GetString(sd.AesAlgorithm.Decrypt(message))));
         }
 
         public void CallPay(byte[] message, string address)
@@ -272,6 +272,17 @@ namespace Client
                     clientSessions.Remove(delClientKey);
                 }
             }
+        }
+
+        public Dictionary<int, string> GetClients()
+        {
+            Dictionary<int, string> retVal = new Dictionary<int, string>();
+            int num = 1;
+            foreach(var key in clientSessions.Keys)
+            {
+                retVal.Add(num++, key);
+            }
+            return retVal;
         }
     }
 }

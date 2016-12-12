@@ -61,5 +61,11 @@ namespace Client
         {
             this.proxy.RemoveInvalidClient(clientAddress);
         }
+
+
+        public Dictionary<int, string> GetClients()
+        {
+            return this.proxy.GetClients();
+        }
     }
 }

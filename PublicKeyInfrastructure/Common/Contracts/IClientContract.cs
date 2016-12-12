@@ -36,5 +36,8 @@ namespace Common.Client
 
         [OperationContract]
         void RemoveInvalidClient(string clientAddress);
+
+        [OperationContract]
+        Dictionary<int, string> GetClients();
     }
 }
