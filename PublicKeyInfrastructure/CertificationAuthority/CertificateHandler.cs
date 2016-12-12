@@ -250,20 +250,15 @@ namespace CertificationAuthority
         {
             bool isReplaceDone = false;
 
-            if(RemoveCertificateFromStore(oldCert, StoreName.Root, StoreLocation.LocalMachine))
+            RemoveCertificateFromStore(oldCert, StoreName.Root, StoreLocation.LocalMachine);
+            if(AddCertificateToStore(newCert, StoreName.Root, StoreLocation.LocalMachine))
             {
-                if(AddCertificateToStore(newCert, StoreName.Root, StoreLocation.LocalMachine))
-                {
-                    isReplaceDone = true;
-                }
+                isReplaceDone = true;
             }
 
             return isReplaceDone;
         }
 
-        #endregion
-
-        #region Private methods
 
         /// <summary>
         /// Add certificate to store.
@@ -273,7 +268,7 @@ namespace CertificationAuthority
         /// <param name="st">Store name</param>
         /// <param name="sl">Store location</param>
         /// <returns></returns>
-        private static bool AddCertificateToStore(X509Certificate2 cert, StoreName st, StoreLocation sl)
+        public static bool AddCertificateToStore(X509Certificate2 cert, StoreName st, StoreLocation sl)
         {
             bool isCertificateAdded = false;
 
@@ -282,17 +277,21 @@ namespace CertificationAuthority
                 X509Store store = new X509Store(st, sl);
                 store.Open(OpenFlags.ReadWrite);
                 store.Add(cert);
-                
+
                 store.Close();
                 isCertificateAdded = true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Exception on adding certificate to store. Message: " + ex.Message);
             }
 
             return isCertificateAdded;
         }
+
+        #endregion
+
+        #region Private methods
 
         /// <summary>
         /// Remove certificate from store.

@@ -179,8 +179,7 @@ namespace CertificationAuthority
 
         public bool SetModel(CAModelDto param)
         {
-            //TODO: implementirati setModel na CA servisu
-            bool retVal = false;
+            bool retVal = true;
             
             if (File.Exists(PFX_PATH))
             {
@@ -193,18 +192,22 @@ namespace CertificationAuthority
             CertificateHandler.ExportToFileSystem(X509ContentType.Pfx, caCertificate, caCertificate.SubjectName.Name);
 
             activeCertificates.Clear();
-            //mozda i obrisati postojece sertifikate u folderu ili racunati da ce oni biti pregazeni novim fajlovima
             foreach(var cerDto in param.ActiveCertificates)
             {
                 X509Certificate2 cert = cerDto.GetCert();
                 activeCertificates.Add(cert);
                 CertificateHandler.ExportToFileSystem(X509ContentType.Pfx, cert, cert.SubjectName.Name);
+
+                string fileName = cert.SubjectName.Name.Contains("=") ? cert.SubjectName.Name.Split('=')[1] : cert.SubjectName.Name;
+                if (!File.Exists(CERT_FOLDER_PATH + cert.SubjectName.Name + fileName + ".pfx"))
+                {
+                    CertificateHandler.AddCertificateToStore(cert, StoreName.TrustedPeople, StoreLocation.LocalMachine);
+                }
             }
 
             revocationList.Clear();
             foreach (var cerDto in param.RevocationList)
             {
-                //mozda ubaciti i brisanje postojeceg sertifikata iz foldera
                 X509Certificate2 cert = cerDto.GetCert();
                 revocationList.Add(cert);
             }
@@ -215,7 +218,6 @@ namespace CertificationAuthority
                 clientDict.Add(pair.Key, pair.Value);
             }
 
-            retVal = true;
             return retVal;
         }
 
