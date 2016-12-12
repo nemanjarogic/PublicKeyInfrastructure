@@ -30,11 +30,11 @@ namespace Common
             }
         }
 
-        public static void WriteEvent(string eventMessage)
+        public static void WriteEvent(string eventMessage, EventLogEntryType eventType)
         {
             if (customLog != null)
             {
-                EventLog.WriteEntry(SourceName, eventMessage, EventLogEntryType.Information);
+                EventLog.WriteEntry(SourceName, eventMessage, eventType);
             }
             else
             {

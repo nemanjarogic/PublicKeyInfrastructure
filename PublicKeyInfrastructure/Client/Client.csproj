@@ -45,7 +45,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClientProxy.cs" />
     <Compile Include="ClientService.cs" />
     <Compile Include="Database\IDatabaseWrapper.cs" />
     <Compile Include="Database\SQLiteWrapper.cs" />
