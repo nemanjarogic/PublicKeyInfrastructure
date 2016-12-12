@@ -15,8 +15,9 @@ namespace Client
         public IClientContract Proxy { get; set; }
         public string ProxySessionId { get; set; }
         public string CallbackSessionId { get; set; }
-        public bool IsSuccessfull { get; set; }
         public string Address { get; set; }
+
+        public SessionData() { }
 
         public SessionData(AES128_ECB aesAlgorithm, IClientContract proxy)
         {

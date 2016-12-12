@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace CertificationAuthority
 {
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.Single)]
     public class CertificationAuthorityService : ICertificationAuthorityContract
     {
         #region Fields
@@ -88,26 +89,32 @@ namespace CertificationAuthority
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Check if specified certificate is active.
+        /// Active certificate is issued by CA and doesn't belong to CRL(Certificate Revocation List)
+        /// </summary>
+        /// <param name="certificate">Specified certificate</param>
+        /// <returns></returns>
         public bool IsCertificateActive(X509Certificate2 certificate)
         {
-            return true;
+            bool isCertificateActive = false;
+
+            if(!IsCertificateInCollection(certificate, revocationList))
+            {
+                if(IsCertificateInCollection(certificate, activeCertificates))
+                {
+                    isCertificateActive = true;
+                }
+            }
+
+            return isCertificateActive;
         }
 
-        public FileStream GetFileStreamOfCertificate(string certFileName)
+        public bool SaveCertificateToBackupDisc(CertificateDto certDto)
         {
-            return new FileStream(CERT_FOLDER_PATH + @"\" + certFileName + ".pfx", FileMode.Open, FileAccess.Read);
-        }
-
-        public bool SaveCertificateToBackupDisc(X509Certificate2 certificate, FileStream stream, string certFileName)
-        {
-            //save file to disk
-            var fileStream = File.Create(CERT_FOLDER_PATH + @"\" + certFileName + ".pfx");
-            stream.Seek(0, SeekOrigin.Begin);
-            stream.CopyTo(fileStream);
-            fileStream.Close();
-
-            //add cert to list
+            X509Certificate2 certificate = certDto.GetCert();
             activeCertificates.Add(certificate);
+            CertificateHandler.ExportToFileSystem(X509ContentType.Pfx, certificate, certificate.SubjectName.Name);
 
             return true;
         }
@@ -135,6 +142,8 @@ namespace CertificationAuthority
                 retVal.ClientDict.Add(pair.Key, pair.Value);
             }
 
+            retVal.CaCertificate = new CertificateDto(caCertificate);
+
             return retVal;
         }
 
@@ -142,6 +151,16 @@ namespace CertificationAuthority
         {
             //TODO: implementirati setModel na CA servisu
             bool retVal = false;
+            
+            if (File.Exists(PFX_PATH))
+            {
+                System.IO.File.Delete(PFX_PATH);
+            }
+
+            CertificateHandler.ReplaceCACertificateInStore(caCertificate, param.CaCertificate.GetCert());
+            caCertificate = param.CaCertificate.GetCert();
+            caPrivateKey = DotNetUtilities.GetKeyPair(caCertificate.PrivateKey).Private;
+
 
             activeCertificates.Clear();
             //mozda i obrisati postojece sertifikate u folderu ili racunati da ce oni biti pregazeni novim fajlovima
@@ -235,6 +254,32 @@ namespace CertificationAuthority
             }
 
             return certificate;
+        }
+
+        /// <summary>
+        /// Check does certificate belong to specifed collection
+        /// </summary>
+        /// <param name="cer">Certificate</param>
+        /// <param name="collection">Collection</param>
+        /// <returns></returns>
+        private bool IsCertificateInCollection(X509Certificate2 cer, HashSet<X509Certificate2> collection)
+        {
+            bool isCertificateInCollection = false;
+
+            foreach (var item in collection)
+            {
+                if(item.Issuer.Equals(cer.Issuer) && item.SubjectName.Name.Equals(cer.SubjectName.Name) && item.Thumbprint.Equals(cer.Thumbprint) 
+                    && item.SignatureAlgorithm.Value.Equals(cer.SignatureAlgorithm.Value) && item.SerialNumber.Equals(cer.SerialNumber) 
+                    && item.PublicKey.ToString().Equals(cer.PublicKey.ToString()) && item.NotAfter.ToLongDateString().Equals(cer.NotAfter.ToLongDateString())
+                    && item.NotBefore.ToLongDateString().Equals(cer.NotBefore.ToLongDateString()))
+                {
+                    isCertificateInCollection = true;
+                    break;
+                }
+            }
+
+
+            return isCertificateInCollection;
         }
 
         #endregion 

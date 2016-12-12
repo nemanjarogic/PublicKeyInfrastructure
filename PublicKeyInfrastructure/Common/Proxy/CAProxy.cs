@@ -29,8 +29,13 @@ namespace Common.Proxy
         {
             binding = new NetTcpBinding();
             binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
-            addressOfHotCAHost = "net.tcp://localhost:10000/CertificationAuthority";
-            addressOfBackupCAHost = "net.tcp://localhost:10001/CertificationAuthorityBACKUP";
+            
+            //addressOfHotCAHost = "net.tcp://localhost:10000/CertificationAuthority";
+            //addressOfBackupCAHost = "net.tcp://localhost:10001/CertificationAuthorityBACKUP";
+
+            addressOfHotCAHost = "net.tcp://10.1.212.118:10000/CertificationAuthority";
+            addressOfBackupCAHost = "net.tcp://localhost:10000/CertificationAuthority";
+
             ACTIVE_SERVER_ADDRESS = addressOfHotCAHost;
             NON_ACTIVE_SERVER_ADDRESS = addressOfBackupCAHost;
         }
@@ -58,9 +63,6 @@ namespace Common.Proxy
 
         private static bool IntegrityUpdate(CAProxy activeProxy, CAProxy nonActiveProxy)
         {
-            //TODO: OSLOBODITI INTEGRITY UPDATE
-            return false;
-
             bool retVal = false;
             CAModelDto objModel = null;
 
@@ -88,9 +90,6 @@ namespace Common.Proxy
                     certificate = retCertDto.GetCert();
                     if (certificate != null)
                     {
-                        //FileStream certFileStream = activeProxy.factory.GetFileStreamOfCertificate(subject);
-                        //TODO: obavezno pogledati kada zatvoriti ovaj filestream (na CAProxy-u ili na CAService-u)!!!!
-
                         #region try replication to NONACTIVE CA server
                         try
                         {
@@ -99,13 +98,10 @@ namespace Common.Proxy
                             {
                                 if (CA_SERVER_STATE == EnumCAServerState.BothOn)
                                 {
-                                    //TODO: srediti REPLICIRANJE novokreiranog sertifikata na backup CA servis
-                                    //nonActiveProxy.factory.SaveCertificateToBackupDisc(certificate, certFileStream, subject);
-                                    //mozda ovde zatvoriti file stream
+                                    nonActiveProxy.factory.SaveCertificateToBackupDisc(new CertificateDto(certificate));
                                 }
                                 else if (CA_SERVER_STATE == EnumCAServerState.OnlyActiveOn)
                                 {
-                                    //nonActiveProxy.factory.INTEGRITY_UPDATE!!!
                                     IntegrityUpdate(activeProxy, nonActiveProxy);
                                     CA_SERVER_STATE = EnumCAServerState.BothOn;
                                 }

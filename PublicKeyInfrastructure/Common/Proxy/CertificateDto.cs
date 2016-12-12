@@ -27,7 +27,9 @@ namespace Common.Proxy
         public CertificateDto(X509Certificate2 certParam)
         {
             this.cert = certParam;
-            stringPrivateKey = certParam.PrivateKey.ToXmlString(true);
+            //if (certParam != null && certParam.HasPrivateKey)
+                stringPrivateKey = certParam.PrivateKey.ToXmlString(true);
+            //stringPrivateKey = null;
         }
 
         #endregion

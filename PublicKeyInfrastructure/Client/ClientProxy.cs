@@ -56,5 +56,10 @@ namespace Client
         {
             this.proxy.CallPay(message, address);
         }
+
+        public void RemoveInvalidClient(string clientAddress)
+        {
+            this.proxy.RemoveInvalidClient(clientAddress);
+        }
     }
 }

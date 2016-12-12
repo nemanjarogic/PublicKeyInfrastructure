@@ -189,6 +189,78 @@ namespace CertificationAuthority
                 new BigInteger(1, parameters.InverseQ));
         }
 
+        /// <summary>
+        /// Export desired content to file system.
+        /// </summary>
+        /// <param name="contentType">Content type can be PFX or CERT</param>
+        /// <param name="certificate">Certificate to export</param>
+        /// <param name="subjectName">Subject name(name of file on system)</param>
+        /// <returns></returns>
+        public static bool ExportToFileSystem(X509ContentType contentType, X509Certificate2 certificate, string subjectName)
+        {
+            bool isValidType = false;
+            bool isExportDone = false;
+            byte[] certData = null;
+
+            if (contentType == X509ContentType.Pfx)
+            {
+                certData = certificate.Export(X509ContentType.Pfx, "123");
+                isValidType = true;
+            }
+            else if (contentType == X509ContentType.Cert)
+            {
+                certData = certificate.Export(X509ContentType.Cert, "123");
+                isValidType = true;
+            }
+
+            if (isValidType)
+            {
+                string fileName = String.Empty;
+                string fileExtension = contentType == X509ContentType.Pfx ? ".pfx" : ".cer";
+
+                if (subjectName.Contains("\\"))
+                {
+                    fileName = subjectName.Replace('\\', '_') + fileExtension;
+                }
+                else
+                {
+                    fileName = subjectName.Trim() + fileExtension;
+                }
+
+                if(fileName.Contains("="))
+                {
+                    fileName = fileName.Split('=')[1];
+                }
+
+                File.WriteAllBytes(@"..\..\SecurityStore\" + fileName, certData);
+                isExportDone = true;
+            }
+
+            return isExportDone;
+        }
+
+        /// <summary>
+        /// Replace CA certificate in store.
+        /// This action can be triggered on integrity update.
+        /// </summary>
+        /// <param name="oldCert">Old certificate</param>
+        /// <param name="newCert">New certificate</param>
+        /// <returns></returns>
+        public static bool ReplaceCACertificateInStore(X509Certificate2 oldCert, X509Certificate2 newCert)
+        {
+            bool isReplaceDone = false;
+
+            if(RemoveCertificateFromStore(oldCert, StoreName.Root, StoreLocation.LocalMachine))
+            {
+                if(AddCertificateToStore(newCert, StoreName.Root, StoreLocation.LocalMachine))
+                {
+                    isReplaceDone = true;
+                }
+            }
+
+            return isReplaceDone;
+        }
+
         #endregion
 
         #region Private methods
@@ -210,7 +282,7 @@ namespace CertificationAuthority
                 X509Store store = new X509Store(st, sl);
                 store.Open(OpenFlags.ReadWrite);
                 store.Add(cert);
-
+                
                 store.Close();
                 isCertificateAdded = true;
             }
@@ -223,48 +295,31 @@ namespace CertificationAuthority
         }
 
         /// <summary>
-        /// Export desired content to file system.
+        /// Remove certificate from store.
         /// </summary>
-        /// <param name="contentType">Content type can be PFX or CERT</param>
-        /// <param name="certificate">Certificate to export</param>
-        /// <param name="subjectName">Subject name(name of file on system)</param>
+        /// <param name="cert">Certificate to remove</param>
+        /// <param name="st">Store name</param>
+        /// <param name="sl">Store location</param>
         /// <returns></returns>
-        public static bool ExportToFileSystem(X509ContentType contentType, X509Certificate2 certificate , string subjectName)
+        private static bool RemoveCertificateFromStore(X509Certificate2 cert, StoreName st, StoreLocation sl)
         {
-            bool isValidType = false;
-            bool isExportDone = false;
-            byte[] certData = null;
+            bool isCertificateRemoved = false;
 
-            if(contentType == X509ContentType.Pfx)
+            try
             {
-                certData = certificate.Export(X509ContentType.Pfx, "123");
-                isValidType = true;
+                X509Store store = new X509Store(st, sl);
+                store.Open(OpenFlags.ReadWrite);
+                store.Remove(cert);
+
+                store.Close();
+                isCertificateRemoved = true;
             }
-            else if(contentType == X509ContentType.Cert)
+            catch (Exception ex)
             {
-                certData = certificate.Export(X509ContentType.Cert, "123");
-                isValidType = true;
-            }
-
-            if(isValidType)
-            {
-                string fileName = String.Empty;
-                string fileExtension = contentType == X509ContentType.Pfx ? ".pfx" : ".cer";
-
-                if (subjectName.Contains("\\"))
-                {
-                    fileName = subjectName.Replace('\\','_') + fileExtension;
-                }
-                else
-                {
-                    fileName = subjectName.Trim() + fileExtension;
-                }
-
-                File.WriteAllBytes(@"..\..\SecurityStore\" + fileName, certData);
-                isExportDone = true;
+                Console.WriteLine("Exception on removing certificate to store. Message: " + ex.Message);
             }
 
-            return isExportDone;
+            return isCertificateRemoved;
         }
 
         #endregion

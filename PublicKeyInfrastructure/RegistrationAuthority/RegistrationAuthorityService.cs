@@ -42,6 +42,8 @@ namespace RegistrationAuthority
                 string port = address.Split(':')[2].Split('/')[0];
                 subject = subject.Replace('-', '_') + port;
                 certDto = CAProxy.GenerateCertificate(subject, address);
+
+                var isActive = CAProxy.IsCertificateActive(certDto.GetCert());
             }
 
             return certDto;
