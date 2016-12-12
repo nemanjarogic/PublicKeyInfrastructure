@@ -32,11 +32,11 @@ namespace Client
         {
             NetTcpBinding raBinding = new NetTcpBinding();
             raBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
-            string raAddress = "net.tcp://localhost:10002/RegistrationAuthorityService";
+            string raAddress = "net.tcp://10.1.212.117:10002/RegistrationAuthorityService";
 
             NetTcpBinding vaBinding = new NetTcpBinding();
             vaBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
-            string vaAddress = "net.tcp://localhost:10003/ValidationAuthorityService";
+            string vaAddress = "net.tcp://10.1.212.117:10003/ValidationAuthorityService";
             vaProxy = new VAProxy(vaAddress, vaBinding);
             raProxy = new RAProxy(raAddress, raBinding);
 
