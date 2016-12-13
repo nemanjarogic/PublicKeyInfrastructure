@@ -46,7 +46,7 @@ namespace Client
             clientSessions = new Dictionary<string, SessionData>();
             this.HostAddress = hostAddress;
             InitializeDatabase(dbWrapper);
-            myCertificate = LoadMyCertificate();
+            LoadMyCertificate();
         }
 
         public ClientService() { }
@@ -173,7 +173,7 @@ namespace Client
             return false;
         }
 
-        public X509Certificate2 LoadMyCertificate()
+        public void LoadMyCertificate()
         {
             using (new OperationContextScope(raProxy.GetChannel()))
             {
@@ -185,7 +185,7 @@ namespace Client
                 certDto = raProxy.RegisterClient(HostAddress);
                 retCert = certDto.GetCert();
 
-                return retCert;
+                myCertificate = retCert;
             }
         }
 
