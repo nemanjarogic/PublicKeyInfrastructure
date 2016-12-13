@@ -35,12 +35,12 @@ namespace Client
             NetTcpBinding raBinding = new NetTcpBinding();
             raBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
             //string raAddress = "net.tcp://10.1.212.117:10002/RegistrationAuthorityService";
-            string raAddress = "net.tcp://10.1.212.117:10002/RegistrationAuthorityService";
+            string raAddress = "net.tcp://10.1.212.108:10002/RegistrationAuthorityService";
 
             NetTcpBinding vaBinding = new NetTcpBinding();
             vaBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
             //string vaAddress = "net.tcp://10.1.212.117:10003/ValidationAuthorityService";
-            string vaAddress = "net.tcp://10.1.212.117:10003/ValidationAuthorityService";
+            string vaAddress = "net.tcp://10.1.212.108:10003/ValidationAuthorityService";
             vaProxy = new VAProxy(vaAddress, vaBinding);
             raProxy = new RAProxy(raAddress, raBinding);
             clientSessions = new Dictionary<string, SessionData>();
@@ -266,7 +266,7 @@ namespace Client
         {
             //Kada PKI pogodi klijenta ciji je sertifikat istekao, 
             //on javlja svim povezanim da ga obrisu iz liste konektovanih ali prazni i svoju listu konektovanih.
-            if (clientAddress.Equals(HostAddress))
+            if (clientAddress == null)
             {
                 foreach (KeyValuePair<string, SessionData> connectedClient in clientSessions)
                 {

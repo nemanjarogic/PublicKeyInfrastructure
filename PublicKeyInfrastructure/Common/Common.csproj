@@ -32,6 +32,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>SQLite\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
@@ -41,11 +44,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AES\AES128_ECB.cs" />
+    <Compile Include="AES\AESOperations.cs" />
+    <Compile Include="AES\Decryption.cs" />
+    <Compile Include="AES\Encryption.cs" />
+    <Compile Include="AES\TestAES.cs" />
     <Compile Include="Audit.cs" />
+    <Compile Include="Client\ClientService.cs" />
+    <Compile Include="Client\RAProxy.cs" />
+    <Compile Include="Client\SessionData.cs" />
+    <Compile Include="Client\VAProxy.cs" />
     <Compile Include="Contracts\ICertificationAuthorityContract.cs" />
     <Compile Include="Contracts\IClientContract.cs" />
     <Compile Include="Contracts\IRegistrationAuthorityContract.cs" />
     <Compile Include="Contracts\IValidationAuthorityContract.cs" />
+    <Compile Include="Database\IDatabaseWrapper.cs" />
+    <Compile Include="Database\SQLiteWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Proxy\CAModelDto.cs" />
     <Compile Include="Proxy\CAProxy.cs" />

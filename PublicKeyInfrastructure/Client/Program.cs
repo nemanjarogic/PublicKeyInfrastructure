@@ -5,15 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.ServiceModel;
-using Common.Client;
 using System.Security.Principal;
 using Cryptography.AES;
-using Common.Proxy;
-using Client.Database;
 using System.Net;
 using System.Net.Sockets;
 using System.ServiceModel.Channels;
 using System.Runtime.InteropServices;
+using Client.Database;
+using Common.Client;
 
 namespace Client
 {
@@ -102,8 +101,15 @@ namespace Client
                         Console.WriteLine();
                         Console.Write("Port: ");
                         string clientPort = Console.ReadLine();
-                        proxy.StartComunication(string.Format("net.tcp://{0}:{1}/Client", ip, clientPort));
-
+                        try
+                        {
+                            proxy.StartComunication(string.Format("net.tcp://{0}:{1}/Client", ip, clientPort));
+                            Console.WriteLine("Session is opened");
+                        }
+                        catch(Exception)
+                        {
+                            Console.WriteLine("Failed to start communication");
+                        }
                         break;
 
                     case "2":

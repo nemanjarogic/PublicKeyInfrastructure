@@ -275,7 +275,7 @@ namespace Common.Proxy
         {
             try
             {
-                using (ClientProxy proxy = new ClientProxy(new EndpointAddress(clientAddress), new NetTcpBinding(), null))
+                using (ClientProxy proxy = new ClientProxy(new EndpointAddress(clientAddress), new NetTcpBinding(), new ClientService()))
                 {
                     proxy.RemoveInvalidClient(null);
                 }
