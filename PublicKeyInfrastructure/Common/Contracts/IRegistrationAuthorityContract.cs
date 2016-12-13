@@ -14,5 +14,8 @@ namespace Common.Server
     {
         [OperationContract]
         CertificateDto RegisterClient(string address);
+
+        [OperationContract]
+        bool RemoveActiveClient();
     }
 }

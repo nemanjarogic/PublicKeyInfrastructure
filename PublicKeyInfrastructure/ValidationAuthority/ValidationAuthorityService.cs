@@ -43,7 +43,6 @@ namespace ValidationAuthority
                 //------ check if it is in activeCerts list in CA
                 //------ check if it is NOT in CLR list in CA
 
-                //TODO: ISPRAVITI USLOV DA POREDI VREMENA U CILJU PROVERE ISTEKA SERTIFIKATA
                 if (DateTime.Compare(DateTime.Now, certificate.NotBefore) >= 0 && DateTime.Compare(DateTime.Now, certificate.NotAfter) <= 0)
                 {
                     retValue = CAProxy.IsCertificateActive(certificate);

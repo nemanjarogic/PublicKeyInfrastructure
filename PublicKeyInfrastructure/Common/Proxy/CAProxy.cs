@@ -140,6 +140,29 @@ namespace Common.Proxy
                     using (CAProxy activeProxy = new CAProxy(binding, ACTIVE_SERVER_ADDRESS))
                     {
                         clientAddress = activeProxy.factory.WithdrawCertificate(subjectName);
+
+                        #region try replication to NONACTIVE CA server
+                        try
+                        {
+                            //replicate to NONACTIVE server to withdraw certificate on NONACTIVE server
+                            using (CAProxy nonActiveProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
+                            {
+                                if (CA_SERVER_STATE == EnumCAServerState.BothOn)
+                                {
+                                    activeProxy.factory.WithdrawCertificate(subjectName);
+                                }
+                                else if (CA_SERVER_STATE == EnumCAServerState.OnlyActiveOn)
+                                {
+                                    IntegrityUpdate(activeProxy, nonActiveProxy);
+                                    CA_SERVER_STATE = EnumCAServerState.BothOn;
+                                }
+                            }
+                        }
+                        catch (EndpointNotFoundException exNONACTIVE)
+                        {
+                            CA_SERVER_STATE = EnumCAServerState.OnlyActiveOn;
+                        }
+                        #endregion
                     }
                 }
                 catch (EndpointNotFoundException exACTIVE)
@@ -194,6 +217,68 @@ namespace Common.Proxy
                         using (CAProxy nonActiveProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
                         {
                             retValue = nonActiveProxy.factory.IsCertificateActive(certificate);
+
+                            SwitchActiveNonActiveAddress();
+                            CA_SERVER_STATE = EnumCAServerState.OnlyActiveOn;
+                        }
+                    }
+                    catch (EndpointNotFoundException exNONACTIVE)
+                    {
+                        Console.WriteLine("Both of CA servers not working!");
+                        CA_SERVER_STATE = EnumCAServerState.BothOff;
+                    }
+
+                }
+            }
+
+            return retValue;
+        }
+
+        public static bool RemoveClientFromListOfActiveClients(string subject)
+        {
+            bool retValue = false;
+
+            lock (objLock)
+            {
+                try
+                {
+                    //try communication with ACTIVE CA server
+                    using (CAProxy activeProxy = new CAProxy(binding, ACTIVE_SERVER_ADDRESS))
+                    {
+                        retValue = activeProxy.factory.RemoveClientFromListOfActiveClients(subject);
+
+                        #region try replication to NONACTIVE CA server
+                        try
+                        {
+                            //replicate to NONACTIVE server to remove client on NONACTIVE server
+                            using (CAProxy nonActiveProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
+                            {
+                                if (CA_SERVER_STATE == EnumCAServerState.BothOn)
+                                {
+                                    activeProxy.factory.RemoveClientFromListOfActiveClients(subject);
+                                }
+                                else if (CA_SERVER_STATE == EnumCAServerState.OnlyActiveOn)
+                                {
+                                    IntegrityUpdate(activeProxy, nonActiveProxy);
+                                    CA_SERVER_STATE = EnumCAServerState.BothOn;
+                                }
+                            }
+                        }
+                        catch (EndpointNotFoundException exNONACTIVE)
+                        {
+                            CA_SERVER_STATE = EnumCAServerState.OnlyActiveOn;
+                        }
+                        #endregion
+                    }
+                }
+                catch (EndpointNotFoundException exACTIVE)
+                {
+                    try
+                    {
+                        //try communication with NONACTIVE CA server
+                        using (CAProxy nonActiveProxy = new CAProxy(binding, NON_ACTIVE_SERVER_ADDRESS))
+                        {
+                            retValue = nonActiveProxy.factory.RemoveClientFromListOfActiveClients(subject);
 
                             SwitchActiveNonActiveAddress();
                             CA_SERVER_STATE = EnumCAServerState.OnlyActiveOn;

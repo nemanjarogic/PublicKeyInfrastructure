@@ -172,7 +172,8 @@ namespace Client
                 NetTcpBinding binding = new NetTcpBinding();
                 binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
                 string address = "net.tcp://localhost:10002/RegistrationAuthorityService";
-                using (new OperationContextScope(new RAProxy(address, binding).GetChannel()))
+                var raProxy = new RAProxy(address, binding);
+                using (new OperationContextScope(raProxy.GetChannel()))
                 {
                     string myAddress = clientService.HostAddress;
                     clientService.RemoveInvalidClient(myAddress);
@@ -181,7 +182,9 @@ namespace Client
                     OperationContext.Current.OutgoingMessageHeaders.Add(aMessageHeader);
                     
                     //caProxy.RemoveMeFromList();
+                    raProxy.RemoveActiveClient();
                 }
+                raProxy.Close();
             }
             return false;
         }
