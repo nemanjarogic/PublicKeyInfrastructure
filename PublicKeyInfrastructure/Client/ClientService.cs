@@ -43,8 +43,8 @@ namespace Client
             raProxy = new RAProxy(raAddress, raBinding);
             clientSessions = new Dictionary<string, SessionData>();
             this.hostAddress = hostAddress;
-            myCertificate = LoadMyCertificate();
             InitializeDatabase(dbWrapper);
+            myCertificate = LoadMyCertificate();
         }
 
         public ClientService() { }
@@ -173,12 +173,18 @@ namespace Client
 
         public X509Certificate2 LoadMyCertificate()
         {
-            X509Certificate2 retCert = null;
-            CertificateDto certDto = null;
-            certDto = raProxy.RegisterClient(hostAddress);
-            retCert = certDto.GetCert();
+            using (new OperationContextScope(raProxy.GetChannel()))
+            {
+                MessageHeader aMessageHeader = MessageHeader.CreateHeader("UserName", "", serviceName);
+                OperationContext.Current.OutgoingMessageHeaders.Add(aMessageHeader);
 
-            return retCert;
+                X509Certificate2 retCert = null;
+                CertificateDto certDto = null;
+                certDto = raProxy.RegisterClient(hostAddress);
+                retCert = certDto.GetCert();
+
+                return retCert;
+            }
         }
 
         private SessionData GetSession(string sessionId)

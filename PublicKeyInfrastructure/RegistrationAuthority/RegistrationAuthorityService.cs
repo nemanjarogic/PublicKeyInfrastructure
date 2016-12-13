@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
+using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -38,9 +39,19 @@ namespace RegistrationAuthority
 
             if (!String.IsNullOrEmpty(address))
             {
-                string subject = ServiceSecurityContext.Current.PrimaryIdentity.Name.Replace('\\','_').Trim();
-                string port = address.Split(':')[2].Split('/')[0];
-                subject = subject.Replace('-', '_') + port;
+                MessageHeaders headers = OperationContext.Current.RequestContext.RequestMessage.Headers;
+                string subject = null;
+                if (headers.FindHeader("UserName", "") > -1)
+                {
+                    subject = headers.GetHeader<string>(headers.FindHeader("UserName", ""));
+                }
+                if(subject == null)
+                {
+                    throw new Exception("Invalid user name");
+                }
+                //string subject = ServiceSecurityContext.Current.PrimaryIdentity.Name.Replace('\\','_').Trim();
+                //string port = address.Split(':')[2].Split('/')[0];
+                //subject = subject.Replace('-', '_') + port;
                 certDto = CAProxy.GenerateCertificate(subject, address);
             }
 

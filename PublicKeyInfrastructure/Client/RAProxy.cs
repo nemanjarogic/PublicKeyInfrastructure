@@ -24,5 +24,11 @@ namespace Client
         {
             return raProxy.RegisterClient(subjectName);
         }
+
+        public IClientChannel GetChannel()
+        {
+            return raProxy as IClientChannel;
+        }
+
     }
 }
