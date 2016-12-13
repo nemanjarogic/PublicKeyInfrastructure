@@ -2,6 +2,7 @@
 using Common.Server;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -53,10 +54,7 @@ namespace Common.Proxy
             ACTIVE_SERVER_ADDRESS = addressOfHotCAHost;
             NON_ACTIVE_SERVER_ADDRESS = addressOfBackupCAHost;
 
-            //TryIntegrityUpdate();
             Task task1 = Task.Factory.StartNew(() => TryIntegrityUpdate());
-
-            Console.WriteLine("asdasdsa");
         }
 
         #endregion
