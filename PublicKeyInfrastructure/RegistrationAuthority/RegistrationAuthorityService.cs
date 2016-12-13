@@ -73,7 +73,7 @@ namespace RegistrationAuthority
                 throw new Exception("Invalid user name");
             }
 
-            
+            retVal = CAProxy.RemoveClientFromListOfActiveClients(subject);
 
             return retVal;
         }
