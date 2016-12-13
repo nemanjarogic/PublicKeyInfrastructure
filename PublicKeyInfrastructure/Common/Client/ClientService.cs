@@ -34,12 +34,12 @@ namespace Client
         {
             NetTcpBinding raBinding = new NetTcpBinding();
             raBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
-            string raAddress = "net.tcp://10.1.212.117:10002/RegistrationAuthorityService";
+            string raAddress = "net.tcp://10.1.212.108:10002/RegistrationAuthorityService";
             //string raAddress = "net.tcp://10.1.212.108:10002/RegistrationAuthorityService";
 
             NetTcpBinding vaBinding = new NetTcpBinding();
             vaBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
-            string vaAddress = "net.tcp://10.1.212.117:10003/ValidationAuthorityService";
+            string vaAddress = "net.tcp://10.1.212.108:10003/ValidationAuthorityService";
             //string vaAddress = "net.tcp://10.1.212.108:10003/ValidationAuthorityService";
             vaProxy = new VAProxy(vaAddress, vaBinding);
             raProxy = new RAProxy(raAddress, raBinding);
@@ -82,7 +82,7 @@ namespace Client
             byte[] sessionKey = RandomGenerateKey();
             SessionData sd = new SessionData() { AesAlgorithm = new AES128_ECB(sessionKey), Proxy = serverProxy, Address = address };
 
-            CertificateDto serverCert = serverProxy.SendCert(new CertificateDto(myCertificate));
+            CertificateDto serverCert = serverProxy.SendCert(new CertificateDto(myCertificate, false));
 
             if (serverCert == null)
             {
@@ -134,7 +134,7 @@ namespace Client
 
         public CertificateDto SendCert(CertificateDto certDto)
         {
-            if (!vaProxy.isCertificateValidate(certDto.GetCert()))
+            if (!vaProxy.isCertificateValidate(certDto.GetCert(false)))
             {
                 return null;
             }
