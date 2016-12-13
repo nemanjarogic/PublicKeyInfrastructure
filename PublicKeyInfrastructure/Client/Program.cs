@@ -199,6 +199,8 @@ namespace Client
                     OperationContext.Current.OutgoingMessageHeaders.Add(aMessageHeader);
                     
                     //caProxy.RemoveMeFromList();
+
+                    //clientService.Dispose();
                 }
             }
             return false;

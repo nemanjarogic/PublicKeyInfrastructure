@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace Client
 {
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Multiple)]
-    public class ClientService : IClientContract
+    public class ClientService : IClientContract, IDisposable
     {
         private Dictionary<string, SessionData> clientSessions;
         private X509Certificate2 myCertificate;
@@ -34,13 +34,13 @@ namespace Client
         {
             NetTcpBinding raBinding = new NetTcpBinding();
             raBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
-            //string raAddress = "net.tcp://10.1.212.117:10002/RegistrationAuthorityService";
-            string raAddress = "net.tcp://10.1.212.108:10002/RegistrationAuthorityService";
+            string raAddress = "net.tcp://10.1.212.117:10002/RegistrationAuthorityService";
+            //string raAddress = "net.tcp://10.1.212.108:10002/RegistrationAuthorityService";
 
             NetTcpBinding vaBinding = new NetTcpBinding();
             vaBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
-            //string vaAddress = "net.tcp://10.1.212.117:10003/ValidationAuthorityService";
-            string vaAddress = "net.tcp://10.1.212.108:10003/ValidationAuthorityService";
+            string vaAddress = "net.tcp://10.1.212.117:10003/ValidationAuthorityService";
+            //string vaAddress = "net.tcp://10.1.212.108:10003/ValidationAuthorityService";
             vaProxy = new VAProxy(vaAddress, vaBinding);
             raProxy = new RAProxy(raAddress, raBinding);
             clientSessions = new Dictionary<string, SessionData>();
@@ -296,6 +296,30 @@ namespace Client
                 retVal.Add(num++, key);
             }
             return retVal;
+        }
+
+        public void Dispose()
+        {
+            if (raProxy != null)
+            {
+                raProxy.Close();
+            }
+            if (vaProxy != null)
+            {
+                vaProxy.Close();
+            }
+            foreach(KeyValuePair<string, SessionData> connectedClient in clientSessions){
+                try
+                {
+                    (connectedClient.Value.Proxy as ClientProxy).Close();
+                }
+                catch {  }
+            }
+            if (sqliteWrapper != null)
+            {
+                sqliteWrapper.DropDatabase();
+                sqliteWrapper = null;
+            }
         }
 
         public void TestInvalidCertificate()

@@ -22,7 +22,7 @@ namespace RegistrationAuthority
             NetTcpBinding binding = new NetTcpBinding();
             binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
 
-            string address = "net.tcp://10.1.212.108:10002/RegistrationAuthorityService";
+            string address = "net.tcp://10.1.212.117:10002/RegistrationAuthorityService";
             ServiceHost host = new ServiceHost(typeof(RegistrationAuthorityService));
             host.AddServiceEndpoint(typeof(IRegistrationAuthorityContract), binding, address);
 
