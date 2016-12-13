@@ -20,29 +20,31 @@ namespace Client
     {
         private Dictionary<string, SessionData> clientSessions;
         private X509Certificate2 myCertificate;
-        private string hostAddress;
-        private string serviceName;
+        
         private IDatabaseWrapper sqliteWrapper;
         private VAProxy vaProxy;
         private RAProxy raProxy;
         private int tempSessionNum = 0;
         private object objLock = new Object();
 
+        public string ServiceName { get; set; }
+        public string HostAddress { get; set; }
+
         public ClientService(string hostAddress, IDatabaseWrapper dbWrapper)
         {
             NetTcpBinding raBinding = new NetTcpBinding();
             raBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
             //string raAddress = "net.tcp://10.1.212.117:10002/RegistrationAuthorityService";
-            string raAddress = "net.tcp://localhost:10002/RegistrationAuthorityService";
+            string raAddress = "net.tcp://10.1.212.117:10002/RegistrationAuthorityService";
 
             NetTcpBinding vaBinding = new NetTcpBinding();
             vaBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
             //string vaAddress = "net.tcp://10.1.212.117:10003/ValidationAuthorityService";
-            string vaAddress = "net.tcp://localhost:10003/ValidationAuthorityService";
+            string vaAddress = "net.tcp://10.1.212.117:10003/ValidationAuthorityService";
             vaProxy = new VAProxy(vaAddress, vaBinding);
             raProxy = new RAProxy(raAddress, raBinding);
             clientSessions = new Dictionary<string, SessionData>();
-            this.hostAddress = hostAddress;
+            this.HostAddress = hostAddress;
             InitializeDatabase(dbWrapper);
             myCertificate = LoadMyCertificate();
         }
@@ -52,14 +54,14 @@ namespace Client
         private void InitializeDatabase(IDatabaseWrapper dbWrapper)
         {
             string subjectName = WindowsIdentity.GetCurrent().Name;
-            string port = hostAddress.Split(':')[2].Split('/')[0];
+            string port = HostAddress.Split(':')[2].Split('/')[0];
             string subjName = subjectName.Replace('\\', '_').Replace('-', '_');
-            serviceName = subjName + port;
+            ServiceName = subjName + port;
 
             sqliteWrapper = dbWrapper;
             sqliteWrapper.CreateDatabase("Connections" + port);
             sqliteWrapper.ConnectToDatabase();
-            sqliteWrapper.CreateTable(serviceName);
+            sqliteWrapper.CreateTable(ServiceName);
         }
 
         public void StartComunication(string address)
@@ -112,7 +114,7 @@ namespace Client
             {
                 sqliteWrapper.InsertToTable(sd.Address);
 
-                object sessionInfo = serverProxy.GetSessionInfo(hostAddress);
+                object sessionInfo = serverProxy.GetSessionInfo(HostAddress);
                 if (sessionInfo != null)
                 {
                     string[] sessionId = ((string)sessionInfo).Split('|');
@@ -175,12 +177,12 @@ namespace Client
         {
             using (new OperationContextScope(raProxy.GetChannel()))
             {
-                MessageHeader aMessageHeader = MessageHeader.CreateHeader("UserName", "", serviceName);
+                MessageHeader aMessageHeader = MessageHeader.CreateHeader("UserName", "", ServiceName);
                 OperationContext.Current.OutgoingMessageHeaders.Add(aMessageHeader);
 
                 X509Certificate2 retCert = null;
                 CertificateDto certDto = null;
-                certDto = raProxy.RegisterClient(hostAddress);
+                certDto = raProxy.RegisterClient(HostAddress);
                 retCert = certDto.GetCert();
 
                 return retCert;
@@ -264,11 +266,11 @@ namespace Client
         {
             //Kada PKI pogodi klijenta ciji je sertifikat istekao, 
             //on javlja svim povezanim da ga obrisu iz liste konektovanih ali prazni i svoju listu konektovanih.
-            if (clientAddress.Equals(hostAddress))
+            if (clientAddress.Equals(HostAddress))
             {
                 foreach (KeyValuePair<string, SessionData> connectedClient in clientSessions)
                 {
-                    connectedClient.Value.Proxy.RemoveInvalidClient(hostAddress);
+                    connectedClient.Value.Proxy.RemoveInvalidClient(HostAddress);
                 }
                 lock (objLock)
                 {

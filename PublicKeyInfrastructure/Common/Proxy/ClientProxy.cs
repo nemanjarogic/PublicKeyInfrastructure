@@ -14,8 +14,6 @@ namespace Client
     {
         private IClientContract proxy;
 
-        public string HostAddress { get; set; }
-
         public ClientProxy(EndpointAddress address, NetTcpBinding binding, object callback)
             : base(callback, binding, address)
         {

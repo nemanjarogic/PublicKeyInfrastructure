@@ -12,15 +12,24 @@ using Common.Proxy;
 using Client.Database;
 using System.Net;
 using System.Net.Sockets;
+using System.ServiceModel.Channels;
+using System.Runtime.InteropServices;
 
 namespace Client
 {
     class Program
     {
+        public static ClientService clientService;
+
+        static ConsoleEventDelegate handler;
+        private delegate bool ConsoleEventDelegate(int eventType);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool SetConsoleCtrlHandler(ConsoleEventDelegate callback, bool add);
+
         static void Main(string[] args)
         {
-            AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
-            Console.CancelKeyPress += CurrentDomain_ProcessExit;
+            handler = new ConsoleEventDelegate(ConsoleEventCallback);
+            SetConsoleCtrlHandler(handler, true);
 
             Console.WriteLine("Client node\n\n");
             Console.Write("Host service port: ");
@@ -37,7 +46,7 @@ namespace Client
                 }
             }
 
-            if(localIp == null)
+            if (localIp == null)
             {
                 Console.WriteLine("Faield to start client");
                 Console.ReadLine();
@@ -50,7 +59,8 @@ namespace Client
             ServiceHost host = null;
             try
             {
-                host = new ServiceHost(new ClientService(address, dbWrapper));
+                clientService = new ClientService(address, dbWrapper);
+                host = new ServiceHost(clientService);
                 NetTcpBinding binding = new NetTcpBinding();
                 binding.SendTimeout = new TimeSpan(0, 5, 5);
                 binding.ReceiveTimeout = new TimeSpan(0, 5, 5);
@@ -62,7 +72,7 @@ namespace Client
                 host.Open();
                 Console.WriteLine("Service is started...");
             }
-            catch(Exception)
+            catch (Exception)
             {
                 Console.WriteLine("Faield to start client");
                 Console.ReadLine();
@@ -74,7 +84,7 @@ namespace Client
                 new NetTcpBinding(), new ClientService()
             );
 
-            while(true)
+            while (true)
             {
                 Console.WriteLine("\n1.Connect to other client");
                 Console.WriteLine("2.Send message");
@@ -84,7 +94,7 @@ namespace Client
                 string option = Console.ReadLine();
                 if (option.Equals("4")) break;
 
-                switch(option)
+                switch (option)
                 {
                     case "1":
                         Console.Write("IP address:");
@@ -100,7 +110,7 @@ namespace Client
                         Dictionary<int, string> clients = proxy.GetClients();
 
                         Console.WriteLine("===============================");
-                        foreach(var c in clients)
+                        foreach (var c in clients)
                         {
                             Console.WriteLine("{0}.{1}", c.Key, c.Value);
                         }
@@ -109,7 +119,7 @@ namespace Client
                         Console.Write("Client number: ");
                         string clientNumString = Console.ReadLine();
                         Int32 clientNum;
-                        if(Int32.TryParse(clientNumString, out clientNum))
+                        if (Int32.TryParse(clientNumString, out clientNum))
                         {
                             string clientAddr = null;
 
@@ -122,7 +132,7 @@ namespace Client
                                     proxy.CallPay(System.Text.Encoding.UTF8.GetBytes(message), clientAddr);
                                     Console.WriteLine("Message is sent successfully");
                                 }
-                                catch(Exception)
+                                catch (Exception)
                                 {
                                     Console.WriteLine("Error while sending message. Try again.");
                                 }
@@ -136,7 +146,7 @@ namespace Client
                         {
                             Console.WriteLine("Number is invalid");
                         }
-                        
+
                         break;
                     case "3":
                         Console.WriteLine("Connected Clients:");
@@ -145,20 +155,30 @@ namespace Client
                 }
             }
 
-            Console.ReadKey();
+            ConsoleEventCallback(2);
             host.Close();
-            
         }
 
-        private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        static bool ConsoleEventCallback(int eventType)
         {
-            NetTcpBinding binding = new NetTcpBinding();
-            binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
-            string address = "net.tcp://localhost:10002/RegistrationAuthorityService";
-            using (RAProxy raProxy = new RAProxy(address, binding))
+            if (clientService!=null && (eventType == 2 || eventType == 0))
             {
-                //caProxy.RemoveMeFromList();
+                NetTcpBinding binding = new NetTcpBinding();
+                binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
+                string address = "net.tcp://localhost:10002/RegistrationAuthorityService";
+                using (new OperationContextScope(new RAProxy(address, binding).GetChannel()))
+                {
+                    string myAddress = clientService.HostAddress;
+                    clientService.RemoveInvalidClient(myAddress);
+                    
+                    MessageHeader aMessageHeader = MessageHeader.CreateHeader("UserName", "", clientService.ServiceName);
+                    OperationContext.Current.OutgoingMessageHeaders.Add(aMessageHeader);
+                    
+                    //caProxy.RemoveMeFromList();
+                }
             }
+            return false;
         }
+
     }
 }
