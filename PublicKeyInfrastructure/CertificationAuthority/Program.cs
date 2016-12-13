@@ -39,9 +39,8 @@ namespace CertificationAuthority
 
             //string address = "net.tcp://localhost:10000/CertificationAuthority";
             //string address = "net.tcp://localhost:10001/CertificationAuthorityBACKUP";
-            ServiceHost host = new ServiceHost(typeof(CertificationAuthorityService));
-            host.AddServiceEndpoint(typeof(ICertificationAuthorityContract), binding, address);
-            
+
+            ServiceHost host = null;
 
             int menuOption = 0;
             bool hostOpened = false;
@@ -72,14 +71,17 @@ namespace CertificationAuthority
                     {
                         if (!hostOpened)
                         {
-                            //OTVARANJE HOSTA
+                            //open host
+                            host = new ServiceHost(typeof(CertificationAuthorityService));
+                            host.AddServiceEndpoint(typeof(ICertificationAuthorityContract), binding, address);
                             host.Open();
                             hostOpened = true;
                             Console.WriteLine("CertificationAuthority is started [address: {0}].\nPress <enter> to stop ...", address);
                         }
                         else
                         {
-                            //ZATVARANJE HOSTA
+                            //close host
+                            host.Abort();
                             host.Close();
                             hostOpened = false;
                             Console.WriteLine("Host closed [address: {0}]", address);
@@ -87,7 +89,7 @@ namespace CertificationAuthority
                     }
                     else if (menuOption == 2)
                     {
-                        //POVLACENJE SERTIFIKATA PREKO CAPROXY-A!!!
+                        //withdrawing certificate using proxy
                         string certName = null;
                         bool succ = false;
                         Console.WriteLine("Insert certificate name:");
@@ -115,23 +117,6 @@ namespace CertificationAuthority
                 host.Abort();
                 host.Close();
             }
-
-            /*try
-            {
-                host.Open();
-                Console.WriteLine("CertificationAuthority is started [address: {0}].\nPress <enter> to stop ...", address);
-                Console.ReadLine();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("[ERROR] {0}", e.Message);
-                Console.WriteLine("[StackTrace] {0}", e.StackTrace);
-            }
-            finally
-            {
-                host.Abort();
-                host.Close();
-            }*/
 
             mainSemaphore.Release();
         }
