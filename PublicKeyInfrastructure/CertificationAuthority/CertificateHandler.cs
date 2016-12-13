@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Asn1;
+﻿using Common;
+using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
@@ -12,6 +13,7 @@ using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.X509;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -259,7 +261,6 @@ namespace CertificationAuthority
             return isReplaceDone;
         }
 
-
         /// <summary>
         /// Add certificate to store.
         /// Installation of the certificate.
@@ -283,7 +284,8 @@ namespace CertificationAuthority
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception on adding certificate to store. Message: " + ex.Message);
+                string logMessage = "Exception on adding certificate to store. Certificate subject name is '" + cert.SubjectName.Name + "'Exception message: " + ex.Message;
+                Audit.WriteEvent(logMessage, EventLogEntryType.FailureAudit);
             }
 
             return isCertificateAdded;
@@ -315,7 +317,8 @@ namespace CertificationAuthority
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception on removing certificate to store. Message: " + ex.Message);
+                string logMessage = "Exception on removing certificate from store. Certificate subject name is '" + cert.SubjectName.Name + "'Exception message: " + ex.Message;
+                Audit.WriteEvent(logMessage, EventLogEntryType.FailureAudit);
             }
 
             return isCertificateRemoved;

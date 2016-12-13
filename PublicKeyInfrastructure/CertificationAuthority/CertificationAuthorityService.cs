@@ -70,6 +70,7 @@ namespace CertificationAuthority
         {
             CertificateDto retVal = null;
             X509Certificate2 newCertificate = null;
+            string logMessage = String.Empty;
 
             newCertificate = IsCertificatePublished(subject);
             if (newCertificate == null)
@@ -80,9 +81,19 @@ namespace CertificationAuthority
                     activeCertificates.Add(newCertificate);
                     clientDict.Add(subject, address);
 
-                    string logMessage = "Certificate with subject name '" + subject + "' is issued by '" + CA_SUBJECT_NAME + "'";
+                    logMessage = "Certificate with subject name '" + subject + "' is issued by '" + CA_SUBJECT_NAME + "'";
                     Audit.WriteEvent(logMessage, EventLogEntryType.Information);
                 }
+                else
+                {
+                    logMessage = "Generation of certificate with subject name '" + subject + "' failed.";
+                    Audit.WriteEvent(logMessage, EventLogEntryType.Warning);
+                }
+            }
+            else
+            {
+                logMessage = "Certificate with subject name '" + subject + "' is already published";
+                Audit.WriteEvent(logMessage, EventLogEntryType.Warning);
             }
 
             retVal = new CertificateDto(newCertificate);
@@ -117,7 +128,7 @@ namespace CertificationAuthority
                     revocationList.Add(activeCer);
                     clientAddress = clientDict[subjectName];
 
-                    string logMessage = "Certificate with subject name '" + subjectName + "' is revoked.";
+                    string logMessage = "Certificate with subject name '" + subjectName + "' is successfully revoked.";
                     Audit.WriteEvent(logMessage, EventLogEntryType.Information);
                 }
             }
@@ -151,18 +162,30 @@ namespace CertificationAuthority
             return isCertificateActive;
         }
 
+        /// <summary>
+        /// Save specified certificate to backup
+        /// </summary>
+        /// <param name="certDto">Certificate</param>
+        /// <returns></returns>
         public bool SaveCertificateToBackupDisc(CertificateDto certDto)
         {
             X509Certificate2 certificate = certDto.GetCert();
             activeCertificates.Add(certificate);
             CertificateHandler.ExportToFileSystem(X509ContentType.Pfx, certificate, certificate.SubjectName.Name);
 
+            string logMessage = "Certificate with subject name '" + certificate.SubjectName.Name + "' is saved on backup server.'";
+            Audit.WriteEvent(logMessage, EventLogEntryType.Information);
+
             return true;
         }
 
+        /// <summary>
+        /// Get active data from hot server. 
+        /// This is neccessary on integrity update.
+        /// </summary>
+        /// <returns>Active data from hot server</returns>
         public CAModelDto GetModel()
         {
-            //TODO: implementirati getModel na CA servisu 
             CAModelDto retVal = new CAModelDto();
 
             retVal.ActiveCertificates = new HashSet<CertificateDto>();
@@ -188,10 +211,17 @@ namespace CertificationAuthority
             return retVal;
         }
 
+        /// <summary>
+        /// This method is used for integrity update.
+        /// Integrity update implies data copy from hot to backup server.
+        /// </summary>
+        /// <param name="param">Data from hot server</param>
+        /// <returns></returns>
         public bool SetModel(CAModelDto param)
         {
             bool retVal = true;
             
+            // Copy and install valid CA certificate to backup server
             if (File.Exists(PFX_PATH))
             {
                 System.IO.File.Delete(PFX_PATH);
@@ -202,6 +232,7 @@ namespace CertificationAuthority
             caPrivateKey = DotNetUtilities.GetKeyPair(caCertificate.PrivateKey).Private;
             CertificateHandler.ExportToFileSystem(X509ContentType.Pfx, caCertificate, caCertificate.SubjectName.Name);
 
+            // Export and install active client certificates on backup server
             activeCertificates.Clear();
             foreach(var cerDto in param.ActiveCertificates)
             {
@@ -216,6 +247,7 @@ namespace CertificationAuthority
                 }
             }
 
+            // Set active revocation list on backup server
             revocationList.Clear();
             foreach (var cerDto in param.RevocationList)
             {
@@ -276,6 +308,8 @@ namespace CertificationAuthority
                 // if PFX for the CA isn't created generate certificate and PFX for the CA
                 caCertificate = CertificateHandler.GenerateCACertificate(CA_SUBJECT_NAME, ref caPrivateKey);
             }
+
+            Audit.WriteEvent("Certificate for the CA is successfully loaded.", EventLogEntryType.Information);
         }
 
         /// <summary>
