@@ -258,8 +258,11 @@ namespace Common.Proxy
             bool retVal = false;
             CAModelDto objModel = null;
 
-            objModel = activeProxy.factory.GetModel();
-            retVal = nonActiveProxy.factory.SetModel(objModel);
+            lock (objLock)
+            {
+                objModel = activeProxy.factory.GetModel();
+                retVal = nonActiveProxy.factory.SetModel(objModel);
+            }
 
             return retVal;
         }

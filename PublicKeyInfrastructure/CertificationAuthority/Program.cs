@@ -114,8 +114,12 @@ namespace CertificationAuthority
             }
             finally
             {
-                host.Abort();
-                host.Close();
+                if (host != null)
+                {
+
+                    host.Abort();
+                    host.Close();
+                }
             }
 
             mainSemaphore.Release();
