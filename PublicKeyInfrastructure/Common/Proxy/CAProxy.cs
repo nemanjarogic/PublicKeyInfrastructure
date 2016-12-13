@@ -258,8 +258,11 @@ namespace Common.Proxy
             bool retVal = false;
             CAModelDto objModel = null;
 
-            objModel = activeProxy.factory.GetModel();
-            retVal = nonActiveProxy.factory.SetModel(objModel);
+            lock (objLock)
+            {
+                objModel = activeProxy.factory.GetModel();
+                retVal = nonActiveProxy.factory.SetModel(objModel);
+            }
 
             return retVal;
         }
@@ -270,9 +273,17 @@ namespace Common.Proxy
         /// <param name="clientAddress">Client address</param>
         private static void NotifyClientsAboutCertificateWithdraw(string clientAddress)
         {
-            using (ClientProxy proxy = new ClientProxy(new EndpointAddress(clientAddress), new NetTcpBinding(), null))
+            try
             {
-                proxy.RemoveInvalidClient(null);
+                using (ClientProxy proxy = new ClientProxy(new EndpointAddress(clientAddress), new NetTcpBinding(), null))
+                {
+                    proxy.RemoveInvalidClient(null);
+                }
+            }
+            catch(Exception ex)
+            {
+                string logMessage = "Client not found on withdraw certificate action. Specified client address is '" + clientAddress + "'. Exception message: " + ex.Message;
+                Audit.WriteEvent(logMessage, EventLogEntryType.FailureAudit);
             }
         }
 
