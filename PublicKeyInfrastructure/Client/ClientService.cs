@@ -41,7 +41,6 @@ namespace Client
             string vaAddress = "net.tcp://localhost:10003/ValidationAuthorityService";
             vaProxy = new VAProxy(vaAddress, vaBinding);
             raProxy = new RAProxy(raAddress, raBinding);
-
             clientSessions = new Dictionary<string, SessionData>();
             this.hostAddress = hostAddress;
             myCertificate = LoadMyCertificate();
@@ -174,7 +173,6 @@ namespace Client
 
         public X509Certificate2 LoadMyCertificate()
         {
-            //retVal = raProxy.RegisterClient(hostAddress);
             X509Certificate2 retCert = null;
             CertificateDto certDto = null;
             certDto = raProxy.RegisterClient(hostAddress);
@@ -258,20 +256,25 @@ namespace Client
 
         public void RemoveInvalidClient(string clientAddress)
         {
-            string delClientKey = null;
-            foreach (var client in clientSessions)
+            //Kada PKI pogodi klijenta ciji je sertifikat istekao, 
+            //on javlja svim povezanim da ga obrisu iz liste konektovanih ali prazni i svoju listu konektovanih.
+            if (clientAddress.Equals(hostAddress))
             {
-                if (client.Value.Address.Equals(clientAddress))
+                foreach (KeyValuePair<string, SessionData> connectedClient in clientSessions)
                 {
-                    delClientKey = client.Key;
-                    break;
+                    connectedClient.Value.Proxy.RemoveInvalidClient(hostAddress);
+                }
+                lock (objLock)
+                {
+                    clientSessions.Clear();
                 }
             }
-            lock (objLock)
+            //U else ulazi kada metodu pozove proksi iz klijenta ciji je sertifikat istekao
+            else
             {
-                if (delClientKey != null)
+                lock (objLock)
                 {
-                    clientSessions.Remove(delClientKey);
+                    clientSessions.Remove(clientAddress);
                 }
             }
         }
