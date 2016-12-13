@@ -9,8 +9,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Principal;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,6 +53,7 @@ namespace CertificationAuthority
             PFX_PASSWORD = "123";
             CERT_FOLDER_PATH = @"..\..\SecurityStore\";
 
+            SetAccessControlList();
             PrepareCAService();
             Audit.WriteEvent("CertificationAuthorityService initialized.", EventLogEntryType.Information);
         }
@@ -68,6 +71,11 @@ namespace CertificationAuthority
         /// <returns></returns>
         public CertificateDto GenerateCertificate(string subject, string address)
         {
+            if(!IsUserAccessGranted(WindowsIdentity.GetCurrent().Name))
+            {
+                Audit.WriteEvent("User '" + WindowsIdentity.GetCurrent().Name + "' had denied access for method GenerateCertificate", EventLogEntryType.FailureAudit);
+            }
+
             CertificateDto retVal = null;
             X509Certificate2 newCertificate = null;
             string logMessage = String.Empty;
@@ -108,6 +116,11 @@ namespace CertificationAuthority
         /// <returns>Endpoint address of client which certificate is withdrawn.</returns>
         public string WithdrawCertificate(string subjectName)
         {
+            if (!IsUserAccessGranted(WindowsIdentity.GetCurrent().Name))
+            {
+                Audit.WriteEvent("User '" + WindowsIdentity.GetCurrent().Name + "' had denied access for method WithdrawCertificate", EventLogEntryType.FailureAudit);
+            }
+
             string clientAddress = null;
             X509Certificate2 activeCer = null;
 
@@ -149,6 +162,11 @@ namespace CertificationAuthority
         /// <returns></returns>
         public bool IsCertificateActive(X509Certificate2 certificate)
         {
+            if (!IsUserAccessGranted(WindowsIdentity.GetCurrent().Name))
+            {
+                Audit.WriteEvent("User '" + WindowsIdentity.GetCurrent().Name + "' had denied access for method IsCertificateActive", EventLogEntryType.FailureAudit);
+            }
+
             bool isCertificateActive = false;
 
             if(!IsCertificateInCollection(certificate, revocationList))
@@ -169,6 +187,11 @@ namespace CertificationAuthority
         /// <returns></returns>
         public bool SaveCertificateToBackupDisc(CertificateDto certDto)
         {
+            if (!IsUserAccessGranted(WindowsIdentity.GetCurrent().Name))
+            {
+                Audit.WriteEvent("User '" + WindowsIdentity.GetCurrent().Name + "' had denied access for method SaveCertificateToBackupDisc", EventLogEntryType.FailureAudit);
+            }
+
             X509Certificate2 certificate = certDto.GetCert();
             activeCertificates.Add(certificate);
             CertificateHandler.ExportToFileSystem(X509ContentType.Pfx, certificate, certificate.SubjectName.Name);
@@ -269,6 +292,37 @@ namespace CertificationAuthority
         #region Private methods
 
         /// <summary>
+        /// Add current user to ACL(Access contol list) for SecurityStore folder
+        /// </summary>
+        private void SetAccessControlList()
+        {
+            try
+            {
+                var accessRule = new FileSystemAccessRule(
+                                     WindowsIdentity.GetCurrent().Name,
+                                     fileSystemRights: FileSystemRights.FullControl,
+                                     inheritanceFlags: InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit,
+                                     propagationFlags: PropagationFlags.InheritOnly,
+                                     type: AccessControlType.Allow);
+
+                var directoryInfo = new DirectoryInfo(CERT_FOLDER_PATH);
+
+                // Get a DirectorySecurity object that represents the current security settings.
+                DirectorySecurity dSecurity = directoryInfo.GetAccessControl();
+
+                // Add the FileSystemAccessRule to the security settings. 
+                dSecurity.AddAccessRule(accessRule);
+
+                // Set the new access settings.
+                directoryInfo.SetAccessControl(dSecurity);
+            }
+            catch (Exception ex)
+            {
+                Audit.WriteEvent("Exception in SetAccessControlList(). Exception message: " + ex.Message, EventLogEntryType.FailureAudit);
+            }
+        }
+
+        /// <summary>
         /// Prepare certification authority service for use.
         /// Load information about CA.
         /// </summary>
@@ -277,6 +331,12 @@ namespace CertificationAuthority
             bool isPfxCreated = true;
             bool isCertFound = false;
             X509Certificate2Collection collection = new X509Certificate2Collection();
+            
+            if(!IsUserAccessGranted(WindowsIdentity.GetCurrent().Name))
+            {
+                Audit.WriteEvent("Access to SecurityStore is denied to user '" + WindowsIdentity.GetCurrent().Name + "' based on ACL content.", EventLogEntryType.Warning);
+                return;
+            }
 
             try
             {
@@ -357,6 +417,30 @@ namespace CertificationAuthority
 
 
             return isCertificateInCollection;
+        }
+
+        /// <summary>
+        /// Check does specified user has authority for access to SecurityStore folder.
+        /// </summary>
+        /// <param name="user">User</param>
+        /// <returns></returns>
+        private bool IsUserAccessGranted(string user)
+        {
+            bool accessGranted = false;
+
+            FileSecurity security = File.GetAccessControl(CERT_FOLDER_PATH);
+            AuthorizationRuleCollection acl = security.GetAccessRules(true, true, typeof(NTAccount));
+
+            foreach (FileSystemAccessRule ace in acl)
+            {
+                if (ace.IdentityReference.Value.Equals(user))
+                {
+                    accessGranted = true;
+                    break;
+                }
+            }
+
+            return accessGranted;
         }
 
         #endregion 
