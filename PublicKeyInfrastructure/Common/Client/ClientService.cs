@@ -297,5 +297,19 @@ namespace Client
             }
             return retVal;
         }
+
+        public void TestInvalidCertificate()
+        {
+            try
+            {
+                X509Certificate2 cert = new X509Certificate2(@"..\..\ClientSecurityStore\client.cer");
+                Console.WriteLine("Valid certificate: {0}", vaProxy.isCertificateValidate(cert));
+            }
+            catch
+            {
+                Console.WriteLine("Unable to load invalid certificate");
+            }
+        }
+
     }
 }

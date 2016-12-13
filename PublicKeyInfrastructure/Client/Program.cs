@@ -86,10 +86,11 @@ namespace Client
                 Console.WriteLine("2.Send message...");
                 Console.WriteLine("3.Show database...");
                 Console.WriteLine("4.Register...");
-                Console.WriteLine("5.End");
+                Console.WriteLine("5.Test invalid certificate...");
+                Console.WriteLine("6.End");
 
                 string option = Console.ReadLine();
-                if (option.Equals("5")) break;
+                if (option.Equals("6")) break;
 
                 switch (option)
                 {
@@ -170,6 +171,10 @@ namespace Client
                         clientService.LoadMyCertificate();
                         break;
                     #endregion
+
+                    case "5":
+                        clientService.TestInvalidCertificate();
+                        break;
 
                 }
             }
