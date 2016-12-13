@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace Client
 {
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Multiple)]
-    public class ClientService : IClientContract
+    public class ClientService : IClientContract, IDisposable
     {
         private Dictionary<string, SessionData> clientSessions;
         private X509Certificate2 myCertificate;
@@ -34,19 +34,19 @@ namespace Client
         {
             NetTcpBinding raBinding = new NetTcpBinding();
             raBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
-            //string raAddress = "net.tcp://10.1.212.117:10002/RegistrationAuthorityService";
             string raAddress = "net.tcp://localhost:10002/RegistrationAuthorityService";
+            //string raAddress = "net.tcp://10.1.212.108:10002/RegistrationAuthorityService";
 
             NetTcpBinding vaBinding = new NetTcpBinding();
             vaBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
-            //string vaAddress = "net.tcp://10.1.212.117:10003/ValidationAuthorityService";
             string vaAddress = "net.tcp://localhost:10003/ValidationAuthorityService";
+            //string vaAddress = "net.tcp://10.1.212.108:10003/ValidationAuthorityService";
             vaProxy = new VAProxy(vaAddress, vaBinding);
             raProxy = new RAProxy(raAddress, raBinding);
             clientSessions = new Dictionary<string, SessionData>();
             this.HostAddress = hostAddress;
             InitializeDatabase(dbWrapper);
-            myCertificate = LoadMyCertificate();
+            LoadMyCertificate();
         }
 
         public ClientService() { }
@@ -82,7 +82,7 @@ namespace Client
             byte[] sessionKey = RandomGenerateKey();
             SessionData sd = new SessionData() { AesAlgorithm = new AES128_ECB(sessionKey), Proxy = serverProxy, Address = address };
 
-            CertificateDto serverCert = serverProxy.SendCert(new CertificateDto(myCertificate));
+            CertificateDto serverCert = serverProxy.SendCert(new CertificateDto(myCertificate, false));
 
             if (serverCert == null)
             {
@@ -134,7 +134,7 @@ namespace Client
 
         public CertificateDto SendCert(CertificateDto certDto)
         {
-            if (!vaProxy.isCertificateValidate(certDto.GetCert()))
+            if (!vaProxy.isCertificateValidate(certDto.GetCert(false)))
             {
                 return null;
             }
@@ -173,7 +173,7 @@ namespace Client
             return false;
         }
 
-        public X509Certificate2 LoadMyCertificate()
+        public void LoadMyCertificate()
         {
             using (new OperationContextScope(raProxy.GetChannel()))
             {
@@ -185,7 +185,7 @@ namespace Client
                 certDto = raProxy.RegisterClient(HostAddress);
                 retCert = certDto.GetCert();
 
-                return retCert;
+                myCertificate = retCert;
             }
         }
 
@@ -297,5 +297,43 @@ namespace Client
             }
             return retVal;
         }
+
+        public void Dispose()
+        {
+            if (raProxy != null)
+            {
+                raProxy.Close();
+            }
+            if (vaProxy != null)
+            {
+                vaProxy.Close();
+            }
+            foreach(KeyValuePair<string, SessionData> connectedClient in clientSessions){
+                try
+                {
+                    (connectedClient.Value.Proxy as ClientProxy).Close();
+                }
+                catch {  }
+            }
+            if (sqliteWrapper != null)
+            {
+                sqliteWrapper.DropDatabase();
+                sqliteWrapper = null;
+            }
+        }
+
+        public void TestInvalidCertificate()
+        {
+            try
+            {
+                X509Certificate2 cert = new X509Certificate2(@"..\..\ClientSecurityStore\client.cer");
+                Console.WriteLine("Valid certificate: {0}", vaProxy.isCertificateValidate(cert));
+            }
+            catch
+            {
+                Console.WriteLine("Unable to load invalid certificate");
+            }
+        }
+
     }
 }
