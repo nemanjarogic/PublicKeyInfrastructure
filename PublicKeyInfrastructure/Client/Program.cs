@@ -104,7 +104,6 @@ namespace Client
                         try
                         {
                             clientService.StartComunication(string.Format("net.tcp://{0}:{1}/Client", ip, clientPort));
-                            Console.WriteLine("Session is opened");
                         }
                         catch(Exception)
                         {

@@ -128,6 +128,7 @@ namespace Client
                     lock (objLock)
                     {
                         clientSessions.Add(sd.Address, sd);
+                        Console.WriteLine("Session is opened");
                     }
                 }
             }

@@ -124,17 +124,27 @@ namespace Cryptography.AES
             }
             else if (key.Length != 16)
             {
-                throw new ArgumentException("Duzina kljuca treba da bude 16 bajta!");
+                throw new ArgumentException("Key length must be 16 bytes!");
             }
             sessionKey = key;
             KeyExpansion(key);
         }
 
+        /// <summary>
+        /// Data encrpytion
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns>Encrypted data</returns>
         public byte[] Encrypt(byte[] data)
         {
             return Convert(PrepareData(data));
         }
 
+        /// <summary>
+        /// Data decryption
+        /// </summary>
+        /// <param name="cipherData">Restriction for cipherData: cipherData % 16 == 0</param>
+        /// <returns></returns>
         public byte[] Decrypt(byte[] cipherData)
         {
             if (cipherData == null)
@@ -143,11 +153,16 @@ namespace Cryptography.AES
             }
             else if (cipherData.Length % 16 != 0)
             {
-                throw new ArgumentException("Neispravan format kriptovane poruke!");
+                throw new ArgumentException("Ivalid data format. cipherData.Length % 16 must be 0!");
             }
             return Convert(cipherData, encryption: false);
         }
 
+        /// <summary>
+        /// Adding zeros at the end of data array if data.Length % 16 != 0
+        /// </summary>
+        /// <param name="data">Data for encryption</param>
+        /// <returns>byte array</returns>
         public byte[] PrepareData(byte[] data)
         {
             if (data == null)
@@ -169,6 +184,12 @@ namespace Cryptography.AES
             }
         }
 
+        /// <summary>
+        /// This method is for both, encryption and decryption
+        /// </summary>
+        /// <param name="data">Data for encrypton/decryption</param>
+        /// <param name="encryption">If true then encrypt data, else decrypt</param>
+        /// <returns>Encrypted/decrypted data</returns>
         private byte[] Convert(byte[] data, bool encryption = true)
         {
             byte[] retValue = new byte[data.Length];
@@ -202,6 +223,10 @@ namespace Cryptography.AES
             return retValue;
         }
 
+        /// <summary>
+        /// Creating 11 keys, which will be used in each round of algorithm
+        /// </summary>
+        /// <param name="key">Starting key</param>
         private void KeyExpansion(byte[] key)
         {
             List<byte[]> words = new List<byte[]>(44);
@@ -258,6 +283,10 @@ namespace Cryptography.AES
             }
         }
 
+        /// <summary>
+        /// Shift elements inside word for one position left
+        /// </summary>
+        /// <param name="word">Byte array</param>
         private void RotateWord(byte[] word)
         {
             byte temp = word[0];
@@ -268,6 +297,10 @@ namespace Cryptography.AES
             word[word.Length - 1] = temp;
         }
 
+        /// <summary>
+        /// Replacing each element in word with one from SBOX lookup table
+        /// </summary>
+        /// <param name="word"></param>
         private void SubWord(byte[] word)
         {
             for (int i = 0; i < word.Length; i++)
@@ -278,6 +311,10 @@ namespace Cryptography.AES
             }
         }
 
+        /// <summary>
+        /// Help method which is used for testing
+        /// </summary>
+        /// <param name="blockData"></param>
         public static void PrintBlock(byte[][] blockData)
         {
             Console.WriteLine("====================");
