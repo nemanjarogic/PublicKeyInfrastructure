@@ -31,8 +31,8 @@ namespace Client.Database
             if (!File.Exists(dbName + ".sqlite"))
             {
                 SQLiteConnection.CreateFile(dbName + ".sqlite");
-                TheDatabaseName = dbName;
             }
+            TheDatabaseName = dbName;
         }
 
         /// <summary>

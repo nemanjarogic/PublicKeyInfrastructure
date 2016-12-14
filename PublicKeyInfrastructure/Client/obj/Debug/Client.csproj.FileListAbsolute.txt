@@ -11,7 +11,9 @@ C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\obj\Deb
 C:\Users\ftn\Documents\E5 21-2016\B3\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
 C:\Users\ftn\Documents\E5 21-2016\B3\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
 C:\Users\ftn\Documents\E5 21-2016\B3\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
 C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
 C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Common.dll
 C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
 C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
@@ -19,5 +21,13 @@ C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Deb
 C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
 C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
 C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
+C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
+C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
+C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
+C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\bin\Debug\Common.dll
+C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
+C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
+C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.xml
+C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
+C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
+C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb

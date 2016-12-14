@@ -183,14 +183,7 @@ namespace Client
                     #endregion
 
                     case "5":
-                        try
-                        {
-                            clientService.TestInvalidCertificate();
-                        }
-                        catch
-                        {
-                            PrintMessage.Print("Test failed!");
-                        }
+                        clientService.TestInvalidCertificate();
                         break;
 
                 }
@@ -200,7 +193,12 @@ namespace Client
 
             ConsoleEventCallback(2);
             host.Close();
+           
+            clientService = null;
+            host = null;
 
+
+            GC.Collect();
             Console.ReadLine();
         }
 
@@ -215,7 +213,7 @@ namespace Client
                 using (new OperationContextScope(raProxy.GetChannel()))
                 {
                     string myAddress = clientService.HostAddress;
-                    clientService.RemoveInvalidClient(myAddress);
+                    clientService.RemoveInvalidClient(null);
                     
                     MessageHeader aMessageHeader = MessageHeader.CreateHeader("UserName", "", clientService.ServiceName);
                     OperationContext.Current.OutgoingMessageHeaders.Add(aMessageHeader);
@@ -224,6 +222,7 @@ namespace Client
                     raProxy.RemoveActiveClient();
                 }
                 raProxy.Close();
+                clientService.Dispose();
             }
             return false;
         }
