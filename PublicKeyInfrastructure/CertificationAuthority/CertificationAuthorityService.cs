@@ -317,8 +317,8 @@ namespace CertificationAuthority
                 var accessRule = new FileSystemAccessRule(
                                      WindowsIdentity.GetCurrent().Name,
                                      fileSystemRights: FileSystemRights.FullControl,
-                                     inheritanceFlags: InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit,
-                                     propagationFlags: PropagationFlags.InheritOnly,
+                                     inheritanceFlags: InheritanceFlags.None,
+                                     propagationFlags: PropagationFlags.None,
                                      type: AccessControlType.Allow);
 
                 var directoryInfo = new DirectoryInfo(CERT_FOLDER_PATH);
