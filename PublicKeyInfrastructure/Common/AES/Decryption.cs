@@ -6,10 +6,19 @@ using System.Threading.Tasks;
 
 namespace Cryptography.AES
 {
+    /// <summary>
+    /// Extends AESOperations, and adds method for decryption one data block
+    /// </summary>
     public class Decryption : AESOperations
     {
         public Decryption() { }
 
+        /// <summary>
+        /// Decryption one data block
+        /// </summary>
+        /// <param name="cipherBlock"></param>
+        /// <param name="roundKeys"></param>
+        /// <returns>Decrypted data</returns>
         public byte[] DecryptBlock(ref byte[][] cipherBlock, List<byte[][]> roundKeys)
         {
             byte[] data = new byte[16];
