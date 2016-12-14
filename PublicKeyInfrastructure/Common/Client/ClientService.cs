@@ -20,7 +20,7 @@ namespace Client
     {
         private Dictionary<string, SessionData> clientSessions;
         private X509Certificate2 myCertificate;
-        
+
         private IDatabaseWrapper sqliteWrapper;
         private VAProxy vaProxy;
         private RAProxy raProxy;
@@ -66,13 +66,13 @@ namespace Client
 
         public void StartComunication(string address)
         {
-            if(this.HostAddress.Equals(address))
+            if (this.HostAddress.Equals(address))
             {
                 return;
             }
             if (clientSessions.ContainsKey(address))
             {
-                Console.WriteLine("You are already connected to client: {0}", address);
+                PrintMessage.Print(string.Format("You are already connected to client: {0}", address));
                 return;
             }
 
@@ -90,7 +90,7 @@ namespace Client
 
             if (!vaProxy.isCertificateValidate(serverCert.GetCert(false)))
             {
-                Console.WriteLine("Starting communication failed!");
+                PrintMessage.Print("Starting communication failed!");
                 return;
             }
 
@@ -105,13 +105,13 @@ namespace Client
                 }
                 else
                 {
-                    Console.WriteLine("Error, public key is null");
+                    PrintMessage.Print("Error, public key is null");
                     return;
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error: {0}", e.Message);
+                PrintMessage.Print(string.Format("Error: {0}", e.Message));
             }
             bool success = serverProxy.SendKey(encryptedSessionKey);
             if (success)
@@ -128,12 +128,13 @@ namespace Client
                     lock (objLock)
                     {
                         clientSessions.Add(sd.Address, sd);
+                        PrintMessage.Print("Session is opened");
                     }
                 }
             }
             else
             {
-                Console.WriteLine("Starting communication failed!");
+                PrintMessage.Print("Starting communication failed!");
             }
         }
 
@@ -225,10 +226,10 @@ namespace Client
                 }
                 sqliteWrapper.InsertToTable(sd.Address);
 
-                Console.WriteLine("Session is opened");
+                PrintMessage.Print("Session is opened");
 
                 string retVal = string.Format("{0}|{1}", sd.CallbackSessionId, sd.ProxySessionId);
-                return sd.AesAlgorithm.Encrypt(System.Text.Encoding.UTF8.GetBytes(retVal)); 
+                return sd.AesAlgorithm.Encrypt(System.Text.Encoding.UTF8.GetBytes(retVal));
             }
             return null;
         }
@@ -237,7 +238,7 @@ namespace Client
         {
             string sessionId = OperationContext.Current.SessionId;
             SessionData sd = GetSession(sessionId);
-            Console.WriteLine(string.Format("From: {0}, message: {1}", sd.Address, System.Text.Encoding.UTF8.GetString(sd.AesAlgorithm.Decrypt(message))));
+            PrintMessage.Print(string.Format("From: {0}, message: {1}", sd.Address, System.Text.Encoding.UTF8.GetString(sd.AesAlgorithm.Decrypt(message))));
         }
 
         public void CallPay(byte[] message, string address)
@@ -274,12 +275,12 @@ namespace Client
             //on javlja svim povezanim da ga obrisu iz liste konektovanih ali prazni i svoju listu konektovanih.
             if (clientAddress == null)
             {
-                foreach (KeyValuePair<string, SessionData> connectedClient in clientSessions)
-                {
-                    connectedClient.Value.Proxy.RemoveInvalidClient(HostAddress);
-                }
                 lock (objLock)
                 {
+                    foreach (KeyValuePair<string, SessionData> connectedClient in clientSessions)
+                    {
+                        connectedClient.Value.Proxy.RemoveInvalidClient(HostAddress);
+                    }
                     clientSessions.Clear();
                 }
             }
@@ -297,7 +298,7 @@ namespace Client
         {
             Dictionary<int, string> retVal = new Dictionary<int, string>();
             int num = 1;
-            foreach(var key in clientSessions.Keys)
+            foreach (var key in clientSessions.Keys)
             {
                 retVal.Add(num++, key);
             }
@@ -314,12 +315,13 @@ namespace Client
             {
                 vaProxy.Close();
             }
-            foreach(KeyValuePair<string, SessionData> connectedClient in clientSessions){
+            foreach (KeyValuePair<string, SessionData> connectedClient in clientSessions)
+            {
                 try
                 {
                     (connectedClient.Value.Proxy as ClientProxy).Close();
                 }
-                catch {  }
+                catch { }
             }
             if (sqliteWrapper != null)
             {
@@ -333,11 +335,11 @@ namespace Client
             try
             {
                 X509Certificate2 cert = new X509Certificate2(@"..\..\ClientSecurityStore\client.cer");
-                Console.WriteLine("Valid certificate: {0}", vaProxy.isCertificateValidate(cert));
+                PrintMessage.Print(string.Format("Valid certificate: {0}", vaProxy.isCertificateValidate(cert)));
             }
             catch
             {
-                Console.WriteLine("Unable to load invalid certificate");
+                PrintMessage.Print("Unable to load invalid certificate");
             }
         }
 

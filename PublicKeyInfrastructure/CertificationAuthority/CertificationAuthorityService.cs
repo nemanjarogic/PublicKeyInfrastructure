@@ -140,6 +140,7 @@ namespace CertificationAuthority
                 {
                     revocationList.Add(activeCer);
                     clientAddress = clientDict[subjectName];
+                    clientDict.Remove(subjectName);
 
                     string logMessage = "Certificate with subject name '" + subjectName + "' is successfully revoked.";
                     Audit.WriteEvent(logMessage, EventLogEntryType.Information);
