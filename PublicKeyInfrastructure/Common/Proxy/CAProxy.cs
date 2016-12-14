@@ -13,6 +13,10 @@ using System.Threading.Tasks;
 
 namespace Common.Proxy
 {
+    /// <summary>
+    /// This class provides communication with hot and backup CA service.
+    /// To communicate with CA servers CAProxy provides public static methods.
+    /// </summary>
     public class CAProxy : ChannelFactory<ICertificationAuthorityContract>, IDisposable
     {
         #region Fields
@@ -61,6 +65,14 @@ namespace Common.Proxy
 
         #region Public methods
 
+        /// <summary>
+        /// Generate new certificate with subject name if specific certificate does not exist or it is not active.
+        /// Try to communicate with active CA server and replicate to backup server.
+        /// If communication with active CA server is failed, communicates with backup server.
+        /// </summary>
+        /// <param name="subject">Subject name</param>
+        /// <param name="address">Subject address</param>
+        /// <returns>New or existing certificate attached to subject (client)</returns>
         public static CertificateDto GenerateCertificate(string subject, string address)
         {
             CertificateDto retCertDto = null;
@@ -128,6 +140,13 @@ namespace Common.Proxy
             return retCertDto;
         }
 
+        /// <summary>
+        /// Withdraw certificate if it exists.
+        /// Try to communicate with active CA server and replicate to backup server.
+        /// If communication with active CA server is failed, communicates with backup server.
+        /// </summary>
+        /// <param name="subjectName"></param>
+        /// <returns></returns>
         public static bool WithdrawCertificate(string subjectName)
         {
             string clientAddress = null;
@@ -195,6 +214,13 @@ namespace Common.Proxy
             return clientAddress != null;
         }
 
+        /// <summary>
+        /// Validate if certificate is active.
+        /// Try to communicate with active CA server.
+        /// If communication with active CA server is failed, communicates with backup server.
+        /// </summary>
+        /// <param name="certificate"></param>
+        /// <returns></returns>
         public static bool IsCertificateActive(X509Certificate2 certificate)
         {
             bool retValue = false;
@@ -234,6 +260,13 @@ namespace Common.Proxy
             return retValue;
         }
 
+        /// <summary>
+        /// Remove client from list of active clients when client is closed.
+        /// Try to communicate with active CA server and replicate to backup server.
+        /// If communication with active CA server is failed, communicates with backup server.
+        /// </summary>
+        /// <param name="subject"></param>
+        /// <returns></returns>
         public static bool RemoveClientFromListOfActiveClients(string subject)
         {
             bool retValue = false;
@@ -308,6 +341,9 @@ namespace Common.Proxy
             ACTIVE_SERVER_ADDRESS = temp;
         }
 
+        /// <summary>
+        /// Open active proxy and non active proxy to prepare integrity update.
+        /// </summary>
         private static void TryIntegrityUpdate()
         {
             while (true)
@@ -338,6 +374,9 @@ namespace Common.Proxy
             }
         }
 
+        /// <summary>
+        /// Gets CA model from active CA server and replicates it to non active CA server.
+        /// </summary>
         private static bool IntegrityUpdate(CAProxy activeProxy, CAProxy nonActiveProxy)
         {
             bool retVal = false;
