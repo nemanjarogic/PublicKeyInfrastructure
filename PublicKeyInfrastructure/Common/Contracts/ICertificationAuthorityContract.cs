@@ -30,5 +30,8 @@ namespace Common.Server
 
         [OperationContract]
         bool SetModel(CAModelDto param);
+
+        [OperationContract]
+        bool RemoveClientFromListOfActiveClients(string subject);
     }
 }

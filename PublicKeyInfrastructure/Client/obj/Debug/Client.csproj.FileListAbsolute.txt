@@ -1,115 +1,13 @@
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\bin\Debug\Common.dll
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.dll
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.pdb
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.xml
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Github\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
-C:\Users\ftn\Desktop\Karac\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
-C:\Users\ftn\Desktop\Karac\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
-C:\Users\ftn\Desktop\Karac\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
-C:\Users\ftn\Desktop\Karac\PublicKeyInfrastructure\Client\bin\Debug\Common.dll
-C:\Users\ftn\Desktop\Karac\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.dll
-C:\Users\ftn\Desktop\Karac\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
-C:\Users\ftn\Desktop\Karac\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
-C:\Users\ftn\Desktop\Karac\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.pdb
-C:\Users\ftn\Desktop\Karac\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.xml
-C:\Users\ftn\Desktop\Karac\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
-C:\Users\ftn\Desktop\Karac\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
-C:\Users\ftn\Desktop\Karac\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
-C:\Users\ftn\Documents\E5 21-2016\B3\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
-C:\Users\ftn\Documents\E5 21-2016\B3\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
-C:\Users\ftn\Documents\E5 21-2016\B3\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
-C:\Users\ftn\Documents\E5 21-2016\B3\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Common.dll
-C:\Users\ftn\Documents\E5 21-2016\B3\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.dll
-C:\Users\ftn\Documents\E5 21-2016\B3\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
-C:\Users\ftn\Documents\E5 21-2016\B3\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
-C:\Users\ftn\Documents\E5 21-2016\B3\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.pdb
-C:\Users\ftn\Documents\E5 21-2016\B3\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.xml
-C:\Users\ftn\Documents\E5 21-2016\B3\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
-C:\Users\ftn\Documents\E5 21-2016\B3\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
-C:\Users\ftn\Documents\E5 21-2016\B3\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
-D:\Fakultet\Master\Sigurnost i bezbednost u Smart Grid sistemima\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
-D:\Fakultet\Master\Sigurnost i bezbednost u Smart Grid sistemima\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
-D:\Fakultet\Master\Sigurnost i bezbednost u Smart Grid sistemima\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
-D:\Fakultet\Master\Sigurnost i bezbednost u Smart Grid sistemima\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
-D:\Fakultet\Master\Sigurnost i bezbednost u Smart Grid sistemima\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Common.dll
-D:\Fakultet\Master\Sigurnost i bezbednost u Smart Grid sistemima\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.dll
-D:\Fakultet\Master\Sigurnost i bezbednost u Smart Grid sistemima\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
-D:\Fakultet\Master\Sigurnost i bezbednost u Smart Grid sistemima\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
-D:\Fakultet\Master\Sigurnost i bezbednost u Smart Grid sistemima\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.pdb
-D:\Fakultet\Master\Sigurnost i bezbednost u Smart Grid sistemima\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.xml
-D:\Fakultet\Master\Sigurnost i bezbednost u Smart Grid sistemima\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
-D:\Fakultet\Master\Sigurnost i bezbednost u Smart Grid sistemima\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
-D:\miki_zadaci\MASTER_PSI\blok03\projekatNOVO\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
-D:\miki_zadaci\MASTER_PSI\blok03\projekatNOVO\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
-D:\miki_zadaci\MASTER_PSI\blok03\projekatNOVO\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
-D:\miki_zadaci\MASTER_PSI\blok03\projekatNOVO\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Common.dll
-D:\miki_zadaci\MASTER_PSI\blok03\projekatNOVO\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.dll
-D:\miki_zadaci\MASTER_PSI\blok03\projekatNOVO\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
-D:\miki_zadaci\MASTER_PSI\blok03\projekatNOVO\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
-D:\miki_zadaci\MASTER_PSI\blok03\projekatNOVO\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.pdb
-D:\miki_zadaci\MASTER_PSI\blok03\projekatNOVO\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.xml
-D:\miki_zadaci\MASTER_PSI\blok03\projekatNOVO\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
-D:\miki_zadaci\MASTER_PSI\blok03\projekatNOVO\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
-D:\miki_zadaci\MASTER_PSI\blok03\projekatNOVO\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
-C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
-C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
-C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
-C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\bin\Debug\Common.dll
-C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.dll
-C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
-C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
-C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.pdb
-C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.xml
-C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
-C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
-C:\Users\Pepi5\Desktop\Projekat\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
-D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
-D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
-D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
-D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Common.dll
-D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.dll
-D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
-D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
-D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.pdb
-D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.xml
-D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
-D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
-D:\Fakultet\Master\Blok3\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
 C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
 C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
 C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
 C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Common.dll
-C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.dll
 C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
 C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
-C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.pdb
 C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.xml
 C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
 C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
 C:\e5_18_2016\BLOK_03\projekat\PKI_system\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
-C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
-C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
-C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Gihub\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Gihub\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Gihub\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Gihub\PublicKeyInfrastructure\Client\bin\Debug\Common.dll
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Gihub\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.dll
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Gihub\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Gihub\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Gihub\PublicKeyInfrastructure\Client\bin\Debug\Cryptography.pdb
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Gihub\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.xml
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Gihub\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Gihub\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Gihub\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
-C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
 C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Client.exe.config
 C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
 C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
@@ -117,12 +15,6 @@ C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Deb
 C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
 C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
 C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.xml
+C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
 C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.exe
 C:\Users\ftn\Desktop\SIBUSGS\Projekat\Git\PublicKeyInfrastructure\Client\obj\Debug\Client.pdb
-C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\bin\Debug\Client.exe
-C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\bin\Debug\Client.pdb
-C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\bin\Debug\Common.dll
-C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.dll
-C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\bin\Debug\Common.pdb
-C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\bin\Debug\System.Data.SQLite.xml
-C:\Users\ftn\Desktop\stefan\PublicKeyInfrastructure\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache

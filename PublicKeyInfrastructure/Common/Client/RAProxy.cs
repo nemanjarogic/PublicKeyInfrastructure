@@ -25,6 +25,11 @@ namespace Client
             return raProxy.RegisterClient(subjectName);
         }
 
+        public bool RemoveActiveClient()
+        {
+            return raProxy.RemoveActiveClient();
+        }
+
         public IClientChannel GetChannel()
         {
             return raProxy as IClientChannel;

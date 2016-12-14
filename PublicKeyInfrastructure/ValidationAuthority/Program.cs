@@ -20,7 +20,7 @@ namespace ValidationAuthority
             NetTcpBinding binding = new NetTcpBinding();
             binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
 
-            string address = "net.tcp://10.1.212.108:10003/ValidationAuthorityService";
+            string address = "net.tcp://localhost:10003/ValidationAuthorityService";
             ServiceHost host = new ServiceHost(typeof(ValidationAuthorityService));
             host.AddServiceEndpoint(typeof(IValidationAuthorityContract), binding, address);
 

@@ -34,12 +34,12 @@ namespace Client
         {
             NetTcpBinding raBinding = new NetTcpBinding();
             raBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
-            string raAddress = "net.tcp://10.1.212.108:10002/RegistrationAuthorityService";
+            string raAddress = "net.tcp://localhost:10002/RegistrationAuthorityService";
             //string raAddress = "net.tcp://10.1.212.108:10002/RegistrationAuthorityService";
 
             NetTcpBinding vaBinding = new NetTcpBinding();
             vaBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
-            string vaAddress = "net.tcp://10.1.212.108:10003/ValidationAuthorityService";
+            string vaAddress = "net.tcp://localhost:10003/ValidationAuthorityService";
             //string vaAddress = "net.tcp://10.1.212.108:10003/ValidationAuthorityService";
             vaProxy = new VAProxy(vaAddress, vaBinding);
             raProxy = new RAProxy(raAddress, raBinding);
@@ -66,6 +66,10 @@ namespace Client
 
         public void StartComunication(string address)
         {
+            if(this.HostAddress.Equals(address))
+            {
+                return;
+            }
             if (clientSessions.ContainsKey(address))
             {
                 Console.WriteLine("You are already connected to client: {0}", address);
@@ -84,16 +88,16 @@ namespace Client
 
             CertificateDto serverCert = serverProxy.SendCert(new CertificateDto(myCertificate, false));
 
-            if (serverCert == null)
+            if (!vaProxy.isCertificateValidate(serverCert.GetCert(false)))
             {
-                Console.WriteLine("My certificate is not valid!");
+                Console.WriteLine("Starting communication failed!");
                 return;
             }
 
             byte[] encryptedSessionKey = null;
             try
             {
-                RSACryptoServiceProvider publicKey = (RSACryptoServiceProvider)serverCert.GetCert().PublicKey.Key;
+                RSACryptoServiceProvider publicKey = (RSACryptoServiceProvider)serverCert.GetCert(false).PublicKey.Key;
 
                 if (publicKey != null)
                 {
@@ -117,9 +121,10 @@ namespace Client
                 object sessionInfo = serverProxy.GetSessionInfo(HostAddress);
                 if (sessionInfo != null)
                 {
-                    string[] sessionId = ((string)sessionInfo).Split('|');
-                    sd.CallbackSessionId = sessionId[0];
-                    sd.ProxySessionId = sessionId[1];
+                    string sessionId = System.Text.Encoding.UTF8.GetString(sd.AesAlgorithm.Decrypt((byte[])sessionInfo)).Trim();
+                    string[] sessionIdSplit = sessionId.Split('|');
+                    sd.CallbackSessionId = sessionIdSplit[0];
+                    sd.ProxySessionId = sessionIdSplit[1];
                     lock (objLock)
                     {
                         clientSessions.Add(sd.Address, sd);
@@ -146,7 +151,7 @@ namespace Client
             newSd.Address = string.Format("temp{0}", tempSessionNum++);
             clientSessions.Add(newSd.Address, newSd);
 
-            return new CertificateDto(myCertificate);
+            return new CertificateDto(myCertificate, false);
         }
 
         public bool SendKey(byte[] key)
@@ -222,7 +227,8 @@ namespace Client
 
                 Console.WriteLine("Session is opened");
 
-                return string.Format("{0}|{1}", sd.CallbackSessionId, sd.ProxySessionId);
+                string retVal = string.Format("{0}|{1}", sd.CallbackSessionId, sd.ProxySessionId);
+                return sd.AesAlgorithm.Encrypt(System.Text.Encoding.UTF8.GetBytes(retVal)); 
             }
             return null;
         }

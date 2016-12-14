@@ -287,6 +287,22 @@ namespace CertificationAuthority
             return retVal;
         }
 
+        /// <summary>
+        /// Find client with subject name in list of active clients and remove it.
+        /// This method is used as reaction on closing active client.
+        /// </summary>
+        /// <param name="subject">Subject name</param>
+        /// <returns></returns>
+        public bool RemoveClientFromListOfActiveClients(string subject)
+        {
+            bool retValue = false;
+
+            if (clientDict.Remove(subject))
+                retValue = true;
+
+            return retValue;
+        }
+
         #endregion 
 
         #region Private methods

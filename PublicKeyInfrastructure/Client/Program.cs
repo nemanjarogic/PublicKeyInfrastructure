@@ -117,6 +117,11 @@ namespace Client
                     case "2":
                         
                         Dictionary<int, string> clients = clientService.GetClients();
+                        if(clients.Count == 0)
+                        {
+                            Console.WriteLine("Unable to send message. Connect to clients, and try again!");
+                            break;
+                        }
 
                         Console.WriteLine("===============================");
                         foreach (var c in clients)
@@ -190,7 +195,8 @@ namespace Client
                 NetTcpBinding binding = new NetTcpBinding();
                 binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
                 string address = "net.tcp://localhost:10002/RegistrationAuthorityService";
-                using (new OperationContextScope(new RAProxy(address, binding).GetChannel()))
+                var raProxy = new RAProxy(address, binding);
+                using (new OperationContextScope(raProxy.GetChannel()))
                 {
                     string myAddress = clientService.HostAddress;
                     clientService.RemoveInvalidClient(myAddress);
@@ -199,9 +205,9 @@ namespace Client
                     OperationContext.Current.OutgoingMessageHeaders.Add(aMessageHeader);
                     
                     //caProxy.RemoveMeFromList();
-
-                    //clientService.Dispose();
+                    raProxy.RemoveActiveClient();
                 }
+                raProxy.Close();
             }
             return false;
         }

@@ -58,6 +58,26 @@ namespace RegistrationAuthority
             return certDto;
         }
 
+        public bool RemoveActiveClient()
+        {
+            bool retVal = false;
+
+            MessageHeaders headers = OperationContext.Current.RequestContext.RequestMessage.Headers;
+            string subject = null;
+            if (headers.FindHeader("UserName", "") > -1)
+            {
+                subject = headers.GetHeader<string>(headers.FindHeader("UserName", ""));
+            }
+            if (subject == null)
+            {
+                throw new Exception("Invalid user name");
+            }
+
+            retVal = CAProxy.RemoveClientFromListOfActiveClients(subject);
+
+            return retVal;
+        }
+
         #endregion
     }
 }
