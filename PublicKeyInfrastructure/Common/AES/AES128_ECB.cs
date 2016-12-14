@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Cryptography.AES
 {
+    /// <summary>
+    /// Implementation of AES algorithm in ECB mode
+    /// </summary>
     public class AES128_ECB
     {
         #region SBOX table
@@ -109,6 +112,10 @@ namespace Cryptography.AES
             }
         }
 
+        /// <summary>
+        /// Creates AES object for encryption/decryption
+        /// </summary>
+        /// <param name="key"> Key length must be 16 bytes </param>
         public AES128_ECB(byte[] key)
         {
             if (key == null)

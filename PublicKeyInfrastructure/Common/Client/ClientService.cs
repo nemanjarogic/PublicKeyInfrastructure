@@ -20,7 +20,7 @@ namespace Client
     {
         private Dictionary<string, SessionData> clientSessions;
         private X509Certificate2 myCertificate;
-        
+
         private IDatabaseWrapper sqliteWrapper;
         private VAProxy vaProxy;
         private RAProxy raProxy;
@@ -66,7 +66,7 @@ namespace Client
 
         public void StartComunication(string address)
         {
-            if(this.HostAddress.Equals(address))
+            if (this.HostAddress.Equals(address))
             {
                 return;
             }
@@ -228,7 +228,7 @@ namespace Client
                 Console.WriteLine("Session is opened");
 
                 string retVal = string.Format("{0}|{1}", sd.CallbackSessionId, sd.ProxySessionId);
-                return sd.AesAlgorithm.Encrypt(System.Text.Encoding.UTF8.GetBytes(retVal)); 
+                return sd.AesAlgorithm.Encrypt(System.Text.Encoding.UTF8.GetBytes(retVal));
             }
             return null;
         }
@@ -274,12 +274,12 @@ namespace Client
             //on javlja svim povezanim da ga obrisu iz liste konektovanih ali prazni i svoju listu konektovanih.
             if (clientAddress == null)
             {
-                foreach (KeyValuePair<string, SessionData> connectedClient in clientSessions)
-                {
-                    connectedClient.Value.Proxy.RemoveInvalidClient(HostAddress);
-                }
                 lock (objLock)
                 {
+                    foreach (KeyValuePair<string, SessionData> connectedClient in clientSessions)
+                    {
+                        connectedClient.Value.Proxy.RemoveInvalidClient(HostAddress);
+                    }
                     clientSessions.Clear();
                 }
             }
@@ -297,7 +297,7 @@ namespace Client
         {
             Dictionary<int, string> retVal = new Dictionary<int, string>();
             int num = 1;
-            foreach(var key in clientSessions.Keys)
+            foreach (var key in clientSessions.Keys)
             {
                 retVal.Add(num++, key);
             }
@@ -314,12 +314,13 @@ namespace Client
             {
                 vaProxy.Close();
             }
-            foreach(KeyValuePair<string, SessionData> connectedClient in clientSessions){
+            foreach (KeyValuePair<string, SessionData> connectedClient in clientSessions)
+            {
                 try
                 {
                     (connectedClient.Value.Proxy as ClientProxy).Close();
                 }
-                catch {  }
+                catch { }
             }
             if (sqliteWrapper != null)
             {
