@@ -331,7 +331,6 @@ namespace Common.Proxy
 
         #endregion
 
-
         #region Private methods
 
         private static void SwitchActiveNonActiveAddress()
@@ -412,7 +411,6 @@ namespace Common.Proxy
         }
 
         #endregion
-
 
         #region IDisposable methods
 
