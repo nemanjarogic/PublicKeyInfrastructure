@@ -55,7 +55,7 @@ namespace Client
         {
             string subjectName = WindowsIdentity.GetCurrent().Name;
             string port = HostAddress.Split(':')[2].Split('/')[0];
-            string subjName = subjectName.Replace('\\', '_').Replace('-', '_');
+            string subjName = WindowsIdentity.GetCurrent().Name.Replace('\\', '_').Replace('-', '_');
             ServiceName = subjName + port;
 
             sqliteWrapper = dbWrapper;
