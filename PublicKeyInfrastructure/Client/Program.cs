@@ -183,7 +183,14 @@ namespace Client
                     #endregion
 
                     case "5":
-                        clientService.TestInvalidCertificate();
+                        try
+                        {
+                            clientService.TestInvalidCertificate();
+                        }
+                        catch
+                        {
+                            PrintMessage.Print("Test failed!");
+                        }
                         break;
 
                 }
@@ -193,6 +200,8 @@ namespace Client
 
             ConsoleEventCallback(2);
             host.Close();
+
+            Console.ReadLine();
         }
 
         static bool ConsoleEventCallback(int eventType)
