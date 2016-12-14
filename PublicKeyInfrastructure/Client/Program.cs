@@ -56,7 +56,6 @@ namespace Client
             }
             string address = string.Format("net.tcp://{0}:{1}/Client", localIp, port);
             IDatabaseWrapper dbWrapper = new SQLiteWrapper();
-
             ServiceHost host = null;
             try
             {
