@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 namespace Cryptography.AES
 {
     /// <summary>
-    /// 
+    /// Operations which is used in 10 iterations of AES algorithm
     /// </summary>
     public class AESOperations
     {
         /// <summary>
         /// Replacing elements in dataBlock with corresponding from SBOX table, or inverse SBOX table
         /// </summary>
-        /// <param name="dataBlock"></param>
+        /// <param name="dataBlock">Matrix which elements need to be replaced</param>
         /// <param name="inverse">If true SBOX table is use, else inverse SBOX</param>
         protected void SubBytes(byte[][] dataBlock, bool inverse = false)
         {
@@ -30,7 +30,7 @@ namespace Cryptography.AES
         }
 
         /// <summary>
-        /// Shifting rows in matrix 
+        /// Shifting rows in matrix
         /// </summary>
         /// <param name="dataBlock"></param>
         /// <param name="inverse"></param>
@@ -42,6 +42,13 @@ namespace Cryptography.AES
             }
         }
 
+        /// <summary>
+        /// Shifting byte array for 0, 1, 2, or 3 positions, left or right
+        /// </summary>
+        /// <param name="row">Byte array for shifting</param>
+        /// <param name="shiftSize"></param>
+        /// <param name="inverse">If true shift left, else shift right</param>
+        /// <returns></returns>
         private byte[] ShiftRow(byte[] row, int shiftSize, bool inverse)
         {
             byte[] retValue = new byte[4];
@@ -59,6 +66,11 @@ namespace Cryptography.AES
             return retValue;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dataBlock"></param>
+        /// <param name="inverse"></param>
         protected void MixColumns(ref byte[][] dataBlock, bool inverse = false)
         {
             byte[][] mixedDataBlock = new byte[4][];
@@ -76,7 +88,12 @@ namespace Cryptography.AES
             dataBlock = mixedDataBlock;
         }
 
-        // Galois Field (256) Multiplication of two Bytes
+        /// <summary>
+        /// Galois Field (256) Multiplication of two Bytes
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         private Byte GMul(byte a, byte b)
         {
             byte p = 0;
@@ -109,6 +126,11 @@ namespace Cryptography.AES
             return retValue;
         }
 
+        /// <summary>
+        /// Adding round key on dataBlock in one round
+        /// </summary>
+        /// <param name="dataBlock"></param>
+        /// <param name="roundKey"></param>
         protected void AddRoundKey(byte[][] dataBlock, byte[][] roundKey)
         {
             for (int i = 0; i < 4; i++)
