@@ -21,7 +21,7 @@ namespace Common.Client
         /// </summary>
         /// <param name="message">Received message</param>
         [OperationContract]
-        void Pay(byte[] message);
+        bool Pay(byte[] message);
 
         /// <summary>
         /// Returns id of the current session.

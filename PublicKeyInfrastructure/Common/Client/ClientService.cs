@@ -234,11 +234,19 @@ namespace Client
             return null;
         }
 
-        public void Pay(byte[] message)
+        public bool Pay(byte[] message)
         {
             string sessionId = OperationContext.Current.SessionId;
             SessionData sd = GetSession(sessionId);
-            PrintMessage.Print(string.Format("From: {0}, message: {1}", sd.Address, System.Text.Encoding.UTF8.GetString(sd.AesAlgorithm.Decrypt(message))));
+            if (sd != null)
+            {
+                PrintMessage.Print(string.Format("From: {0}, message: {1}", sd.Address, System.Text.Encoding.UTF8.GetString(sd.AesAlgorithm.Decrypt(message))));
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public void CallPay(byte[] message, string address)

@@ -151,9 +151,9 @@ namespace Client
                                     clientService.CallPay(System.Text.Encoding.UTF8.GetBytes(message), clientAddr);
                                     PrintMessage.Print("Message is sent successfully");
                                 }
-                                catch (Exception)
+                                catch (Exception e)
                                 {
-                                    PrintMessage.Print("Error while sending message. Try again.");
+                                    PrintMessage.Print(string.Format("Error while sending message. Try again. {0}", e.Message));
                                 }
                             }
                             else

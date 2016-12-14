@@ -20,9 +20,9 @@ namespace Client
             proxy = this.CreateChannel();
         }
 
-        public void Pay(byte[] message)
+        public bool Pay(byte[] message)
         {
-            this.proxy.Pay(message);
+            return this.proxy.Pay(message);
         }
 
         public string GetSessionId()
