@@ -25,11 +25,6 @@ namespace Client
             this.proxy.Pay(message);
         }
 
-        public void StartComunication(string address)
-        {
-            this.proxy.StartComunication(address);
-        }
-
         public string GetSessionId()
         {
             return this.proxy.GetSessionId();
@@ -50,20 +45,10 @@ namespace Client
             return this.proxy.GetSessionInfo(address);
         }
 
-        public void CallPay(byte[] message, string address)
-        {
-            this.proxy.CallPay(message, address);
-        }
-
         public void RemoveInvalidClient(string clientAddress)
         {
             this.proxy.RemoveInvalidClient(clientAddress);
         }
 
-
-        public Dictionary<int, string> GetClients()
-        {
-            return this.proxy.GetClients();
-        }
     }
 }

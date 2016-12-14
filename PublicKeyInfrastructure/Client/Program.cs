@@ -32,7 +32,6 @@ namespace Client
 
             #region Starting service
 
-            Console.WriteLine("Client node\n\n");
             Console.Write("Host service port: ");
             string port = Console.ReadLine();
 
@@ -49,14 +48,13 @@ namespace Client
 
             if (localIp == null)
             {
-                Console.WriteLine("Faield to start client");
+                PrintMessage.Print("Faield to start client");
                 Console.ReadLine();
                 return;
 
             }
             string address = string.Format("net.tcp://{0}:{1}/Client", localIp, port);
             IDatabaseWrapper dbWrapper = new SQLiteWrapper();
-
             ServiceHost host = null;
             try
             {
@@ -70,25 +68,30 @@ namespace Client
                 host.AddServiceEndpoint(typeof(IClientContract), binding, address);
 
                 host.Open();
-                Console.WriteLine("Service is started...");
+                PrintMessage.Print("Service is started...");
             }
             catch (Exception)
             {
-                Console.WriteLine("Faield to start client");
-                Console.ReadLine();
+                PrintMessage.Print("Failed to start client");
                 return;
             }
             #endregion
 
             while (true)
             {
+                Console.WriteLine("=============================================");
+                Console.WriteLine("         {0}", address);
+                Console.WriteLine("=============================================");
+                Console.WriteLine("             MENU");
+                Console.Write("=============================================");
                 Console.WriteLine("\n1.Connect to other client...");
                 Console.WriteLine("2.Send message...");
                 Console.WriteLine("3.Show database...");
                 Console.WriteLine("4.Register...");
                 Console.WriteLine("5.Test invalid certificate...");
                 Console.WriteLine("6.End");
-
+                Console.WriteLine("=============================================");
+                Console.Write(">>");
                 string option = Console.ReadLine();
                 if (option.Equals("6")) break;
 
@@ -107,7 +110,7 @@ namespace Client
                         }
                         catch(Exception)
                         {
-                            Console.WriteLine("Failed to start communication");
+                            PrintMessage.Print("Failed to start communication");
                         }
                         break;
                     #endregion
@@ -118,16 +121,19 @@ namespace Client
                         Dictionary<int, string> clients = clientService.GetClients();
                         if(clients.Count == 0)
                         {
-                            Console.WriteLine("Unable to send message. Connect to clients, and try again!");
+                            PrintMessage.Print("Unable to send message. Connect to clients, and try again!");
                             break;
                         }
 
-                        Console.WriteLine("===============================");
+                        Console.WriteLine();
+                        Console.WriteLine("             Clients");
+                        Console.WriteLine("*********************************************");
                         foreach (var c in clients)
                         {
                             Console.WriteLine("{0}.{1}", c.Key, c.Value);
                         }
-                        Console.WriteLine("===============================");
+                        Console.WriteLine("*********************************************");
+                        Console.WriteLine();
 
                         Console.Write("Client number: ");
                         string clientNumString = Console.ReadLine();
@@ -143,21 +149,21 @@ namespace Client
                                 try
                                 {
                                     clientService.CallPay(System.Text.Encoding.UTF8.GetBytes(message), clientAddr);
-                                    Console.WriteLine("Message is sent successfully");
+                                    PrintMessage.Print("Message is sent successfully");
                                 }
                                 catch (Exception)
                                 {
-                                    Console.WriteLine("Error while sending message. Try again.");
+                                    PrintMessage.Print("Error while sending message. Try again.");
                                 }
                             }
                             else
                             {
-                                Console.WriteLine("Number is invalid");
+                                PrintMessage.Print("Number is invalid");
                             }
                         }
                         else
                         {
-                            Console.WriteLine("Number is invalid");
+                            PrintMessage.Print("Number is invalid");
                         }
 
                         break;
@@ -181,10 +187,19 @@ namespace Client
                         break;
 
                 }
+                Console.ReadLine();
+                Console.Clear();
             }
 
             ConsoleEventCallback(2);
             host.Close();
+           
+            clientService = null;
+            host = null;
+
+
+            GC.Collect();
+            Console.ReadLine();
         }
 
         static bool ConsoleEventCallback(int eventType)
@@ -198,7 +213,7 @@ namespace Client
                 using (new OperationContextScope(raProxy.GetChannel()))
                 {
                     string myAddress = clientService.HostAddress;
-                    clientService.RemoveInvalidClient(myAddress);
+                    clientService.RemoveInvalidClient(null);
                     
                     MessageHeader aMessageHeader = MessageHeader.CreateHeader("UserName", "", clientService.ServiceName);
                     OperationContext.Current.OutgoingMessageHeaders.Add(aMessageHeader);
@@ -207,6 +222,7 @@ namespace Client
                     raProxy.RemoveActiveClient();
                 }
                 raProxy.Close();
+                clientService.Dispose();
             }
             return false;
         }

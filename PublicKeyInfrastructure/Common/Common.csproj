@@ -51,6 +51,7 @@
     <Compile Include="AES\TestAES.cs" />
     <Compile Include="Audit.cs" />
     <Compile Include="Client\ClientService.cs" />
+    <Compile Include="Client\PrintMessage.cs" />
     <Compile Include="Client\RAProxy.cs" />
     <Compile Include="Client\SessionData.cs" />
     <Compile Include="Client\VAProxy.cs" />

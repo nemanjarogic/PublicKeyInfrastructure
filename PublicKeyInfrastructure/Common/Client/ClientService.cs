@@ -55,7 +55,7 @@ namespace Client
         {
             string subjectName = WindowsIdentity.GetCurrent().Name;
             string port = HostAddress.Split(':')[2].Split('/')[0];
-            string subjName = subjectName.Replace('\\', '_').Replace('-', '_');
+            string subjName = WindowsIdentity.GetCurrent().Name.Replace('\\', '_').Replace('-', '_');
             ServiceName = subjName + port;
 
             sqliteWrapper = dbWrapper;
@@ -72,7 +72,7 @@ namespace Client
             }
             if (clientSessions.ContainsKey(address))
             {
-                Console.WriteLine("You are already connected to client: {0}", address);
+                PrintMessage.Print(string.Format("You are already connected to client: {0}", address));
                 return;
             }
 
@@ -90,7 +90,7 @@ namespace Client
 
             if (!vaProxy.isCertificateValidate(serverCert.GetCert(false)))
             {
-                Console.WriteLine("Starting communication failed!");
+                PrintMessage.Print("Starting communication failed!");
                 return;
             }
 
@@ -105,13 +105,13 @@ namespace Client
                 }
                 else
                 {
-                    Console.WriteLine("Error, public key is null");
+                    PrintMessage.Print("Error, public key is null");
                     return;
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error: {0}", e.Message);
+                PrintMessage.Print(string.Format("Error: {0}", e.Message));
             }
             bool success = serverProxy.SendKey(encryptedSessionKey);
             if (success)
@@ -128,13 +128,13 @@ namespace Client
                     lock (objLock)
                     {
                         clientSessions.Add(sd.Address, sd);
-                        Console.WriteLine("Session is opened");
+                        PrintMessage.Print("Session is opened");
                     }
                 }
             }
             else
             {
-                Console.WriteLine("Starting communication failed!");
+                PrintMessage.Print("Starting communication failed!");
             }
         }
 
@@ -226,7 +226,7 @@ namespace Client
                 }
                 sqliteWrapper.InsertToTable(sd.Address);
 
-                Console.WriteLine("Session is opened");
+                PrintMessage.Print("Session is opened");
 
                 string retVal = string.Format("{0}|{1}", sd.CallbackSessionId, sd.ProxySessionId);
                 return sd.AesAlgorithm.Encrypt(System.Text.Encoding.UTF8.GetBytes(retVal));
@@ -238,7 +238,7 @@ namespace Client
         {
             string sessionId = OperationContext.Current.SessionId;
             SessionData sd = GetSession(sessionId);
-            Console.WriteLine(string.Format("From: {0}, message: {1}", sd.Address, System.Text.Encoding.UTF8.GetString(sd.AesAlgorithm.Decrypt(message))));
+            PrintMessage.Print(string.Format("From: {0}, message: {1}", sd.Address, System.Text.Encoding.UTF8.GetString(sd.AesAlgorithm.Decrypt(message))));
         }
 
         public void CallPay(byte[] message, string address)
@@ -335,11 +335,11 @@ namespace Client
             try
             {
                 X509Certificate2 cert = new X509Certificate2(@"..\..\ClientSecurityStore\client.cer");
-                Console.WriteLine("Valid certificate: {0}", vaProxy.isCertificateValidate(cert));
+                PrintMessage.Print(string.Format("Valid certificate: {0}", vaProxy.isCertificateValidate(cert)));
             }
             catch
             {
-                Console.WriteLine("Unable to load invalid certificate");
+                PrintMessage.Print("Unable to load invalid certificate");
             }
         }
 
