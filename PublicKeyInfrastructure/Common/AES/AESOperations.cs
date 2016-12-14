@@ -6,8 +6,16 @@ using System.Threading.Tasks;
 
 namespace Cryptography.AES
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class AESOperations
     {
+        /// <summary>
+        /// Replacing elements in dataBlock with corresponding from SBOX table, or inverse SBOX table
+        /// </summary>
+        /// <param name="dataBlock"></param>
+        /// <param name="inverse">If true SBOX table is use, else inverse SBOX</param>
         protected void SubBytes(byte[][] dataBlock, bool inverse = false)
         {
             for (int i = 0; i < 4; i++)
@@ -21,6 +29,11 @@ namespace Cryptography.AES
             }
         }
 
+        /// <summary>
+        /// Shifting rows in matrix 
+        /// </summary>
+        /// <param name="dataBlock"></param>
+        /// <param name="inverse"></param>
         protected void ShiftRows(byte[][] dataBlock, bool inverse = false)
         {
             for (int i = 0; i < 4; i++)
