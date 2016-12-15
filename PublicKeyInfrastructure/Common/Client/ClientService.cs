@@ -342,8 +342,8 @@ namespace Client
         {
             try
             {
-                X509Certificate2 cert = new X509Certificate2(@"..\..\ClientSecurityStore\client.cer");
-                PrintMessage.Print(string.Format("Valid certificate: {0}", vaProxy.isCertificateValidate(cert)));
+                myCertificate =  new X509Certificate2(@"..\..\ClientSecurityStore\client.cer");
+                //PrintMessage.Print(string.Format("Valid certificate: {0}", vaProxy.isCertificateValidate(myCertificate)));
             }
             catch
             {

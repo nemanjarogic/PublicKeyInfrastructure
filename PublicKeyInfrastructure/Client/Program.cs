@@ -88,7 +88,7 @@ namespace Client
                 Console.WriteLine("2.Send message...");
                 Console.WriteLine("3.Show database...");
                 Console.WriteLine("4.Register...");
-                Console.WriteLine("5.Test invalid certificate...");
+                Console.WriteLine("5.Load invalid certificate...");
                 Console.WriteLine("6.End");
                 Console.WriteLine("=============================================");
                 Console.Write(">>");

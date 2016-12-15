@@ -49,11 +49,11 @@ namespace Common.Proxy
             binding = new NetTcpBinding();
             binding.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
 
-            addressOfHotCAHost = "net.tcp://localhost:10000/CertificationAuthority";
-            addressOfBackupCAHost = "net.tcp://localhost:10001/CertificationAuthorityBACKUP";
+            //addressOfHotCAHost = "net.tcp://localhost:10000/CertificationAuthority";
+            //addressOfBackupCAHost = "net.tcp://localhost:10001/CertificationAuthorityBACKUP";
 
-            //addressOfHotCAHost = "net.tcp://10.1.212.118:10000/CertificationAuthority";
-            //addressOfBackupCAHost = "net.tcp://localhost:10000/CertificationAuthority";
+            addressOfHotCAHost = "net.tcp://10.1.212.118:10000/CertificationAuthority";
+            addressOfBackupCAHost = "net.tcp://localhost:10000/CertificationAuthority";
 
             ACTIVE_SERVER_ADDRESS = addressOfHotCAHost;
             NON_ACTIVE_SERVER_ADDRESS = addressOfBackupCAHost;
